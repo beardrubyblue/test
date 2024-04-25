@@ -14,7 +14,6 @@ import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from decimal import Decimal
 from twocaptcha import TwoCaptcha
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg2.connect(**configs.db_config())
@@ -206,7 +205,7 @@ def save_account(phone_jd, password, info):
 
 def get_access_token(phone_string, password):
     """запрос к https://oauth.vk.com/token возвращает access_token"""
-    while 0==0:
+    while 0 == 0:
         try:
             proxy = get_proxies(2)[0]
             proxy_session = create_new_proxy_session(2)
@@ -248,12 +247,12 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
     logging.critical('Registration Started At: ' + str(datetime.datetime.now()))
     html_response += 'Registration Started At: ' + str(datetime.datetime.now())
     for n in range(200):
-        logging.critical('STEP NUMBER: ' + str(n+1))
+        logging.critical('STEP NUMBER: ' + str(n + 1))
         pl = get_proxies(PROXYKIND)
-        html_response += '<BR><BR>' + str(n+1) + ' ---------------------------------------------------- Proxies Founded: ' + str(len(pl)) + '<BR>'
+        html_response += '<BR><BR>' + str(n + 1) + ' ---------------------------------------------------- Proxies Founded: ' + str(len(pl)) + '<BR>'
         proxy_session = create_new_proxy_session(PROXYKIND)
         for c, proxy in enumerate(pl):
-            html_response += '<BR>' + str(c+1) + ' '+ str(datetime.datetime.now()) +' ----------------------------------------------------------------------------------'
+            html_response += '<BR>' + str(c + 1) + ' ' + str(datetime.datetime.now()) + ' ----------------------------------------------------------------------------------'
             html_response += '<BR>Proxy: ' + proxy
             proxy_session.proxies.update(dict(http=proxy_session.params + proxy.split('|')[0], https=proxy_session.params + proxy.split('|')[0]))
             # logging.critical(proxy_session.get('https://icanhazip.com').text)
@@ -325,13 +324,13 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 elif 'error' in jd:
                     jd = json.loads(rr.text)['error']
                     if jd['error_msg'] == "Flood control: can't accept this phone (security reason)":
-                        requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?',data={'service': 'vk'})
+                        requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', data={'service': 'vk'})
                         html_response += "<BR>" + phone_jd['phone'] + " FLOOD CONTROL: can't accept this phone (security reason)<BR>"
                         logging.critical('FLOOD CONTROL! Account: ' + phone_jd['phone'] + ':' + password)
             except Exception as E:
                 requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', json={'service': 'vk', 'broken': True})
                 html_errors += '<BR>' + str(E) + '<BR>'
-        time.sleep(random.randint(1,180))
+        time.sleep(random.randint(1, 180))
     logging.critical('Registration Finished At: ' + str(datetime.datetime.now()))
     html_response += '<BR>Registration Finished At: ' + str(datetime.datetime.now()) + '<BR><BR><BR>'
     html_response += '<BR>Errors List:<BR>' + html_errors
@@ -353,56 +352,6 @@ def main():
     """Версия проекта."""
     html = 'Проект: VKReger<BR>Версия: 15.04.2024 16:30'
     return HTMLResponse(content=html, status_code=200)
-
-
-# @APP.get("/stats")
-# def stats():
-#     """Статистика по копированию различных объектов ВК."""
-#     global STATISTICS
-#     sql = '''
-#     with a as (select 'users' as object_name,round(100*(1-sum(max_user_batch_id-current_user_batch_id)/max(max_user_batch_id)),4) as completness,max(max_user_batch_id)*21000 as ids_count from users_mine_plan group by id
-#     union all
-#     select 'groups' as object_name,round(100*(1-sum(max_group_batch_id-current_group_batch_id)/max(max_group_batch_id)),4) as completness,max(max_group_batch_id)*10500 as ids_count from groups_mine_plan group by id
-#     union all 
-#     select 'friendings' as object_name,round(100*(1-sum(max_user_batch_id-current_user_batch_id)/max(max_user_batch_id)),4) as completness,max(max_user_batch_id)*21 as ids_count from friendings_mine_plan group by id
-#     union all 
-#     select 'groupments' as object_name,round(100*(1-sum(max_group_batch_id-current_group_batch_id)/max(max_group_batch_id)),4) as completness,max(max_group_batch_id)*21 as ids_count from groupments_mine_plan group by id
-#     union all 
-#     select 'followerings' as object_name,round(100*(1-sum(max_user_batch_id-current_user_batch_id)/max(max_user_batch_id)),4) as completness,max(max_user_batch_id)*21 as ids_count from followerings_mine_plan group by id
-#     union all 
-#     select 'subscriptions' as object_name,round(100*(1-sum(max_user_batch_id-current_user_batch_id)/max(max_user_batch_id)),4) as completness,max(max_user_batch_id)*21 as ids_count from subscriptions_mine_plan group by id
-#     union all 
-#     select 'users_walls' as object_name,round(100*(1-sum(max_user_batch_id-current_user_batch_id)/max(max_user_batch_id)),4) as completness,max(max_user_batch_id)*21 as ids_count from users_walls_mine_plan group by id
-#     union all 
-#     select 'groups_walls' as object_name,round(100*(1-sum(max_group_batch_id-current_group_batch_id)/max(max_group_batch_id)),4) as completness,max(max_group_batch_id)*21 as ids_count from groups_walls_mine_plan group by id)
-#     select object_name,sum(completness) as completness,sum(ids_count) as ids_count,now() as time from a group by object_name order by sum(completness)'''
-#     PGDBC.execute(sql)
-#     stts = PGDBC.fetchall()
-#     STATISTICS.insert(0, stts)
-#     if len(STATISTICS)>20:
-#         STATISTICS.pop(20)
-#     html = '<STYLE>table{width:100%;border:1px solid grey;font-size:3vh}td{border:1px solid grey}th{background-color:beige}</STYLE>'
-#     html += '<TABLE><THEAD><TR><TH>OBJECT</TH><TH>COMPLETNESS</TH><TH>AMOUNT</TH><TH>STATISTICS</TH></TR></THEAD><TBODY>'
-#     for c,sts in enumerate(STATISTICS):
-#         for stat in sts:
-#             gain = ''
-#             if c < len(STATISTICS)-1:
-#                 for stt in STATISTICS[c+1]:
-#                     if stat[0] == stt[0]:
-#                         if stat[1] != stt[1]:
-#                             gain = '+ ' + str(stat[1] - stt[1]) + ' % &nbsp&nbsp&nbsp'
-#                             period = (stat[3]- stt[3]).total_seconds()
-#                             gain += str(round(period)) + ' seconds &nbsp&nbsp&nbsp'
-#                             gain += str(round(stat[2] * (stat[1] - stt[1])/Decimal(period))/100) + ' ids/second'
-#                         break
-#             if c == 0:
-#                 html += '<TR bgcolor="azure">'
-#             else:
-#                 html += '<TR bgcolor="beige">'
-#             html += '<TD>' + str(stat[0]) + '</TD><TD>' + str(stat[1]) + ' %</TD><TD>' + '{0:,}'.format(stat[2]).replace(',', ' ') + '</TD><TD>' + gain + '</TD></TR>'
-#         html += '<TR><TD></TD><TD></TD><TD></TD><TD></TD></TR>'
-#     html += '</TBODY></TABLE>'
-#     return HTMLResponse(content=html, status_code=200)
 
 
 if __name__ == "__main__":
