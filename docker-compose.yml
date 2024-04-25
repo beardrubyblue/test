@@ -1,0 +1,55 @@
+version: '3.5'
+x-defaults:
+  &defaults
+  image: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+  environment:
+    - TZ=Europe/Moscow
+    - CI_COMMIT_REF_NAME
+    - CI_COMMIT_SHORT_SHA
+
+services:
+  app:
+    << : *defaults
+    secrets:
+      - VKRegerSecret1
+      - VKRegerSecret2
+      - VKRegerSecret3
+      - VKRegerSecret4
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+      restart_policy:
+        condition: any
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-net
+        - traefik.http.services.vkreger.loadbalancer.server.scheme=http
+        - traefik.http.services.vkreger.loadbalancer.server.port=5000
+        - traefik.http.routers.vkreger.rule=Host(`vkreger${DOMAIN}`)
+        - traefik.http.routers.vkreger.service=vkreger
+        - traefik.http.routers.vkreger.entrypoints=websecure
+        - traefik.http.routers.vkreger.tls=true
+    networks:
+      - default
+      - traefik
+    volumes:
+      -  /data/swarm/gpfdist/data:/home/appuser/data
+
+secrets:
+  VKRegerSecret1:
+    file: /ApiKey.json
+  VKRegerSecret2:
+    file: /ProxyUserOfKind2.json
+  VKRegerSecret3:
+    file: /ProxyUserOfKind3.json
+  VKRegerSecret4:
+    file: /DBConfig.json
+
+networks:
+  default:
+    name: vkreger
+    attachable: true
+  traefik:
+    name: traefik-net
+    external: true

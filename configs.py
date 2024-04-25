@@ -1,0 +1,24 @@
+import ast
+with open('/run/secrets/secret1', 'r') as f:
+    VRS1 = f.readlines()
+    f.close()
+with open('/run/secrets/secret2', 'r') as f:
+    VRS2 = f.readlines()
+    f.close()
+with open('/run/secrets/secret3', 'r') as f:
+    VS3 = f.readlines()
+    f.close()
+ProxyUserOfKind3 = VS3[0].replace('"', '').replace("'", '')
+TwoCaptchaApiKey = VRS1[0].replace('"', '')
+
+
+def convert_string_to_kwargs(kwargs_string):
+    """Безопасное преобразование строки в именованные параметры."""
+    kwargs = f'dict({kwargs_string})'
+    assert sum(isinstance(node, ast.Call) for node in ast.walk(ast.parse(kwargs))) == 1
+    return eval(kwargs)
+
+
+def db_config():
+    """Получение параметров подключение к БД из секретов проекта."""
+    return convert_string_to_kwargs(VRS2[0].replace('"', ''))

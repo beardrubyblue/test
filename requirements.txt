@@ -1,0 +1,9 @@
+requests~=2.31.0
+requests[socks]>=0.23.0
+pydantic~=2.3.0
+beautifulsoup4~=4.12.2
+lxml
+2captcha-python
+uvicorn
+fastapi
+psycopg2-binary
