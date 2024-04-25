@@ -30,7 +30,7 @@ build:
       --cache-from $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME 
       -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA 
       -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-      -t uniminer:latest .
+      -t unireger:latest .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   tags:
@@ -42,9 +42,9 @@ build:
     VAULT_ADDR: 'https://vault.arbat.dev:8200'
   script:
     - export VAULT_TOKEN=$(vault write -field=token auth/jwt/login role=opendata jwt=$CI_JOB_JWT)
-    - vault kv get -field=api_key -format=json opendata/uniminer > /APIKey.json
-    - vault kv get -field=db_config -format=json opendata/uniminer > /DBConfig.json
-    - vault kv get -field=proxy_user_of_kind3 -format=json opendata/uniminer > /ProxyUserOfKind3.json
+    - vault kv get -field=api_key -format=json opendata/unireger > /APIKey.json
+    - vault kv get -field=db_config -format=json opendata/unireger > /DBConfig.json
+    - vault kv get -field=proxy_user_of_kind3 -format=json opendata/unireger > /ProxyUserOfKind3.json
     - docker stack deploy --with-registry-auth --prune -c docker-compose.yml $CI_PROJECT_NAME
     - stack_wait $CI_PROJECT_NAME
 
