@@ -350,7 +350,7 @@ def balance(credentials: HTTPBasicCredentials = Depends(SECURITY)):
 @APP.get("/")
 def main():
     """Версия проекта."""
-    html = 'Проект: VKReger<BR>Версия: 15.04.2024 16:30'
+    html = 'Проект: VKReger<BR>Версия: 26.04.2024 17:18'
     return HTMLResponse(content=html, status_code=200)
 
 
