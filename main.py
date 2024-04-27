@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg2.connect(**configs.db_config())
 DB.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 DBC = DB.cursor()
-APP = FastAPI()
+app = FastAPI()
 SECURITY = HTTPBasic()
 CC = {
     'server': 'rucaptcha.com',
@@ -283,7 +283,7 @@ def get_access_token(phone_string, password):
 # supremacy('ugodina.eli@gmail.com||5430850612t')
 
 
-@APP.get("/register")
+@app.get("/register")
 def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """регистрация одного или пачки учётных записей ВК"""
     global REGISTRATION_STARTED
@@ -388,7 +388,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
     return HTMLResponse(content=html_response, status_code=200)
 
 
-@APP.get("/balance")
+@app.get("/balance")
 def balance(credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Проверка баланса рукапчи."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
@@ -397,7 +397,7 @@ def balance(credentials: HTTPBasicCredentials = Depends(SECURITY)):
     return HTMLResponse(content=html, status_code=200)
 
 
-@APP.get("/")
+@app.get("/")
 def main():
     """Версия проекта."""
     html = 'Проект: VKReger<BR>Версия: 26.04.2024 17:18'
