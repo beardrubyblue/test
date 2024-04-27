@@ -52,5 +52,7 @@ deploy_main:
   extends: .deploy
   only:
     - main
+  variables:
+    DOMAIN: -odata.arbat.dev
   tags:
     - arbat-deploy
