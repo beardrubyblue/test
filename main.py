@@ -15,7 +15,7 @@ from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
-from playwright.sync_api import sync_playwright
+# from playwright.sync_api import sync_playwright
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg2.connect(**configs.db_config())
 DB.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
