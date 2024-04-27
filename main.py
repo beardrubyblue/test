@@ -234,9 +234,9 @@ def get_access_token(phone_string, password):
             logging.critical(e)
 
 
-def supremacy(postfix: str=''):
+def supremacy(postfix: str = ''):
     with sync_playwright() as p:
-        browser = p.chromium.launch(args = ["--disable-blink-features=AutomationControlled"])
+        browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
         context = browser.new_context()
         page = context.new_page()
         logging.critical("Browser is open!")
@@ -262,7 +262,7 @@ def supremacy(postfix: str=''):
             page.wait_for_timeout(2000)  # Ждем 2 секунды
 
             # Проверяем оценивали мы эту новость или нет
-            element =  page.query_selector('body')
+            element = page.query_selector('body')
 
             if "Your read-to-Earn opportunity:" in element.text_content().strip():
                 page.click('#plusButton')
