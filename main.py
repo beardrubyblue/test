@@ -244,12 +244,15 @@ def supremacy(postfix: str = ''):
         page.goto(f"https://supremacy.info/news/{19}")
         logging.critical("Went to the site to login")
         page.click('#plusButton')
+        logging.critical("Let's start authorization")
         page.click('#authButton')
 
         page.fill('input[name="identifier"]', postfix.split('')[0])
+        logging.critical("Login entered")
         page.click('#identifierNext')
 
         page.fill('input[name="Passwd"]', postfix.split('')[1])
+        logging.critical("Password entered")
         page.click('#passwordNext')
         logging.critical("Authorization completed!")
         page.click('#plusButton')
