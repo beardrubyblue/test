@@ -15,15 +15,23 @@ services:
       - secret2
       - secret3
     deploy:
-      mode: replicated
-      replicas: 1
       resources:
         limits:
-          memory: 10240M
+          memory: 1024M
       restart_policy:
         condition: any
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-net
+        - traefik.http.services.unireger.loadbalancer.server.scheme=http
+        - traefik.http.services.unireger.loadbalancer.server.port=5000
+        - traefik.http.routers.unireger.rule=Host(`unireger${DOMAIN}`)
+        - traefik.http.routers.unireger.service=unireger
+        - traefik.http.routers.unireger.entrypoints=websecure
+        - traefik.http.routers.unireger.tls=true
     networks:
       - default
+      - traefik
 
 secrets:
   secret1:
@@ -37,3 +45,6 @@ networks:
   default:
     name: unireger
     attachable: true
+  traefik:
+    name: traefik-net
+    external: true
