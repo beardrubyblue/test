@@ -236,7 +236,7 @@ def get_access_token(phone_string, password):
 
 def supremacy(postfix: str = ''):
     with sync_playwright() as p:
-        browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
+        browser = p.chromium.launch(headless=False, slow_mo=500, args=["--disable-blink-features=AutomationControlled"])
         context = browser.new_context()
         page = context.new_page()
         logging.critical("Browser is open!")
