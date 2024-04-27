@@ -241,7 +241,7 @@ def supremacy(postfix: str = ''):
         page = context.new_page()
         logging.critical("Browser is open!")
 
-        page.goto(f"https://supremacy.info/news/{107}")
+        page.goto(f"https://supremacy.info/news/{19}")
         logging.critical("Went to the site to login")
         page.click('#plusButton')
         page.click('#authButton')
