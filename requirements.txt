@@ -9,3 +9,4 @@ lxml
 uvicorn
 fastapi
 psycopg2-binary
+playwright~=1.43.0

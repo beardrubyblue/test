@@ -15,6 +15,7 @@ from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
+from playwright.sync_api import sync_playwright
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg2.connect(**configs.db_config())
 DB.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
@@ -232,6 +233,47 @@ def get_access_token(phone_string, password):
         except Exception as e:
             logging.critical(e)
 
+def supremacy(postfix: str=''):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
+        context =  browser.new_context()
+        page =  context.new_page()
+        logging.critical("Browser is open!")
+
+        page.goto(f"https://supremacy.info/news/{107}")
+        logging.critical("Went to the site to login")
+        page.click('#plusButton')
+        page.click('#authButton')
+
+        page.fill('input[name="identifier"]', postfix.split('')[0])
+        page.click('#identifierNext')
+
+        page.fill('input[name="Passwd"]', postfix.split('')[1])
+        page.click('#passwordNext')
+        logging.critical("Authorization completed!")
+        page.click('#plusButton')
+
+        news_count = 100
+        i = 1
+        while i != news_count:
+            logging.critical(f"Went to the article page with ID {i}")
+            page.goto(f"https://supremacy.info/news/{i}")
+            page.wait_for_timeout(2000)  # Ждем 2 секунды
+
+            # Проверяем оценивали мы эту новость или нет
+            element =  page.query_selector('body')
+
+            if "Your read-to-Earn opportunity:" in element.text_content().strip():
+                page.click('#plusButton')
+                logging.critical("Article appreciated!")
+                i = i + 1
+
+            else:
+                logging.critical("The article has already been rated or the link is broken!")
+                i = i + 1
+
+        browser.close()
+        logging.critical("Browser is closed!")
 
 @APP.get("/register")
 def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
