@@ -233,11 +233,12 @@ def get_access_token(phone_string, password):
         except Exception as e:
             logging.critical(e)
 
+
 def supremacy(postfix: str=''):
     with sync_playwright() as p:
-        browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
-        context =  browser.new_context()
-        page =  context.new_page()
+        browser = p.chromium.launch(args = ["--disable-blink-features=AutomationControlled"])
+        context = browser.new_context()
+        page = context.new_page()
         logging.critical("Browser is open!")
 
         page.goto(f"https://supremacy.info/news/{107}")
@@ -274,6 +275,7 @@ def supremacy(postfix: str=''):
 
         browser.close()
         logging.critical("Browser is closed!")
+
 
 @APP.get("/register")
 def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
