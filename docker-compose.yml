@@ -19,7 +19,7 @@ services:
       replicas: 1
       resources:
         limits:
-          memory: 1024M
+          memory: 10240M
       restart_policy:
         condition: any
     networks:

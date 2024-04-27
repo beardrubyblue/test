@@ -42,7 +42,7 @@ with open('UserAgents.txt', 'r') as F:
 STATISTICS = []
 REGISTRATION_STARTED = False
 random.seed()
-
+supremacy
 
 def get_proxies(kind: int, amount: int = 1000):
     """функция возвращает список полученных проксей с сайта https://free-proxy-list.net или из https://proxy-manager.arbat.dev/"""
