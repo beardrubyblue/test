@@ -233,7 +233,7 @@ def get_access_token(phone_string, password):
 
 
 def add_id(id):
-    DBC.execute("INSERT INTO "Elizaveta".news_ids(id) VALUES (?)", (id,))
+    DBC.execute('INSERT INTO "Elizaveta".news_ids(id) VALUES (?)', (id,))
     DB.commit()
 
 
@@ -244,7 +244,7 @@ def supremacy(email, password):
         page = context.new_page()
         logging.critical("Browser is open!")
 
-        DBC.execute("SELECT id FROM "Elizaveta".news_ids")
+        DBC.execute('SELECT id FROM "Elizaveta".news_ids')
         visited_news = DBC.fetchall()
         page.goto(f"https://supremacy.info/news/{visited_news[-1]}")
         logging.critical("Went to the site to login")
