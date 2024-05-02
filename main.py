@@ -272,7 +272,7 @@ def supremacy(email, password):
         sqlite_insert_blob_query = """INSERT INTO "Elizaveta".screenshot
                                   (photo) VALUES (?)"""
         emp_photo = convert_to_binary_data("screenshot.png")
-        data_tuple = (emp_photo)
+        data_tuple = (emp_photo,)
         DBC.execute(sqlite_insert_blob_query, data_tuple)
         DB.commit()
 
