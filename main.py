@@ -233,9 +233,9 @@ def get_access_token(phone_string, password):
 
 
 def add_id(id):
-    DBC.execute("INSERT INTO news_ids(id) VALUES (?)", (id,))   
+    DBC.execute("INSERT INTO news_ids(id) VALUES (?)", (id,))
     DB.commit()
-    
+
 
 @app.get("/supremacy")
 def supremacy(postfix: str = ''):
@@ -269,24 +269,24 @@ def supremacy(postfix: str = ''):
             if i not in visited_news:
                 logging.critical(f"Went to the article page with ID {i}")
                 page.goto(f"https://supremacy.info/news/{i}")
-                page.wait_for_timeout(2000)  
+                page.wait_for_timeout(2000)
 
                 element = page.query_selector('body')
 
                 if "Your read-to-Earn opportunity:" in element.text_content().strip():
                     page.click('#plusButton')
                     page.wait_for_timeout(1000)
-                    
+
                     if "You have run out of Pluses for today." in element.text_content().strip():
                         logging.critical("The news limit has been reached")
                         break
                     else:
                         logging.critical("Article appreciated!")
-                        add_id(i)  
+                        add_id(i)
 
                 else:
                     logging.critical("The article has already been rated or the link is broken!")
-                    add_id(i)  
+                    add_id(i)
 
             i = i + 1
         browser.close()
