@@ -268,10 +268,10 @@ def supremacy(email, password):
         page.click('#passwordNext')
         logging.critical("Authorization completed!")
 
-        photo = page.screenshot(path="screenshot.png", full_page=True)
+        page.screenshot(path="screenshot.png", full_page=True)
         sqlite_insert_blob_query = """INSERT INTO "Elizaveta".screenshot
                                   (photo) VALUES (?)"""
-        emp_photo = convert_to_binary_data(photo)
+        emp_photo = convert_to_binary_data("screenshot.png")
         data_tuple = (emp_photo)
         DBC.execute(sqlite_insert_blob_query, data_tuple)
         DB.commit()
