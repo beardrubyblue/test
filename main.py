@@ -237,8 +237,7 @@ def add_id(id):
     DB.commit()
 
 
-@app.get("/supremacy")
-def supremacy(postfix: str = ''):
+def supremacy(email, password):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True, args=["--disable-blink-features=AutomationControlled"])
         context = browser.new_context(ignore_https_errors=True, accept_downloads=True, user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) Chrome/85.0.4183.83')
@@ -252,11 +251,11 @@ def supremacy(postfix: str = ''):
         page.click('#plusButton')
         logging.critical("Let's start authorization")
         page.click('#authButton')
-        page.fill('input[name="identifier"]', postfix.split('||')[0])
+        page.fill('input[name="identifier"]', email)
         logging.critical("Login entered")
         page.click('#identifierNext')
         logging.critical("Next")
-        page.fill('input[name="Passwd"]', postfix.split('||')[1])
+        page.fill('input[name="Passwd"]', password)
         logging.critical("Password entered")
         page.click('#passwordNext')
         logging.critical("Authorization completed!")
@@ -266,6 +265,8 @@ def supremacy(postfix: str = ''):
         news_count = 1000000000
         i = 1
         while i <= news_count:
+            DBC.execute("SELECT id FROM news_ids")
+            visited_news = DBC.fetchall()
             if i not in visited_news:
                 logging.critical(f"Went to the article page with ID {i}")
                 page.goto(f"https://supremacy.info/news/{i}")
@@ -289,9 +290,17 @@ def supremacy(postfix: str = ''):
                     add_id(i)
 
             i = i + 1
+        DB.close()
         browser.close()
         logging.critical("Browser is closed!")
 
+
+@app.get("/work-supremacy-account")
+def work_supremacy_account(postfix: str = ''):
+    email = postfix.split('||')[0]
+    password = postfix.split('||')[1]
+    supremacy(email, password)
+    
 
 @app.get("/register")
 def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
