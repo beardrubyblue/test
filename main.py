@@ -300,7 +300,7 @@ def work_supremacy_account(postfix: str = ''):
     email = postfix.split('||')[0]
     password = postfix.split('||')[1]
     supremacy(email, password)
-    
+
 
 @app.get("/register")
 def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
