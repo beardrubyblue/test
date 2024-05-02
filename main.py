@@ -246,7 +246,7 @@ def supremacy(email, password):
 
         DBC.execute('SELECT id FROM "Elizaveta".news_ids')
         visited_news = DBC.fetchall()
-        ids = visited_news[-1] 
+        ids = visited_news[-1]
         page.goto(f"https://supremacy.info/news/{ids[0] + 1}")
         logging.critical("Went to the site to login")
         page.click('#plusButton')
