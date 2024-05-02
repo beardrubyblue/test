@@ -248,7 +248,7 @@ def supremacy(email, password):
         visited_news = DBC.fetchall()
         ids = visited_news[-1]
         page.goto(f"https://supremacy.info/news/{ids[0] + 1}")
-        logging.critical(f"Went to the site to login https://supremacy.info/news/{ids[0] + 1}")
+        logging.critical("Went to the site to login")
         page.click('#plusButton')
         logging.critical("Let's start authorization")
         page.click('#authButton')
@@ -257,7 +257,7 @@ def supremacy(email, password):
         page.click('#identifierNext')
         logging.critical("Next")
         page.fill('input[name="Passwd"]', password)
-        logging.critical("Password entered")
+        logging.critical(f"Password entered {password}")
         page.click('#passwordNext')
         logging.critical("Authorization completed!")
         page.wait_for_timeout(2000)
