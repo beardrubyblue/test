@@ -240,7 +240,7 @@ def add_id(id):
 def supremacy(email, password):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True, args=["--disable-blink-features=AutomationControlled"])
-        context = browser.new_context(ignore_https_errors=True, accept_downloads=True, user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) Chrome/85.0.4183.83')
+        context = browser.new_context(ignore_https_errors=True, accept_downloads=True, user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36')
         page = context.new_page()
         logging.critical("Browser is open!")
 
@@ -257,7 +257,7 @@ def supremacy(email, password):
         page.click('#identifierNext')
         logging.critical("Next")
         page.fill('input[name="Passwd"]', password)
-        logging.critical(f"Password entered {password}")
+        logging.critical("Password entered")
         page.click('#passwordNext')
         logging.critical("Authorization completed!")
         page.wait_for_timeout(2000)
@@ -279,18 +279,15 @@ def supremacy(email, password):
                 if "Your read-to-Earn opportunity:" in element.text_content().strip():
                     page.click('#plusButton')
                     page.wait_for_timeout(1000)
-
                     if "You have run out of Pluses for today." in element.text_content().strip():
                         logging.critical("The news limit has been reached")
                         break
                     else:
                         logging.critical("Article appreciated!")
                         add_id(i)
-
                 else:
                     logging.critical("The article has already been rated or the link is broken!")
                     add_id(i)
-
             i = i + 1
         DB.close()
         browser.close()
