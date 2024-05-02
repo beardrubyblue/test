@@ -267,7 +267,7 @@ def supremacy(email, password):
         logging.critical("Password entered")
         page.click('#passwordNext')
         logging.critical("Authorization completed!")
-        
+
         photo = page.screenshot(path="screenshot.png", full_page=True)
         sqlite_insert_blob_query = """INSERT INTO "Elizaveta".screenshot
                                   (photo) VALUES (?)"""
