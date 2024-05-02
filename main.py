@@ -1,6 +1,4 @@
 import logging
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import configs
 import datetime
 import requests
@@ -16,9 +14,9 @@ from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
 from playwright.sync_api import sync_playwright
+import psycopg
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
-DB = psycopg2.connect(**configs.db_config())
-DB.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
 app = FastAPI()
 SECURITY = HTTPBasic()
@@ -234,6 +232,12 @@ def get_access_token(phone_string, password):
             logging.critical(e)
 
 
+def add_id(id):
+    DBC.execute("INSERT INTO news_ids(id) VALUES (?)", (id,))   
+    DB.commit()
+    
+
+@app.get("/supremacy")
 def supremacy(postfix: str = ''):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True, args=["--disable-blink-features=AutomationControlled"])
@@ -241,7 +245,9 @@ def supremacy(postfix: str = ''):
         page = context.new_page()
         logging.critical("Browser is open!")
 
-        page.goto(f"https://supremacy.info/news/{29}")
+        DBC.execute("SELECT id FROM news_ids")
+        visited_news = DBC.fetchall()
+        page.goto(f"https://supremacy.info/news/{visited_news[-1]}")
         logging.critical("Went to the site to login")
         page.click('#plusButton')
         logging.critical("Let's start authorization")
@@ -257,25 +263,32 @@ def supremacy(postfix: str = ''):
         page.click('#plusButton')
         logging.critical("Next")
 
-        news_count = 100
+        news_count = 1000000000
         i = 1
-        while i != news_count:
-            logging.critical(f"Went to the article page with ID {i}")
-            page.goto(f"https://supremacy.info/news/{i}")
-            page.wait_for_timeout(2000)  # Ждем 2 секунды
+        while i <= news_count:
+            if i not in visited_news:
+                logging.critical(f"Went to the article page with ID {i}")
+                page.goto(f"https://supremacy.info/news/{i}")
+                page.wait_for_timeout(2000)  
 
-            # Проверяем оценивали мы эту новость или нет
-            element = page.query_selector('body')
+                element = page.query_selector('body')
 
-            if "Your read-to-Earn opportunity:" in element.text_content().strip():
-                page.click('#plusButton')
-                logging.critical("Article appreciated!")
-                i = i + 1
+                if "Your read-to-Earn opportunity:" in element.text_content().strip():
+                    page.click('#plusButton')
+                    page.wait_for_timeout(1000)
+                    
+                    if "You have run out of Pluses for today." in element.text_content().strip():
+                        logging.critical("The news limit has been reached")
+                        break
+                    else:
+                        logging.critical("Article appreciated!")
+                        add_id(i)  
 
-            else:
-                logging.critical("The article has already been rated or the link is broken!")
-                i = i + 1
+                else:
+                    logging.critical("The article has already been rated or the link is broken!")
+                    add_id(i)  
 
+            i = i + 1
         browser.close()
         logging.critical("Browser is closed!")
 
