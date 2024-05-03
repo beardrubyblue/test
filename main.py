@@ -275,7 +275,7 @@ def supremacy(email, password):
         # data_tuple = (emp_photo,)
         # DBC.execute(sqlite_insert_blob_query, data_tuple)
         # DB.commit()
-        
+
         time.sleep(100)
         page.wait_for_timeout(2000)
         page.click('#plusButton')
