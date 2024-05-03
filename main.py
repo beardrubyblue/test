@@ -246,7 +246,11 @@ def convert_to_binary_data(filename):
 
 def supremacy(email, password):
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True, args=["--disable-blink-features=AutomationControlled"])
+        browser = p.chromium.launch(headless=True, args=["--disable-blink-features=AutomationControlled"],
+                                                                              proxy={
+                                                      'server': '194.28.208.52:9848',
+                                                      'username': 'f0KZxS',
+                                                      'password': 'rTFq4B',})
         context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0')
         page = context.new_page()
         logging.critical("Browser is open!")
