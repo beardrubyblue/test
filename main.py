@@ -246,8 +246,8 @@ def convert_to_binary_data(filename):
 
 def supremacy(email, password):
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True, args=["--disable-blink-features=AutomationControlled"], proxy={'server': '194.28.208.52:9848', 'username': 'f0KZxS', 'password': 'rTFq4B'})
-        context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36')
+        browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
+        context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0')
         page = context.new_page()
         logging.critical("Browser is open!")
 
@@ -275,7 +275,8 @@ def supremacy(email, password):
         # data_tuple = (emp_photo,)
         # DBC.execute(sqlite_insert_blob_query, data_tuple)
         # DB.commit()
-
+        
+        time.sleep(100)
         page.wait_for_timeout(2000)
         page.click('#plusButton')
         logging.critical("Next")
