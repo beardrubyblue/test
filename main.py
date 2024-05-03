@@ -237,13 +237,6 @@ def add_id(id):
     DB.commit()
 
 
-def convert_to_binary_data(filename):
-    # Преобразование данных в двоичный формат
-    with open(filename, 'rb') as file:
-        blob_data = file.read()
-    return blob_data
-
-
 def supremacy(email, password):
     with sync_playwright() as p:
         browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
@@ -269,15 +262,19 @@ def supremacy(email, password):
         page.click('#passwordNext')
         logging.critical("Authorization completed!")
 
-        # page.screenshot(path="screenshot.png", full_page=True)
+        page.wait_for_timeout(2000)
+        time.sleep(100)
+        page.screenshot(path="screenshot.png", full_page=True)
         # sqlite_insert_blob_query = 'INSERT INTO "Elizaveta".screenshot(photo) VALUES (?)'
         # emp_photo = convert_to_binary_data("screenshot.png")
         # data_tuple = (emp_photo,)
         # DBC.execute(sqlite_insert_blob_query, data_tuple)
         # DB.commit()
+        with open("screenshot.png", "rb") as f:
+            image_data = f.read()
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo) VALUES (%s)', (image_data,))
+        DB.commit()
 
-        time.sleep(100)
-        page.wait_for_timeout(2000)
         page.click('#plusButton')
         logging.critical("Next")
 
