@@ -258,6 +258,7 @@ def supremacy(email, password):
         logging.critical("Went to the site to login")
         page.click('#plusButton')
         logging.critical("Let's start authorization")
+        page.wait_for_timeout(2000)
         page.click('#authButton')
         page.fill('input[name="identifier"]', email)
         logging.critical("Login entered")
