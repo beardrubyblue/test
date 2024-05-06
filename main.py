@@ -265,11 +265,7 @@ def supremacy(email, password):
         page.wait_for_timeout(2000)
         time.sleep(100)
         page.screenshot(path="screenshot.png", full_page=True)
-        # sqlite_insert_blob_query = 'INSERT INTO "Elizaveta".screenshot(photo) VALUES (?)'
-        # emp_photo = convert_to_binary_data("screenshot.png")
-        # data_tuple = (emp_photo,)
-        # DBC.execute(sqlite_insert_blob_query, data_tuple)
-        # DB.commit()
+
         with open("screenshot.png", "rb") as f:
             image_data = f.read()
         DBC.execute('INSERT INTO "Elizaveta".screenshot(photo) VALUES (%s)', (image_data,))
