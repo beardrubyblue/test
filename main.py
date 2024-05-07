@@ -294,7 +294,7 @@ def supremacy(phone, password):
             logging.critical("Next2")
             page.click('button[name="action"]')
 
-        if "Подтвердите свою личность" in element.text_content().strip():
+        elif "Подтвердите свою личность" in element.text_content().strip():
             page.wait_for_timeout(2000)  # Ждем 2 секунды
             logging.critical("Next3")
             page.click('div[class="VV3oRb YZVTmd SmR8"]')
