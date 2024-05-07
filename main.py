@@ -259,9 +259,9 @@ def supremacy(phone, password):
         logging.critical("Next")
         page.fill('input[name="Passwd"]', password)
 
-        page.click('#passwordNext')  ##################
+        page.click('#passwordNext')  # ?????????????????????
         page.wait_for_timeout(2000)  # Ждем 2 секунды
-        
+
         page.screenshot(path="screenshot0.png", full_page=True)
         with open("screenshot0.png", "rb") as f:
             image_data = f.read()
@@ -272,12 +272,12 @@ def supremacy(phone, password):
         if "This browser or app may not be secure. Learn more" in element.text_content().strip():
             time.sleep(60)
             page.wait_for_timeout(2000)  # Ждем 2 секунды
-            page.click('#try again')   #############################
+            page.click('#try again')   # ?????????????????????
             logging.critical("Next1")
 
         elif "Verify it’s you" in element.text_content().strip():
             page.wait_for_timeout(2000)  # Ждем 2 секунды
-            page.click('button[name="action"]') 
+            page.click('button[name="action"]')
             logging.critical("Nex2")
         else:
             page.click('button[class="mTkos TrZEUc"]')
@@ -286,7 +286,7 @@ def supremacy(phone, password):
         page.wait_for_timeout(2000)
 
         time.sleep(30)
-        response = requests.get(f'http://10.9.20.135:3000/phones/messages/{phone}?fromTs=0').json() 
+        response = requests.get(f'http://10.9.20.135:3000/phones/messages/{phone}?fromTs=0').json()
         if 'G-' in response['messages'][0]:
             kod = response['messages'][0][2:8]
 
@@ -308,7 +308,7 @@ def supremacy(phone, password):
             image_data = f.read()
         DBC.execute('INSERT INTO "Elizaveta".screenshot(name, photo) VALUES (%s, %s)', (image_data, "After kod"))
         DB.commit()
-        
+
         # logging.critical("Password entered")
         # page.click('#passwordNext')
 
@@ -323,7 +323,6 @@ def supremacy(phone, password):
         #     image_data = f.read()
         # DBC.execute('INSERT INTO "Elizaveta".screenshot(photo) VALUES (%s)', (image_data,))
         # DB.commit()
-
 
         # page.wait_for_timeout(2000)
         # kod = f'http://10.9.20.135:3000/phones/messages/{email}?fromTs=0'
