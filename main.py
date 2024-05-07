@@ -237,7 +237,7 @@ def add_id(id):
     DB.commit()
 
 
-def supremacy(email, password):
+def supremacy(phone, password):
     with sync_playwright() as p:
         browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
         context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0')
@@ -253,26 +253,108 @@ def supremacy(email, password):
         logging.critical("Let's start authorization")
         page.wait_for_timeout(2000)
         page.click('#authButton')
-        page.fill('input[name="identifier"]', email)
+        page.fill('input[name="identifier"]', phone)
         logging.critical("Login entered")
         page.click('#identifierNext')
         logging.critical("Next")
         page.fill('input[name="Passwd"]', password)
-        logging.critical("Password entered")
-        page.click('#passwordNext')
-        logging.critical("Authorization completed!")
 
-        page.wait_for_timeout(2000)
-        time.sleep(100)
-        page.screenshot(path="screenshot.png", full_page=True)
-
-        with open("screenshot.png", "rb") as f:
+        page.click('#passwordNext')  ##################
+        page.wait_for_timeout(2000)  # Ждем 2 секунды
+        
+        page.screenshot(path="screenshot0.png", full_page=True)
+        with open("screenshot0.png", "rb") as f:
             image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo) VALUES (%s)', (image_data,))
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(name, photo) VALUES (%s, %s)', (image_data, "passwordNext"))
         DB.commit()
 
-        page.click('#plusButton')
+        element = page.query_selector('body')
+        if "This browser or app may not be secure. Learn more" in element.text_content().strip():
+            time.sleep(60)
+            page.wait_for_timeout(2000)  # Ждем 2 секунды
+            page.click('#try again')   #############################
+            logging.critical("Next1")
+
+        elif "Verify it’s you" in element.text_content().strip():
+            page.wait_for_timeout(2000)  # Ждем 2 секунды
+            page.click('button[name="action"]') 
+            logging.critical("Nex2")
+        else:
+            page.click('button[class="mTkos TrZEUc"]')
+            logging.critical("Next3")
+
+        page.wait_for_timeout(2000)
+
+        time.sleep(30)
+        response = requests.get(f'http://10.9.20.135:3000/phones/messages/{phone}?fromTs=0').json() 
+        if 'G-' in response['messages'][0]:
+            kod = response['messages'][0][2:8]
+
+        page.fill('input[name="Pin"]', kod)
+        logging.critical("Kod entered")
+
+        page.screenshot(path="screenshot1.png", full_page=True)
+        with open("screenshot1.png", "rb") as f:
+            image_data = f.read()
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(name, photo) VALUES (%s, %s)', (image_data, "Kod entered"))
+        DB.commit()
+
+        page.click('#idvPreregisteredPhoneNext')
         logging.critical("Next")
+
+        page.wait_for_timeout(2000)
+        page.screenshot(path="screenshot2.png", full_page=True)
+        with open("screenshot1.png", "rb") as f:
+            image_data = f.read()
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(name, photo) VALUES (%s, %s)', (image_data, "After kod"))
+        DB.commit()
+        
+        # logging.critical("Password entered")
+        # page.click('#passwordNext')
+
+        # page.wait_for_timeout(2000)
+        # element = page.query_selector('body')
+        # if "Подтвердите свою личность" in element.text_content().strip():
+        #     page.click('div[class="VV3oRb YZVTmd SmR8"]')
+
+        # page.wait_for_timeout(2000)
+        # page.screenshot(path="screenshot1.png", full_page=True)
+        # with open("screenshot1.png", "rb") as f:
+        #     image_data = f.read()
+        # DBC.execute('INSERT INTO "Elizaveta".screenshot(photo) VALUES (%s)', (image_data,))
+        # DB.commit()
+
+
+        # page.wait_for_timeout(2000)
+        # kod = f'http://10.9.20.135:3000/phones/messages/{email}?fromTs=0'
+
+        # page.fill('input[name="Pin"]', kod)
+        # logging.critical("Kod entered")
+        # page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 BqKGqe Jskylb TrZEUc lw1w4b"]')
+        # logging.critical("Next")
+
+        # page.wait_for_timeout(2000)
+        # page.screenshot(path="screenshot2.png", full_page=True)
+        # with open("screenshot2.png", "rb") as f:
+        #     image_data = f.read()
+        # DBC.execute('INSERT INTO "Elizaveta".screenshot(photo) VALUES (%s)', (image_data,))
+        # DB.commit()
+
+        # page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
+
+        # logging.critical("Authorization completed!")
+
+        # page.wait_for_timeout(2000)
+        # time.sleep(100)
+        # page.screenshot(path="screenshot.png", full_page=True)
+
+        # with open("screenshot.png", "rb") as f:
+        #     image_data = f.read()
+        # DBC.execute('INSERT INTO "Elizaveta".screenshot(photo) VALUES (%s)', (image_data,))
+        # DB.commit()
+
+        # page.click('#plusButton')
+        # logging.critical("Next")
 
         news_count = 1000000000
         i = 1
@@ -306,9 +388,9 @@ def supremacy(email, password):
 
 @app.get("/work-supremacy-account")
 def work_supremacy_account(postfix: str = ''):
-    email = postfix.split('||')[0]
+    phone = postfix.split('||')[0]
     password = postfix.split('||')[1]
-    supremacy(email, password)
+    supremacy(phone, password)
 
 
 @app.get("/register")
