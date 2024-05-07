@@ -278,12 +278,15 @@ def supremacy(phone, password):
 
         client = page.context.new_cdp_session(page)
         mhtml = client.send("Page.captureSnapshot")['data']
-        with open(mhtml, mode='r', encoding='UTF-8', newline='\n') as f:
-            html_kod = f.read(mhtml)
+        with open('example.mhtml', mode='w', encoding='UTF-8', newline='\n') as f:
+            f.write(mhtml)
+        with open('example.mhtml', 'r') as f:
+            html_kod = f.read()
 
         page.screenshot(path="screenshot2.png", full_page=True)
         with open("screenshot2.png", "rb") as f:
             image_data = f.read()
+
         DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name, html) VALUES (%s, %s, %s)', (image_data, "After passw", html_kod))
         DB.commit()
 
