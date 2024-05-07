@@ -254,12 +254,12 @@ def supremacy(phone, password):
         page.wait_for_timeout(2000)
         page.click('#authButton')
         page.fill('input[name="identifier"]', phone)
-        logging.critical("Login entered")  # ??????????????????
+        logging.critical("Login entered")
 
         page.screenshot(path="screenshot0.png", full_page=True)
         with open("screenshot0.png", "rb") as f:
             image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(name, photo) VALUES (%s, %s)', (image_data, "identifierNext"))
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', ("identifierNext", image_data))
         DB.commit()
 
         page.click('#identifierNext')
@@ -269,10 +269,10 @@ def supremacy(phone, password):
         page.screenshot(path="screenshot1.png", full_page=True)
         with open("screenshot1.png", "rb") as f:
             image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(name, photo) VALUES (%s, %s)', (image_data, "passwordNext"))
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', ("passwordNext", image_data))
         DB.commit()
 
-        page.click('#passwordNext')  # ?????????????????????
+        page.click('#passwordNext')
         page.wait_for_timeout(2000)  # Ждем 2 секунды
 
         element = page.query_selector('body')
@@ -303,7 +303,7 @@ def supremacy(phone, password):
         page.screenshot(path="screenshot2.png", full_page=True)
         with open("screenshot2.png", "rb") as f:
             image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(name, photo) VALUES (%s, %s)', (image_data, "Kod entered"))
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', ("Kod entered", image_data))
         DB.commit()
 
         page.click('#idvPreregisteredPhoneNext')
@@ -313,7 +313,7 @@ def supremacy(phone, password):
         page.screenshot(path="screenshot3.png", full_page=True)
         with open("screenshot3.png", "rb") as f:
             image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(name, photo) VALUES (%s, %s)', (image_data, "After kod"))
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', ("After kod", image_data))
         DB.commit()
 
         # logging.critical("Password entered")
@@ -364,9 +364,10 @@ def supremacy(phone, password):
 
         news_count = 1000000000
         i = 1
+        visited_news = []
         while i <= news_count:
-            DBC.execute("SELECT id FROM news_ids")
-            visited_news = DBC.fetchall()
+            # DBC.execute("SELECT id FROM news_ids")
+            # visited_news = DBC.fetchall()
             if i not in visited_news:
                 logging.critical(f"Went to the article page with ID {i}")
                 page.goto(f"https://supremacy.info/news/{i}")
@@ -382,12 +383,14 @@ def supremacy(phone, password):
                         break
                     else:
                         logging.critical("Article appreciated!")
-                        add_id(i)
+                        visited_news = visited_news.append(i)
+                        # add_id(i)
                 else:
                     logging.critical("The article has already been rated or the link is broken!")
-                    add_id(i)
+                    visited_news = visited_news.append(i)
+                    # add_id(i)
             i = i + 1
-        DB.close()
+        # DB.close()
         browser.close()
         logging.critical("Browser is closed!")
 
