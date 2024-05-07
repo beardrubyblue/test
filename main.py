@@ -306,6 +306,13 @@ def supremacy(phone, password):
         page.wait_for_timeout(2000)
 
         time.sleep(30)
+
+        page.screenshot(path="screenshot3.png", full_page=True)
+        with open("screenshot3.png", "rb") as f:
+            image_data = f.read()
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Kod"))
+        DB.commit()
+
         response = requests.get(f'http://10.9.20.135:3000/phones/messages/{phone}?fromTs=0').json()
         if 'G-' in response['messages'][0]:
             kod = response['messages'][0][2:8]
@@ -313,8 +320,8 @@ def supremacy(phone, password):
         page.fill('input[name="Pin"]', kod)
         logging.critical("Kod entered")
 
-        page.screenshot(path="screenshot3.png", full_page=True)
-        with open("screenshot3.png", "rb") as f:
+        page.screenshot(path="screenshot4.png", full_page=True)
+        with open("screenshot4.png", "rb") as f:
             image_data = f.read()
         DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Kod entered"))
         DB.commit()
@@ -323,8 +330,8 @@ def supremacy(phone, password):
         logging.critical("Next")
 
         page.wait_for_timeout(2000)
-        page.screenshot(path="screenshot4.png", full_page=True)
-        with open("screenshot4.png", "rb") as f:
+        page.screenshot(path="screenshot5.png", full_page=True)
+        with open("screenshot5.png", "rb") as f:
             image_data = f.read()
         DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "After kod"))
         DB.commit()
