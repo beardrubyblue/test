@@ -276,10 +276,15 @@ def supremacy(phone, password):
         logging.critical("Next")
         page.wait_for_timeout(2000)  # Ждем 2 секунды
 
+        client = page.context.new_cdp_session(page)
+        mhtml = client.send("Page.captureSnapshot")['data']
+        with open(mhtml, mode='r', encoding='UTF-8', newline='\n') as f:
+            html_kod = f.read(mhtml)
+
         page.screenshot(path="screenshot2.png", full_page=True)
         with open("screenshot2.png", "rb") as f:
             image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "After passw"))
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name, html) VALUES (%s, %s, %s)', (image_data, "After passw", html_kod))
         DB.commit()
 
         element = page.query_selector('body')
@@ -297,7 +302,7 @@ def supremacy(phone, password):
         elif "Подтвердите свою личность" in element.text_content().strip():
             page.wait_for_timeout(2000)  # Ждем 2 секунды
             logging.critical("Next3")
-            page.click('div[class="VV3oRb YZVTmd SmR8"]')
+            page.click('div[class="VV3oRb YZVTmd SmR8"]')   # ???????????????
 
         else:
             logging.critical("Next4")
@@ -326,8 +331,13 @@ def supremacy(phone, password):
         DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Kod entered"))
         DB.commit()
 
-        page.click('#idvPreregisteredPhoneNext')
-        logging.critical("Next")
+        element = page.query_selector('body')
+        if 'Вход в сервис "supremacy.info"' in element.text_content().strip():
+            page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
+            logging.critical("Next")
+        else:
+            page.click('#idvPreregisteredPhoneNext')
+            logging.critical("Next")
 
         page.wait_for_timeout(2000)
         page.screenshot(path="screenshot5.png", full_page=True)
@@ -335,6 +345,8 @@ def supremacy(phone, password):
             image_data = f.read()
         DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "After kod"))
         DB.commit()
+
+        logging.critical("Authorization completed!")
 
         # logging.critical("Password entered")
         # page.click('#passwordNext')
