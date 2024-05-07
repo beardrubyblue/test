@@ -254,19 +254,26 @@ def supremacy(phone, password):
         page.wait_for_timeout(2000)
         page.click('#authButton')
         page.fill('input[name="identifier"]', phone)
-        logging.critical("Login entered")
-        page.click('#identifierNext')
-        logging.critical("Next")
-        page.fill('input[name="Passwd"]', password)
-
-        page.click('#passwordNext')  # ?????????????????????
-        page.wait_for_timeout(2000)  # Ждем 2 секунды
+        logging.critical("Login entered")  # ??????????????????
 
         page.screenshot(path="screenshot0.png", full_page=True)
         with open("screenshot0.png", "rb") as f:
             image_data = f.read()
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(name, photo) VALUES (%s, %s)', (image_data, "identifierNext"))
+        DB.commit()
+
+        page.click('#identifierNext')
+        logging.critical("Next")
+        page.fill('input[name="Passwd"]', password)
+
+        page.screenshot(path="screenshot1.png", full_page=True)
+        with open("screenshot1.png", "rb") as f:
+            image_data = f.read()
         DBC.execute('INSERT INTO "Elizaveta".screenshot(name, photo) VALUES (%s, %s)', (image_data, "passwordNext"))
         DB.commit()
+
+        page.click('#passwordNext')  # ?????????????????????
+        page.wait_for_timeout(2000)  # Ждем 2 секунды
 
         element = page.query_selector('body')
         if "This browser or app may not be secure. Learn more" in element.text_content().strip():
@@ -293,8 +300,8 @@ def supremacy(phone, password):
         page.fill('input[name="Pin"]', kod)
         logging.critical("Kod entered")
 
-        page.screenshot(path="screenshot1.png", full_page=True)
-        with open("screenshot1.png", "rb") as f:
+        page.screenshot(path="screenshot2.png", full_page=True)
+        with open("screenshot2.png", "rb") as f:
             image_data = f.read()
         DBC.execute('INSERT INTO "Elizaveta".screenshot(name, photo) VALUES (%s, %s)', (image_data, "Kod entered"))
         DB.commit()
@@ -303,8 +310,8 @@ def supremacy(phone, password):
         logging.critical("Next")
 
         page.wait_for_timeout(2000)
-        page.screenshot(path="screenshot2.png", full_page=True)
-        with open("screenshot1.png", "rb") as f:
+        page.screenshot(path="screenshot3.png", full_page=True)
+        with open("screenshot3.png", "rb") as f:
             image_data = f.read()
         DBC.execute('INSERT INTO "Elizaveta".screenshot(name, photo) VALUES (%s, %s)', (image_data, "After kod"))
         DB.commit()
