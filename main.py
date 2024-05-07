@@ -276,6 +276,12 @@ def supremacy(phone, password):
         logging.critical("Next")
         page.wait_for_timeout(2000)  # Ждем 2 секунды
 
+        page.screenshot(path="screenshot2.png", full_page=True)
+        with open("screenshot2.png", "rb") as f:
+            image_data = f.read()
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "After passw"))
+        DB.commit()
+
         element = page.query_selector('body')
         if "This browser or app may not be secure. Learn more" in element.text_content().strip():
             time.sleep(60)
@@ -289,7 +295,8 @@ def supremacy(phone, password):
             page.click('button[name="action"]')
         else:
             logging.critical("Next3")
-            page.click('button[class="mTkos TrZEUc"]')
+            page.click('button[class="mTkos TrZEUc"]')  # ???????????????
+        #     page.click('div[class="VV3oRb YZVTmd SmR8"]')
 
         page.wait_for_timeout(2000)
 
@@ -301,8 +308,8 @@ def supremacy(phone, password):
         page.fill('input[name="Pin"]', kod)
         logging.critical("Kod entered")
 
-        page.screenshot(path="screenshot2.png", full_page=True)
-        with open("screenshot2.png", "rb") as f:
+        page.screenshot(path="screenshot3.png", full_page=True)
+        with open("screenshot3.png", "rb") as f:
             image_data = f.read()
         DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Kod entered"))
         DB.commit()
@@ -311,8 +318,8 @@ def supremacy(phone, password):
         logging.critical("Next")
 
         page.wait_for_timeout(2000)
-        page.screenshot(path="screenshot3.png", full_page=True)
-        with open("screenshot3.png", "rb") as f:
+        page.screenshot(path="screenshot4.png", full_page=True)
+        with open("screenshot4.png", "rb") as f:
             image_data = f.read()
         DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "After kod"))
         DB.commit()
