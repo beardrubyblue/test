@@ -259,7 +259,7 @@ def supremacy(phone, password):
         page.screenshot(path="screenshot0.png", full_page=True)
         with open("screenshot0.png", "rb") as f:
             image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', ("identifierNext", image_data))
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "identifierNext"))
         DB.commit()
 
         page.click('#identifierNext')
@@ -269,7 +269,7 @@ def supremacy(phone, password):
         page.screenshot(path="screenshot1.png", full_page=True)
         with open("screenshot1.png", "rb") as f:
             image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', ("passwordNext", image_data))
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "passwordNext"))
         DB.commit()
 
         page.click('#passwordNext')
@@ -303,7 +303,7 @@ def supremacy(phone, password):
         page.screenshot(path="screenshot2.png", full_page=True)
         with open("screenshot2.png", "rb") as f:
             image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', ("Kod entered", image_data))
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Kod entered"))
         DB.commit()
 
         page.click('#idvPreregisteredPhoneNext')
@@ -313,7 +313,7 @@ def supremacy(phone, password):
         page.screenshot(path="screenshot3.png", full_page=True)
         with open("screenshot3.png", "rb") as f:
             image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', ("After kod", image_data))
+        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "After kod"))
         DB.commit()
 
         # logging.critical("Password entered")
