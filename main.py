@@ -293,10 +293,15 @@ def supremacy(phone, password):
             page.wait_for_timeout(2000)  # Ждем 2 секунды
             logging.critical("Next2")
             page.click('button[name="action"]')
-        else:
+
+        if "Подтвердите свою личность" in element.text_content().strip():
+            page.wait_for_timeout(2000)  # Ждем 2 секунды
             logging.critical("Next3")
+            page.click('div[class="VV3oRb YZVTmd SmR8"]')
+
+        else:
+            logging.critical("Next4")
             page.click('button[class="mTkos TrZEUc"]')  # ???????????????
-        #     page.click('div[class="VV3oRb YZVTmd SmR8"]')
 
         page.wait_for_timeout(2000)
 
