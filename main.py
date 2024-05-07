@@ -273,22 +273,23 @@ def supremacy(phone, password):
         DB.commit()
 
         page.click('#passwordNext')
+        logging.critical("Next")
         page.wait_for_timeout(2000)  # Ждем 2 секунды
 
         element = page.query_selector('body')
         if "This browser or app may not be secure. Learn more" in element.text_content().strip():
             time.sleep(60)
             page.wait_for_timeout(2000)  # Ждем 2 секунды
-            page.click('#try again')   # ?????????????????????
             logging.critical("Next1")
+            page.click('#try again')   # ?????????????????????
 
         elif "Verify it’s you" in element.text_content().strip():
             page.wait_for_timeout(2000)  # Ждем 2 секунды
+            logging.critical("Next2")
             page.click('button[name="action"]')
-            logging.critical("Nex2")
         else:
-            page.click('button[class="mTkos TrZEUc"]')
             logging.critical("Next3")
+            page.click('button[class="mTkos TrZEUc"]')
 
         page.wait_for_timeout(2000)
 
