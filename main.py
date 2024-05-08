@@ -252,7 +252,7 @@ def supremacy():
         password = result[1][0]
         logging.critical(f"Login {phone}")
         logging.critical(f"Passw {password}")
-        
+
         DBC.execute('SELECT id_last FROM "Elizaveta".news_ids')
         id = DBC.fetchone()
         id = id[0] + 1
