@@ -238,22 +238,22 @@ async def get_access_token(phone_string: str, password: str):
             logging.critical(e)
 
 
-def supremacy(phone, password):
+@app.get("/work-supremacy-account")
+def supremacy():
     with sync_playwright() as p:
         browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
         context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0')
         page = context.new_page()
         logging.critical("Browser is open!")
 
-        DBC.execute('SELECT COUNT(*) FROM "Elizaveta".news_ids WHERE phone = %s', (phone,))
-        result = DBC.fetchone()
+        DBC.execute("SELECT phone, passw, id_last FROM ваша_таблица ORDER BY id_last")
+        result = DBC.fetchall()
+        phone = result[0]
+        password = result[1]
 
-        if result[0] == 0:
-            id = 1
-        else:
-            DBC.execute('SELECT id_last FROM "Elizaveta".news_ids')
-            id = DBC.fetchone()
-            id = id[0] + 1
+        DBC.execute('SELECT id_last FROM "Elizaveta".news_ids')
+        id = DBC.fetchone()
+        id = id[0] + 1
 
         page.goto(f"https://supremacy.info/news/{id}")
         logging.critical("Went to the site to login")
@@ -394,13 +394,6 @@ def supremacy(phone, password):
 
         browser.close()
         logging.critical("Browser is closed!")
-
-
-@app.get("/work-supremacy-account")
-def work_supremacy_account(postfix: str = ''):
-    phone = postfix.split('||')[0]
-    password = postfix.split('||')[1]
-    supremacy(phone, password)
 
 
 @app.get("/register")
