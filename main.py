@@ -251,7 +251,10 @@ def supremacy():
             result = DBC.fetchall()
             phone = result[i][0]
             password = result[i][1]
-            id = result[i][2] + 1
+            if id is None:
+                id = 1
+            else:
+                id = result[i][2] + 1
             logging.critical(f"Login {phone}")
             logging.critical(f"Passw {password}")
             logging.critical(f"id {id}")
