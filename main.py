@@ -245,7 +245,18 @@ def supremacy(phone, password):
         DBC.execute('SELECT id FROM "Elizaveta".news_ids')
         visited_news = DBC.fetchall()
         ids = visited_news[-1]
-        page.goto(f"https://supremacy.info/news/{ids[0] + 1}")
+
+        DBC.execute('SELECT COUNT(*) FROM "Elizaveta".news_ids WHERE телефон = ?', (phone,))
+        result = DBC.fetchone()
+
+        if result[0] == 0:
+            id = 1
+        else:
+            DBC.execute('SELECT id_last FROM "Elizaveta".news_ids')
+            id = DBC.fetchone()
+            id = id[0] + 1
+
+        page.goto(f"https://supremacy.info/news/{id}")
         logging.critical("Went to the site to login")
         page.click('#plusButton')
         logging.critical("Let's start authorization")
@@ -348,16 +359,6 @@ def supremacy(phone, password):
         DB.commit()
 
         logging.critical("Authorization completed!")
-
-        DBC.execute('SELECT COUNT(*) FROM "Elizaveta".news_ids WHERE телефон = ?', (phone,))
-        result = DBC.fetchone()
-
-        if result[0] == 0:
-            id = 1
-            DB.commit()
-        else:
-            DBC.execute('SELECT id_last FROM "Elizaveta".news_ids')
-            id = DBC.fetchone()
 
         while True:
             logging.critical(f"Went to the article page with ID {id}")
