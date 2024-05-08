@@ -80,7 +80,7 @@ def create_new_proxy_session(kind: int, proxy):
     if kind == 3:
         proxy_user = configs.ProxyUserOfKind3
     if proxy is None:
-        return aiohttp.ClientSession()
+        return requests.session()
     else:
         return aiohttp.ClientSession(connector=ProxyConnector.from_url(proxy_user + proxy['host'] + ':' + str(proxy['port'])))
 
