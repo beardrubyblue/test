@@ -202,7 +202,7 @@ def save_account(phone_jd, password, info):
     return requests.post('https://accman-dev.tgbank.dev/add', headers=headers, json=json_data)
 
 
-def get_access_token(phone_string, password):
+def get_access_token(phone_string: str, password: str):
     """запрос к https://oauth.vk.com/token возвращает access_token"""
     while 0 == 0:
         try:
@@ -540,6 +540,15 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
     html_response += '<BR>Errors List:<BR>' + html_errors
     REGISTRATION_STARTED = False
     return HTMLResponse(content=html_response, status_code=200)
+
+
+@app.get("/revive-vk-access-token")
+def balance(phone_string: str, password: str,credentials: HTTPBasicCredentials = Depends(SECURITY)):
+    """Проверка баланса рукапчи."""
+    if credentials.username != 'AlanD' or credentials.password != 'Bober666':
+        return HTMLResponse(content='В доступе отказано!', status_code=200)
+    html = get_access_token(phone_string, password)
+    return HTMLResponse(content=html, status_code=200)
 
 
 @app.get("/balance")
