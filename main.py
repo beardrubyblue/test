@@ -228,7 +228,7 @@ async def get_access_token(phone_string: str, password: str):
                 'password': password,
                 'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'
             }
-            return await proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers)
+            return await proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers).text
         except Exception as e:
             logging.critical(e)
 
