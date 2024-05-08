@@ -419,7 +419,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
         for c, proxy in enumerate(pl):
             html_response += '<BR>' + str(c + 1) + ' ' + str(datetime.datetime.now()) + ' ----------------------------------------------------------------------------------'
             html_response += '<BR>Proxy: ' + proxy
-            proxy_session.proxies.update(dict(http=proxy_session.params + proxy.split('|')[0], https=proxy_session.params + proxy.split('|')[0]))
+            proxy_session.proxies.update(dict(http=proxy.split('|')[0], https=proxy.split('|')[0]))
             # logging.critical(proxy_session.get('https://icanhazip.com').text)
             phone_jd = json.loads(requests.get('http://10.9.20.135:3000/phones/random?service=vk&bank=virtual').text)
             logging.critical(phone_jd)
