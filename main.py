@@ -79,6 +79,8 @@ def create_new_proxy_session(kind: int, proxy):
         proxy_user = f"socks5://{proxy['login']}:{proxy['password']}@"
     if kind == 3:
         proxy_user = configs.ProxyUserOfKind3
+    logging.critical(proxy['host'])
+    logging.critical(proxy['port'])
     return aiohttp.ClientSession(connector=ProxyConnector.from_url(proxy_user + proxy['host'] + ':' + str(proxy['port'])))
 
 
