@@ -305,18 +305,23 @@ def supremacy(phone, password):
             logging.critical("Next1")
             page.click('button[name="action"]')  # ?????????????????????
 
-        elif "Verify it’s you" in element.text_content().strip():
+        elif "Choose how you want to sign in:" in element.text_content().strip():
             page.wait_for_timeout(2000)
             logging.critical("Next2")
             page.click('button[value="5,SMS"]')
 
-        elif "Подтвердите свою личность" in element.text_content().strip():
+        elif "Your recovery phone recently changed" in element.text_content().strip():
             page.wait_for_timeout(2000)
             logging.critical("Next3")
             page.click('button[name="action"]')
 
-        else:
+        elif "Подтвердите свою личность" in element.text_content().strip():
+            page.wait_for_timeout(2000)
             logging.critical("Next4")
+            page.click('button[name="action"]')
+
+        else:
+            logging.critical("Next5")
             page.click('button[class="mTkos TrZEUc"]')  # ???????????????
 
         page.wait_for_timeout(2000)
