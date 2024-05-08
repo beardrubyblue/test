@@ -246,7 +246,7 @@ def supremacy():
         page = context.new_page()
         logging.critical("Browser is open!")
 
-        for i in range (0, 25): 
+        for i in range(0, 25):
             DBC.execute('SELECT phone, passw, id_last FROM "Elizaveta".news_ids')
             result = DBC.fetchall()
             phone = result[i][0]
