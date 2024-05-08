@@ -47,7 +47,7 @@ def get_proxies(kind: int, amount: int = 1000):
     """функция возвращает список полученных проксей с сайта https://free-proxy-list.net или из https://proxy-manager.arbat.dev/"""
     proxies = []
     if kind == 1:
-        soup = BeautifulSoup(requests.get('https://free-proxy-list.net').content, 'html.parser')
+        soup = BeautifulSoup(requests.get('https://www.sslproxies.org').content, 'html.parser')
         for row in soup.find('table', attrs={'class': 'table table-striped table-bordered'}).find_all('tr')[1:]:
             tds = row.find_all('td')
             if tds[2].text.strip() != 'RU' and tds[6].text.strip() == 'yes':
@@ -79,8 +79,6 @@ def create_new_proxy_session(kind: int, proxy):
         proxy_user = f"socks5://{proxy['login']}:{proxy['password']}@"
     if kind == 3:
         proxy_user = configs.ProxyUserOfKind3
-    logging.critical(proxy['host'])
-    logging.critical(proxy['port'])
     return aiohttp.ClientSession(connector=ProxyConnector.from_url(proxy_user + proxy['host'] + ':' + str(proxy['port'])))
 
 
