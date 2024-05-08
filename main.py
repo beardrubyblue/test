@@ -240,13 +240,13 @@ async def get_access_token(phone_string: str, password: str):
 
 @app.get("/work-supremacy-account")
 def supremacy():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
-        context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0')
-        page = context.new_page()
-        logging.critical("Browser is open!")
-
-        for i in range(0, 25):
+    
+    for i in range(0, 25):
+        with sync_playwright() as p:
+            browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
+            context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0')
+            page = context.new_page()
+            logging.critical("Browser is open!")
             DBC.execute('SELECT phone, passw, id_last FROM "Elizaveta".news_ids')
             result = DBC.fetchall()
             phone = result[i][0]
@@ -388,12 +388,12 @@ def supremacy():
                     logging.critical("The article has already been rated or the link is broken!")
                     id = id + 1
             id = id - 1
-            if result[i][2] is None:
-                DBC.execute('INSERT INTO "Elizaveta".news_ids(phone, passw, id_last) VALUES (%s, %s, %s)', (phone, password, id))
-                logging.critical("Id INSERT")
-            else:
-                DBC.execute('UPDATE "Elizaveta".news_ids SET id_last = %s WHERE phone = %s', (id, phone))
-                logging.critical("Id UPDATE")
+            # if result[i][2] is None:
+            #     DBC.execute('INSERT INTO "Elizaveta".news_ids(id_last) VALUES (%s) WHERE phone = %s', (id, phone))
+            #     logging.critical("Id INSERT")
+            # else:
+            DBC.execute('UPDATE "Elizaveta".news_ids SET id_last = %s WHERE phone = %s', (id, phone))
+            logging.critical("Id UPDATE")
             DB.commit()
 
             browser.close()
