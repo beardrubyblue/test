@@ -378,13 +378,12 @@ def supremacy(phone, password):
         DBC.execute('SELECT id_last FROM "Elizaveta".news_ids WHERE phone = %s', (phone,))
         result = DBC.fetchone()
 
-        if result is None:
+        if result[0] == 0:
             DBC.execute('INSERT INTO "Elizaveta".news_ids(phone, passw, id_last) VALUES (%s, %s, %s)', (phone, password, id))
         else:
             DBC.execute('UPDATE "Elizaveta".news_ids SET id_last = %s WHERE phone = %s', (id, phone))
         DB.commit()
 
-        DB.close()
         browser.close()
         logging.critical("Browser is closed!")
 
