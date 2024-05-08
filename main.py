@@ -319,13 +319,18 @@ def supremacy():
                 logging.critical("Next3")
                 page.click('button[name="action"]')
 
-            elif "Подтвердите свою личность" in element.text_content().strip():
+            elif "Выберите способ входа:" in element.text_content().strip():
                 page.wait_for_timeout(2000)
                 logging.critical("Next4")
+                page.click('button[value=3D"5,SMS"]')
+
+            elif "Подтвердите свою личность" in element.text_content().strip():
+                page.wait_for_timeout(2000)
+                logging.critical("Next5")
                 page.click('button[name="action"]')
 
             else:
-                logging.critical("Next5")
+                logging.critical("Next6")
                 page.click('button[class="mTkos TrZEUc"]')  # ???????????????
 
             page.wait_for_timeout(2000)
