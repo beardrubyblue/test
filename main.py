@@ -242,7 +242,7 @@ def supremacy(phone, password):
         page = context.new_page()
         logging.critical("Browser is open!")
 
-        DBC.execute('SELECT COUNT(*) FROM "Elizaveta".news_ids WHERE телефон = ?', (phone,))
+        DBC.execute('SELECT COUNT(*) FROM "Elizaveta".news_ids WHERE телефон = %s', (phone,))
         result = DBC.fetchone()
 
         if result[0] == 0:
@@ -375,13 +375,13 @@ def supremacy(phone, password):
                 logging.critical("The article has already been rated or the link is broken!")
             id = id + 1
 
-        DBC.execute('SELECT id_last FROM "Elizaveta".news_ids WHERE phone = ?', (phone,))
+        DBC.execute('SELECT id_last FROM "Elizaveta".news_ids WHERE phone = %s', (phone,))
         result = DBC.fetchone()
 
         if result is None:
             DBC.execute('INSERT INTO "Elizaveta".news_ids(phone, passw, id_last) VALUES (%s, %s, %s)', (phone, password, id))
         else:
-            DBC.execute('UPDATE "Elizaveta".news_ids SET id_last = ? WHERE phone = ?', (id, phone))
+            DBC.execute('UPDATE "Elizaveta".news_ids SET id_last = %s WHERE phone = %s', (id, phone))
         DB.commit()
 
         DB.close()
