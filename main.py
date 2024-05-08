@@ -295,7 +295,7 @@ def supremacy(phone, password):
             time.sleep(60)
             page.wait_for_timeout(2000)  # Ждем 2 секунды
             logging.critical("Next1")
-            page.click('#try again')   # ?????????????????????
+            page.click('button[name="action"]')  # ?????????????????????
 
         elif "Verify it’s you" in element.text_content().strip():
             page.wait_for_timeout(2000)  # Ждем 2 секунды
@@ -305,7 +305,7 @@ def supremacy(phone, password):
         elif "Подтвердите свою личность" in element.text_content().strip():
             page.wait_for_timeout(2000)  # Ждем 2 секунды
             logging.critical("Next3")
-            page.click('div[class="VV3oRb YZVTmd SmR8"]')   # ???????????????
+            page.click('button[name="action"]')   # ???????????????
 
         else:
             logging.critical("Next4")
