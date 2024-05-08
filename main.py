@@ -248,9 +248,11 @@ def supremacy():
 
         DBC.execute('SELECT phone, passw, id_last FROM "Elizaveta".news_ids ORDER BY id_last')
         result = DBC.fetchall()
-        phone = result[0]
-        password = result[1]
-
+        phone = result[0][0]
+        password = result[1][0]
+        logging.critical(f"Login {phone}")
+        logging.critical(f"Passw {password}")
+        
         DBC.execute('SELECT id_last FROM "Elizaveta".news_ids')
         id = DBC.fetchone()
         id = id[0] + 1
