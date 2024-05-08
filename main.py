@@ -412,7 +412,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
         logging.critical('STEP NUMBER: ' + str(n + 1))
         pl = get_proxies(PROXYKIND)
         html_response += '<BR><BR>' + str(n + 1) + ' ---------------------------------------------------- Proxies Founded: ' + str(len(pl)) + '<BR>'
-        proxy_session = create_new_proxy_session(PROXYKIND, pl[0])
+        proxy_session = create_new_proxy_session(PROXYKIND, {'host': pl[0].split(':')[0], 'port': pl[0].split(':')[1].split('|')[0]})
         for c, proxy in enumerate(pl):
             html_response += '<BR>' + str(c + 1) + ' ' + str(datetime.datetime.now()) + ' ----------------------------------------------------------------------------------'
             html_response += '<BR>Proxy: ' + proxy
