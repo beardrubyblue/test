@@ -355,7 +355,7 @@ def supremacy(phone, password):
         if result[0] == 0:
             id = 1
             DB.commit()
-        else:      
+        else:
             DBC.execute('SELECT id_last FROM "Elizaveta".news_ids')
             id = DBC.fetchone()
 
@@ -377,7 +377,6 @@ def supremacy(phone, password):
             else:
                 logging.critical("The article has already been rated or the link is broken!")
             id = id + 1
-
 
         DBC.execute('SELECT id_last FROM "Elizaveta".news_ids WHERE phone = ?', (phone,))
         result = DBC.fetchone()
