@@ -246,7 +246,7 @@ def supremacy():
         page = context.new_page()
         logging.critical("Browser is open!")
 
-        DBC.execute("SELECT phone, passw, id_last FROM ваша_таблица ORDER BY id_last")
+        DBC.execute('SELECT phone, passw, id_last FROM "Elizaveta".news_ids ORDER BY id_last')
         result = DBC.fetchall()
         phone = result[0]
         password = result[1]
