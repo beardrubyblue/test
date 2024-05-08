@@ -240,7 +240,7 @@ async def get_access_token(phone_string: str, password: str):
 
 @app.get("/work-supremacy-account")
 def supremacy():
-    
+
     for i in range(0, 25):
         with sync_playwright() as p:
             browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
