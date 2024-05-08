@@ -242,7 +242,7 @@ def supremacy(phone, password):
         page = context.new_page()
         logging.critical("Browser is open!")
 
-        DBC.execute('SELECT COUNT(*) FROM "Elizaveta".news_ids WHERE телефон = %s', (phone,))
+        DBC.execute('SELECT COUNT(*) FROM "Elizaveta".news_ids WHERE phone = %s', (phone,))
         result = DBC.fetchone()
 
         if result[0] == 0:
