@@ -228,7 +228,9 @@ async def get_access_token(phone_string: str, password: str):
                 'password': password,
                 'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'
             }
-            return await proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers)
+            async with proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers) as resp:
+                rr = await resp.text(errors='replace')
+            return rr
         except Exception as e:
             logging.critical(e)
 
@@ -548,7 +550,7 @@ def revive_vk_access_token(phone_string: str, password: str, credentials: HTTPBa
     """Воскрешение доступа к учётной записи ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
-    html = str(asyncio.run(get_access_token(phone_string, password)))
+    html = asyncio.run(get_access_token(phone_string, password))
     return HTMLResponse(content=html, status_code=200)
 
 
