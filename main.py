@@ -413,13 +413,13 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
         logging.critical('STEP NUMBER: ' + str(n + 1))
         pl = get_proxies(PROXYKIND)
         html_response += '<BR><BR>' + str(n + 1) + ' ---------------------------------------------------- Proxies Founded: ' + str(len(pl)) + '<BR>'
-        proxy_session = create_new_proxy_session(PROXYKIND)
+        proxy_session = requests.session()
         for c, proxy in enumerate(pl):
             html_response += '<BR>' + str(c + 1) + ' ' + str(datetime.datetime.now()) + ' ----------------------------------------------------------------------------------'
             html_response += '<BR>Proxy: ' + proxy
             proxy_session.proxies.update(dict(http=proxy_session.params + proxy.split('|')[0], https=proxy_session.params + proxy.split('|')[0]))
             # logging.critical(proxy_session.get('https://icanhazip.com').text)
-            phone_jd = json.loads(requests.get('http://10.9.20.135:3000/phones/random?service=vk&bank=real&raspId=RB_10.149.8.104').text)
+            phone_jd = json.loads(requests.get('http://10.9.20.135:3000/phones/random?service=vk&bank=virtual').text)
             logging.critical(phone_jd)
             phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
             html_response += '<BR>Phone: ' + phone_string
