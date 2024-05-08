@@ -308,7 +308,7 @@ def supremacy(phone, password):
         elif "Verify it’s you" in element.text_content().strip():
             page.wait_for_timeout(2000)
             logging.critical("Next2")
-            page.click('button[value=3D"5,SMS"]')
+            page.click('button[value="5,SMS"]')
 
         elif "Подтвердите свою личность" in element.text_content().strip():
             page.wait_for_timeout(2000)
