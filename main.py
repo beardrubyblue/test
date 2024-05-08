@@ -383,7 +383,7 @@ def supremacy(phone, password):
             else:
                 logging.critical("The article has already been rated or the link is broken!")
                 id = id + 1
-
+        id = id - 1
         if result[0] == 0:
             DBC.execute('INSERT INTO "Elizaveta".news_ids(phone, passw, id_last) VALUES (%s, %s, %s)', (phone, password, id))
             logging.critical("Id INSERT")
