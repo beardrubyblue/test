@@ -544,7 +544,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
 
 @app.get("/revive-vk-access-token")
 def balance(phone_string: str, password: str,credentials: HTTPBasicCredentials = Depends(SECURITY)):
-    """Проверка баланса рукапчи."""
+    """Воскрешение доступа к учётной записи ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
     html = get_access_token(phone_string, password)
