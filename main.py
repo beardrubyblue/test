@@ -249,12 +249,14 @@ def supremacy():
         DBC.execute('SELECT phone, passw, id_last FROM "Elizaveta".news_ids ORDER BY id_last')
         result = DBC.fetchall()
         phone = result[0][0]
-        password = result[1][0]
+        password = result[0][1]
+        id = result[0][2] + 1
         logging.critical(f"Login {phone}")
         logging.critical(f"Passw {password}")
+        logging.critical(f"id {id}")
 
-        DBC.execute('SELECT id_last FROM "Elizaveta".news_ids')
-        id = DBC.fetchone()
+        # DBC.execute('SELECT id_last FROM "Elizaveta".news_ids')
+        # id = DBC.fetchone()
         id = id[0] + 1
 
         page.goto(f"https://supremacy.info/news/{id}")
