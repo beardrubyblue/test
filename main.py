@@ -251,7 +251,7 @@ def supremacy():
             result = DBC.fetchall()
             phone = result[i][0]
             password = result[i][1]
-            if id is None:
+            if result[i][2] is None:
                 id = 1
             else:
                 id = result[i][2] + 1
