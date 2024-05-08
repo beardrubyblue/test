@@ -246,154 +246,155 @@ def supremacy():
         page = context.new_page()
         logging.critical("Browser is open!")
 
-        DBC.execute('SELECT phone, passw, id_last FROM "Elizaveta".news_ids')
-        result = DBC.fetchall()
-        phone = result[0][0]
-        password = result[0][1]
-        id = result[0][2] + 1
-        logging.critical(f"Login {phone}")
-        logging.critical(f"Passw {password}")
-        logging.critical(f"id {id}")
+        for i in range (0, 25): 
+            DBC.execute('SELECT phone, passw, id_last FROM "Elizaveta".news_ids')
+            result = DBC.fetchall()
+            phone = result[i][0]
+            password = result[i][1]
+            id = result[i][2] + 1
+            logging.critical(f"Login {phone}")
+            logging.critical(f"Passw {password}")
+            logging.critical(f"id {id}")
 
-        page.goto(f"https://supremacy.info/news/{id}")
-        logging.critical("Went to the site to login")
-        page.click('#plusButton')
-        logging.critical("Let's start authorization")
-        page.wait_for_timeout(2000)
-        page.click('#authButton')
-        page.fill('input[name="identifier"]', phone)
-        logging.critical("Login entered")
-
-        page.screenshot(path="screenshot0.png", full_page=True)
-        with open("screenshot0.png", "rb") as f:
-            image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "identifierNext"))
-        DB.commit()
-
-        page.click('#identifierNext')
-        logging.critical("Next")
-        page.fill('input[name="Passwd"]', password)
-
-        page.screenshot(path="screenshot1.png", full_page=True)
-        with open("screenshot1.png", "rb") as f:
-            image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "passwordNext"))
-        DB.commit()
-
-        page.click('#passwordNext')
-        logging.critical("Next")
-        page.wait_for_timeout(2000)
-
-        client = page.context.new_cdp_session(page)
-        mhtml = client.send("Page.captureSnapshot")['data']
-        with open('example.mhtml', mode='w', encoding='UTF-8', newline='\n') as f:
-            f.write(mhtml)
-        with open('example.mhtml', 'r') as f:
-            html_kod = f.read()
-
-        page.screenshot(path="screenshot2.png", full_page=True)
-        with open("screenshot2.png", "rb") as f:
-            image_data = f.read()
-
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name, html) VALUES (%s, %s, %s)', (image_data, "After passw", html_kod))
-        DB.commit()
-
-        element = page.query_selector('body')
-        if "This browser or app may not be secure. Learn more" in element.text_content().strip():
-            time.sleep(60)
-            page.wait_for_timeout(2000)
-            logging.critical("Next1")
-            page.click('button[name="action"]')  # ?????????????????????
-
-        elif "Choose how you want to sign in:" in element.text_content().strip():
-            page.wait_for_timeout(2000)
-            logging.critical("Next2")
-            page.click('button[value="5,SMS"]')
-
-        elif "Your recovery phone recently changed" in element.text_content().strip():
-            page.wait_for_timeout(2000)
-            logging.critical("Next3")
-            page.click('button[name="action"]')
-
-        elif "Подтвердите свою личность" in element.text_content().strip():
-            page.wait_for_timeout(2000)
-            logging.critical("Next4")
-            page.click('button[name="action"]')
-
-        else:
-            logging.critical("Next5")
-            page.click('button[class="mTkos TrZEUc"]')  # ???????????????
-
-        page.wait_for_timeout(2000)
-
-        time.sleep(30)
-
-        page.screenshot(path="screenshot3.png", full_page=True)
-        with open("screenshot3.png", "rb") as f:
-            image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Kod"))
-        DB.commit()
-
-        response = requests.get(f'http://10.9.20.135:3000/phones/messages/{phone}?fromTs=0').json()
-        if 'G-' in response['messages'][0]:
-            kod = response['messages'][0][2:8]
-
-        page.fill('input[name="Pin"]', kod)
-        logging.critical("Kod entered")
-
-        page.screenshot(path="screenshot4.png", full_page=True)
-        with open("screenshot4.png", "rb") as f:
-            image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Kod entered"))
-        DB.commit()
-
-        element = page.query_selector('body')
-        if 'Вход в сервис "supremacy.info"' in element.text_content().strip():
-            page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
-            logging.critical("Next")
-        else:
-            page.click('#idvPreregisteredPhoneNext')
-            logging.critical("Next")
-
-        page.wait_for_timeout(2000)
-        page.screenshot(path="screenshot5.png", full_page=True)
-        with open("screenshot5.png", "rb") as f:
-            image_data = f.read()
-        DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "After kod"))
-        DB.commit()
-
-        logging.critical("Authorization completed!")
-
-        while True:
-            logging.critical(f"Went to the article page with ID {id}")
             page.goto(f"https://supremacy.info/news/{id}")
+            logging.critical("Went to the site to login")
+            page.click('#plusButton')
+            logging.critical("Let's start authorization")
             page.wait_for_timeout(2000)
+            page.click('#authButton')
+            page.fill('input[name="identifier"]', phone)
+            logging.critical("Login entered")
+
+            page.screenshot(path="screenshot0.png", full_page=True)
+            with open("screenshot0.png", "rb") as f:
+                image_data = f.read()
+            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "identifierNext"))
+            DB.commit()
+
+            page.click('#identifierNext')
+            logging.critical("Next")
+            page.fill('input[name="Passwd"]', password)
+
+            page.screenshot(path="screenshot1.png", full_page=True)
+            with open("screenshot1.png", "rb") as f:
+                image_data = f.read()
+            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "passwordNext"))
+            DB.commit()
+
+            page.click('#passwordNext')
+            logging.critical("Next")
+            page.wait_for_timeout(2000)
+
+            client = page.context.new_cdp_session(page)
+            mhtml = client.send("Page.captureSnapshot")['data']
+            with open('example.mhtml', mode='w', encoding='UTF-8', newline='\n') as f:
+                f.write(mhtml)
+            with open('example.mhtml', 'r') as f:
+                html_kod = f.read()
+
+            page.screenshot(path="screenshot2.png", full_page=True)
+            with open("screenshot2.png", "rb") as f:
+                image_data = f.read()
+
+            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name, html) VALUES (%s, %s, %s)', (image_data, "After passw", html_kod))
+            DB.commit()
 
             element = page.query_selector('body')
+            if "This browser or app may not be secure. Learn more" in element.text_content().strip():
+                time.sleep(60)
+                page.wait_for_timeout(2000)
+                logging.critical("Next1")
+                page.click('button[name="action"]')  # ?????????????????????
 
-            if "Your read-to-Earn opportunity:" in element.text_content().strip():
-                page.click('#plusButton')
-                page.wait_for_timeout(1000)
-                if "You have run out of Pluses for today." in element.text_content().strip():
-                    logging.critical("The news limit has been reached")
-                    break
-                else:
-                    logging.critical("Article appreciated!")
-                    id = id + 1
+            elif "Choose how you want to sign in:" in element.text_content().strip():
+                page.wait_for_timeout(2000)
+                logging.critical("Next2")
+                page.click('button[value="5,SMS"]')
+
+            elif "Your recovery phone recently changed" in element.text_content().strip():
+                page.wait_for_timeout(2000)
+                logging.critical("Next3")
+                page.click('button[name="action"]')
+
+            elif "Подтвердите свою личность" in element.text_content().strip():
+                page.wait_for_timeout(2000)
+                logging.critical("Next4")
+                page.click('button[name="action"]')
+
             else:
-                logging.critical("The article has already been rated or the link is broken!")
-                id = id + 1
-        id = id - 1
-        if result[0] == 0:
-            DBC.execute('INSERT INTO "Elizaveta".news_ids(phone, passw, id_last) VALUES (%s, %s, %s)', (phone, password, id))
-            logging.critical("Id INSERT")
-        else:
-            DBC.execute('UPDATE "Elizaveta".news_ids SET id_last = %s WHERE phone = %s', (id, phone))
-            logging.critical("Id UPDATE")
-        DB.commit()
+                logging.critical("Next5")
+                page.click('button[class="mTkos TrZEUc"]')  # ???????????????
 
-        browser.close()
-        logging.critical("Browser is closed!")
+            page.wait_for_timeout(2000)
+
+            time.sleep(30)
+
+            page.screenshot(path="screenshot3.png", full_page=True)
+            with open("screenshot3.png", "rb") as f:
+                image_data = f.read()
+            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Kod"))
+            DB.commit()
+
+            response = requests.get(f'http://10.9.20.135:3000/phones/messages/{phone}?fromTs=0').json()
+            if 'G-' in response['messages'][0]:
+                kod = response['messages'][0][2:8]
+
+            page.fill('input[name="Pin"]', kod)
+            logging.critical("Kod entered")
+
+            page.screenshot(path="screenshot4.png", full_page=True)
+            with open("screenshot4.png", "rb") as f:
+                image_data = f.read()
+            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Kod entered"))
+            DB.commit()
+
+            element = page.query_selector('body')
+            if 'Вход в сервис "supremacy.info"' in element.text_content().strip():
+                page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
+                logging.critical("Next")
+            else:
+                page.click('#idvPreregisteredPhoneNext')
+                logging.critical("Next")
+
+            page.wait_for_timeout(2000)
+            page.screenshot(path="screenshot5.png", full_page=True)
+            with open("screenshot5.png", "rb") as f:
+                image_data = f.read()
+            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "After kod"))
+            DB.commit()
+
+            logging.critical("Authorization completed!")
+
+            while True:
+                logging.critical(f"Went to the article page with ID {id}")
+                page.goto(f"https://supremacy.info/news/{id}")
+                page.wait_for_timeout(2000)
+
+                element = page.query_selector('body')
+
+                if "Your read-to-Earn opportunity:" in element.text_content().strip():
+                    page.click('#plusButton')
+                    page.wait_for_timeout(1000)
+                    if "You have run out of Pluses for today." in element.text_content().strip():
+                        logging.critical("The news limit has been reached")
+                        break
+                    else:
+                        logging.critical("Article appreciated!")
+                        id = id + 1
+                else:
+                    logging.critical("The article has already been rated or the link is broken!")
+                    id = id + 1
+            id = id - 1
+            if result[0] == 0:
+                DBC.execute('INSERT INTO "Elizaveta".news_ids(phone, passw, id_last) VALUES (%s, %s, %s)', (phone, password, id))
+                logging.critical("Id INSERT")
+            else:
+                DBC.execute('UPDATE "Elizaveta".news_ids SET id_last = %s WHERE phone = %s', (id, phone))
+                logging.critical("Id UPDATE")
+            DB.commit()
+
+            browser.close()
+            logging.critical("Browser is closed!")
 
 
 @app.get("/register")
