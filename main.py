@@ -2,6 +2,7 @@ import logging
 import configs
 import datetime
 import requests
+import asyncio
 import aiohttp
 from aiohttp_socks import ProxyConnector
 import json
@@ -202,7 +203,7 @@ def save_account(phone_jd, password, info):
     return requests.post('https://accman-dev.tgbank.dev/add', headers=headers, json=json_data)
 
 
-def get_access_token(phone_string: str, password: str):
+async def get_access_token(phone_string: str, password: str):
     """запрос к https://oauth.vk.com/token возвращает access_token"""
     while 0 == 0:
         try:
@@ -227,7 +228,7 @@ def get_access_token(phone_string: str, password: str):
                 'password': password,
                 'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'
             }
-            return proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers)
+            return await proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers)
         except Exception as e:
             logging.critical(e)
 
@@ -547,7 +548,7 @@ def revive_vk_access_token(phone_string: str, password: str, credentials: HTTPBa
     """Воскрешение доступа к учётной записи ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
-    html = get_access_token(phone_string, password)
+    html = asyncio.run(get_access_token(phone_string, password))
     return HTMLResponse(content=html, status_code=200)
 
 
