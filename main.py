@@ -329,9 +329,10 @@ def supremacy():
                 logging.critical("Next5")
                 page.click('button[name="action"]')
 
-            else:
+            elif "Verify it’s you" in element.text_content().strip():
+                page.wait_for_timeout(2000)
                 logging.critical("Next6")
-                page.click('button[class="mTkos TrZEUc"]')  # ???????????????
+                page.click('button[class="JnOM6e TrZEUc rDisVe"]')
 
             page.wait_for_timeout(2000)
 
