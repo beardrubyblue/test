@@ -380,6 +380,7 @@ def supremacy():
             DB.commit()
 
             if 'wants to access your Google Account' in element.text_content().strip():
+                logging.critical("lllll")
                 page.click('button[id="submit_deny_access"]')
                 logging.critical("Next")
 
