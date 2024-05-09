@@ -384,6 +384,13 @@ def supremacy():
                 page.click('button[id="submit_deny_access"]')
                 logging.critical("Next")
 
+            page.wait_for_timeout(2000)
+            page.screenshot(path="screenshot7.png", full_page=True)
+            with open("screenshot7.png", "rb") as f:
+                image_data = f.read()
+            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Authorization"))
+            DB.commit()
+
             logging.critical("Authorization completed!")
 
             while True:
