@@ -364,6 +364,7 @@ def supremacy():
                 page.click('#idvPreregisteredPhoneNext')
                 logging.critical("Next")
 
+            page.wait_for_timeout(2000)
             client = page.context.new_cdp_session(page)
             html = client.send("Page.captureSnapshot")['data']
             with open('example1.mhtml', mode='w', encoding='UTF-8', newline='\n') as f:
@@ -384,6 +385,12 @@ def supremacy():
                 logging.critical(f"Went to the article page with ID {id}")
                 page.goto(f"https://supremacy.info/news/{id}")
                 page.wait_for_timeout(2000)
+
+                page.screenshot(path="screenshot6.png", full_page=True)
+                with open("screenshot6.png", "rb") as f:
+                    image_data = f.read()
+                DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "news"))
+                DB.commit()
 
                 element = page.query_selector('body')
 
