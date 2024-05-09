@@ -364,7 +364,6 @@ def supremacy():
                 page.click('#idvPreregisteredPhoneNext')
                 logging.critical("Next")
 
-
             client = page.context.new_cdp_session(page)
             html = client.send("Page.captureSnapshot")['data']
             with open('example1.mhtml', mode='w', encoding='UTF-8', newline='\n') as f:
