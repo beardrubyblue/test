@@ -364,11 +364,19 @@ def supremacy():
                 page.click('#idvPreregisteredPhoneNext')
                 logging.critical("Next")
 
+
+            client = page.context.new_cdp_session(page)
+            html = client.send("Page.captureSnapshot")['data']
+            with open('example1.mhtml', mode='w', encoding='UTF-8', newline='\n') as f:
+                f.write(html)
+            with open('example1.mhtml', 'r') as f:
+                html_kod = f.read()
+
             page.wait_for_timeout(2000)
             page.screenshot(path="screenshot5.png", full_page=True)
             with open("screenshot5.png", "rb") as f:
                 image_data = f.read()
-            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "After kod"))
+            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name, html) VALUES (%s, %s, %s)', (image_data, "After kod", html_kod))
             DB.commit()
 
             logging.critical("Authorization completed!")
@@ -393,10 +401,7 @@ def supremacy():
                     logging.critical("The article has already been rated or the link is broken!")
                     id = id + 1
             id = id - 1
-            # if result[i][2] is None:
-            #     DBC.execute('INSERT INTO "Elizaveta".news_ids(id_last) VALUES (%s) WHERE phone = %s', (id, phone))
-            #     logging.critical("Id INSERT")
-            # else:
+
             DBC.execute('UPDATE "Elizaveta".news_ids SET id_last = %s WHERE phone = %s', (id, phone))
             logging.critical("Id UPDATE")
             DB.commit()
