@@ -384,6 +384,7 @@ def supremacy():
             if 'wants to access your Google Account' in element.text_content().strip():
                 page.click('button[id="submit_deny_access"]')
                 logging.critical("Next")
+                time.sleep(20)
 
             page.wait_for_timeout(2000)
             page.screenshot(path="screenshot7.png", full_page=True)
