@@ -379,8 +379,8 @@ def supremacy():
             DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name, html) VALUES (%s, %s, %s)', (image_data, "After kod", html_kod))
             DB.commit()
 
+            element = page.query_selector('body')
             if 'wants to access your Google Account' in element.text_content().strip():
-                logging.critical("lllll")
                 page.click('button[id="submit_deny_access"]')
                 logging.critical("Next")
 
