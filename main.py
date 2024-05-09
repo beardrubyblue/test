@@ -360,9 +360,6 @@ def supremacy():
             if 'Вход в сервис "supremacy.info"' in element.text_content().strip():
                 page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
                 logging.critical("Next")
-            elif 'wants to access your Google Account' in element.text_content().strip():
-                page.click('button[id="submit_deny_access"]')
-                logging.critical("Next")
             else:
                 page.click('#idvPreregisteredPhoneNext')
                 logging.critical("Next")
@@ -381,6 +378,10 @@ def supremacy():
                 image_data = f.read()
             DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name, html) VALUES (%s, %s, %s)', (image_data, "After kod", html_kod))
             DB.commit()
+
+            if 'wants to access your Google Account' in element.text_content().strip():
+                page.click('button[id="submit_deny_access"]')
+                logging.critical("Next")
 
             logging.critical("Authorization completed!")
 
