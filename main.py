@@ -361,7 +361,7 @@ def supremacy():
                 page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
                 logging.critical("Next")
             elif 'wants to access your Google Account' in element.text_content().strip():
-                page.click('#submit_deny_access')
+                page.click('button[id="submit_deny_access"]')
                 logging.critical("Next")
             else:
                 page.click('#idvPreregisteredPhoneNext')
