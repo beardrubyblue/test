@@ -238,16 +238,12 @@ async def get_access_token(phone_string: str, password: str):
             logging.critical(e)
 
 
-@app.get("/work-supremacy-account")
+@app.get("/work-supremacy")
 def supremacy():
 
     for i in range(0, 25):
         with sync_playwright() as p:
-            browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
-            context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0')
-            page = context.new_page()
-            logging.critical("Browser is open!")
-            DBC.execute('SELECT phone, passw, id_last FROM "Elizaveta".news_ids')
+            DBC.execute('SELECT phone, passw, id_last, proxi FROM "Elizaveta".news_ids')
             result = DBC.fetchall()
             phone = result[i][0]
             password = result[i][1]
@@ -255,9 +251,16 @@ def supremacy():
                 id = 1
             else:
                 id = result[i][2] + 1
+            proxi = result[i][3]
             logging.critical(f"Login {phone}")
             logging.critical(f"Passw {password}")
             logging.critical(f"id {id}")
+            logging.critical(f"proxi {proxi}")
+
+            browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"], proxy=proxi)
+            context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0')
+            page = context.new_page()
+            logging.critical("Browser is open!")
 
             page.goto(f"https://supremacy.info/news/{id}")
             logging.critical("Went to the site to login")
