@@ -252,7 +252,7 @@ def supremacy():
             else:
                 id = result[i][2] + 1
             proxi = result[i][3]
-            
+
             logging.critical(f"Login {phone}")
             logging.critical(f"Passw {password}")
             logging.critical(f"id {id}")
@@ -262,11 +262,7 @@ def supremacy():
             passw = proxi[2]
             logging.critical(f"proxi {server, username, passw}")
 
-            browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"], proxy={
-                                                    'server': server,
-                                                    'username': username,
-                                                    'password': passw,
-                                                })
+            browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"], proxy={'server': server, 'username': username, 'password': passw})
             context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0')
             page = context.new_page()
             logging.critical("Browser is open!")
