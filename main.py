@@ -257,7 +257,7 @@ def supremacy():
             logging.critical(f"id {id}")
             logging.critical(f"proxi {proxi}")
 
-            browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"], proxy=proxi)
+            browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"], proxy={proxi})
             context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0')
             page = context.new_page()
             logging.critical("Browser is open!")
