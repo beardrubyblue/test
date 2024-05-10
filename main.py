@@ -388,6 +388,10 @@ def supremacy():
                 page.click('button[class="JIE42b"]')
                 logging.critical("Next")
                 time.sleep(20)
+            elif 'запрашивает разрешение на доступ к вашему аккаунту' in element.text_content().strip():
+                page.click('button[class="JIE42b"]')
+                logging.critical("Next")
+                time.sleep(20)
 
             page.wait_for_timeout(2000)
             page.screenshot(path="screenshot7.png", full_page=True)
