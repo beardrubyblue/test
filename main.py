@@ -206,7 +206,7 @@ def save_account(phone_jd, password, info):
     return requests.post('https://accman-dev.tgbank.dev/add', headers=headers, json=json_data)
 
 
-async def get_access_token(proxy_session, phone_string: str, password: str):
+def get_access_token(proxy_session, phone_string: str, password: str):
     """Запрос к https://oauth.vk.com/token возвращает access_token"""
     headers = {
         'authority': 'api.vk.com',
