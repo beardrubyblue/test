@@ -206,8 +206,33 @@ def save_account(phone_jd, password, info):
     return requests.post('https://accman-dev.tgbank.dev/add', headers=headers, json=json_data)
 
 
-async def get_access_token(phone_string: str, password: str):
-    """запрос к https://oauth.vk.com/token возвращает access_token"""
+async def get_access_token(proxy_session, phone_string: str, password: str):
+    """Запрос к https://oauth.vk.com/token возвращает access_token"""
+    headers = {
+        'authority': 'api.vk.com',
+        'accept': '*/*',
+        'accept-language': 'en-US,en;q=0.9',
+        'cache-control': 'no-cache',
+        'content-type': 'application/x-www-form-urlencoded',
+        'origin': 'https://dev.vk.com',
+        'pragma': 'no-cache',
+        'referer': 'https://dev.vk.com/'}
+    params = {
+        'grant_type': 'password',
+        'v': '5.131',
+        'client_id': '2274003',
+        'client_secret': 'hHbZxrka2uZ6jB1inYsH',
+        'username': phone_string,
+        'password': password,
+        'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'
+    }
+    rr = proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers)
+    return rr
+
+
+
+async def get_access_token_async(phone_string: str, password: str):
+    """Запрос к https://oauth.vk.com/token возвращает access_token"""
     while 0 == 0:
         try:
             proxy = get_proxies(2)[0]
@@ -478,6 +503,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 soup = BeautifulSoup(rr.text, 'lxml')
                 s1 = soup.head.findAll('script')[1].text
                 access_token = s1[s1.find('"access_token":"') + 16:s1.find('","anonymous_token"')]
+                logging.critical('access_token: ' + access_token)
                 html_response += '<BR>Access Token: ' + access_token
                 rr = vkr_validate_phone(proxy_session, phone_string, access_token, device_id, cookies)
                 cookies = rr.cookies
@@ -495,7 +521,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                         cookies = rr.cookies
                 jd = json.loads(rr.text)['response']
                 login_sid = jd['sid']
-                logging.critical('SID: ' + str(login_sid))
+                logging.critical('Login SID: ' + login_sid)
                 html_response += '<BR>Phone Validation Response: ' + rr.text + '<BR>'
                 time.sleep(1.16)
                 for r in range(50):
@@ -511,6 +537,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 cookies = rr.cookies
                 jd = json.loads(rr.text)['response']
                 sid = jd['sid']
+                logging.critical('SID: ' + login_sid)
                 password = js_userandom_string(21)
                 first_name = random.choice(Names).split(' ')[0]
                 last_name = random.choice(Names).split(' ')[1]
@@ -521,7 +548,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 if 'response' in jd:
                     jd = json.loads(rr.text)['response']
                     time.sleep(8)
-                    rr = get_access_token(phone_string, password)
+                    rr = get_access_token(proxy_session, phone_string, password)
                     html_response += '<BR>Access Token Getting Response: ' + rr.text
                     access_token1 = rr.text.split('{"access_token":"')[1].split('","expires_in"')[0]
                     requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', data={'service': 'vk'})
@@ -553,7 +580,7 @@ def revive_vk_access_token(phone_string: str, password: str, credentials: HTTPBa
     """Воскрешение доступа к учётной записи ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
-    html = asyncio.run(get_access_token(phone_string, password))
+    html = asyncio.run(get_access_token_async(phone_string, password))
     return HTMLResponse(content=html, status_code=200)
 
 
