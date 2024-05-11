@@ -495,6 +495,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                         cookies = rr.cookies
                 jd = json.loads(rr.text)['response']
                 login_sid = jd['sid']
+                logging.critical('SID: ' + str(login_sid))
                 html_response += '<BR>Phone Validation Response: ' + rr.text + '<BR>'
                 time.sleep(1.16)
                 for r in range(50):
