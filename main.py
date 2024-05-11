@@ -207,7 +207,7 @@ def save_account(phone_jd, password, info):
 def get_access_token(phone_string: str, password: str):
     """Запрос к https://oauth.vk.com/token возвращает access_token"""
     proxy = get_proxies(2)[0]
-    proxy_session = create_new_proxy_session(2, None)
+    proxy_session = requests.session()
     proxy_session.proxies.update(dict(http=proxy.split('|')[0], https=proxy.split('|')[0]))
     headers = {
         'authority': 'api.vk.com',
