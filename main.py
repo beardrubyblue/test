@@ -44,10 +44,10 @@ random.seed()
 
 
 def get_proxies(kind: int, amount: int = 1000):
-    """функция возвращает список полученных проксей с сайта https://free-proxy-list.net или из https://proxy-manager.arbat.dev/"""
+    """функция возвращает список полученных проксей с сайта https://free-proxy-list.net или из https://proxy-manager.arbat.dev или из https://www.sslproxies.org"""
     proxies = []
     if kind == 1:
-        soup = BeautifulSoup(requests.get('https://www.sslproxies.org').content, 'html.parser')
+        soup = BeautifulSoup(requests.get('https://free-proxy-list.net').content, 'html.parser')
         for row in soup.find('table', attrs={'class': 'table table-striped table-bordered'}).find_all('tr')[1:]:
             tds = row.find_all('td')
             if tds[2].text.strip() != 'RU' and tds[6].text.strip() == 'yes':
@@ -498,10 +498,10 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 cookies = rr.cookies
                 soup = BeautifulSoup(rr.text, 'lxml')
                 s1 = soup.head.findAll('script')[1].text
-                access_token = s1[s1.find('"access_token":"') + 16:s1.find('","anonymous_token"')]
-                logging.critical('auth_token: ' + access_token)
-                html_response += '<BR>Access Token: ' + access_token
-                rr = vkr_validate_phone(proxy_session, phone_string, access_token, device_id, cookies)
+                auth_token = s1[s1.find('"access_token":"') + 16:s1.find('","anonymous_token"')]
+                logging.critical('auth_token: ' + auth_token)
+                html_response += '<BR>Auth Token: ' + auth_token
+                rr = vkr_validate_phone(proxy_session, phone_string, auth_token, device_id, cookies)
                 cookies = rr.cookies
                 if rr.text[:10] == '{"error":{':
                     jd = json.loads(rr.text)['error']
@@ -513,7 +513,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                         cid = SOLVER.send(file="LastCaptcha.jpg")
                         time.sleep(20)
                         ck = SOLVER.get_result(cid)
-                        rr = vkr_validate_phone(proxy_session, phone_string, access_token, device_id, cookies, ck, jd['captcha_sid'], jd['captcha_ts'], jd['captcha_attempt'])
+                        rr = vkr_validate_phone(proxy_session, phone_string, auth_token, device_id, cookies, ck, jd['captcha_sid'], jd['captcha_ts'], jd['captcha_attempt'])
                         cookies = rr.cookies
                 jd = json.loads(rr.text)['response']
                 login_sid = jd['sid']
@@ -528,7 +528,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 logging.critical('SMS response: ' + rr.text)
                 jd = json.loads(rr.text)['messages']
                 html_response += '<BR>SMS Response: ' + rr.text + '<BR>'
-                rr = vkr_validate_phone_confirm(proxy_session, phone_string, access_token, device_id, login_sid, str(jd).split(' ')[1], cookies)
+                rr = vkr_validate_phone_confirm(proxy_session, phone_string, auth_token, device_id, login_sid, str(jd).split(' ')[1], cookies)
                 html_response += '<BR>Phone Validation Confirmation Response: ' + rr.text + '<BR>'
                 cookies = rr.cookies
                 jd = json.loads(rr.text)['response']
@@ -538,7 +538,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 first_name = random.choice(Names).split(' ')[0]
                 last_name = random.choice(Names).split(' ')[1]
                 birthday = str(random.randint(10, 28)) + '.0' + str(random.randint(1, 9)) + '.' + str(random.randint(1980, 2004))
-                rr = vkr_signup(proxy_session, phone_string, password, access_token, device_id, jd['sid'], birthday, first_name, last_name, cookies)
+                rr = vkr_signup(proxy_session, phone_string, password, auth_token, device_id, jd['sid'], birthday, first_name, last_name, cookies)
                 html_response += '<BR>Signup Response: ' + rr.text + '<BR>'
                 logging.critical('RR TEXT: ' + rr.text)
                 jd = json.loads(rr.text)
@@ -549,9 +549,10 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                     rr = get_access_token(proxy_session, phone_string, password)
                     logging.critical('Access Token Getting Response: ' + rr.text)
                     html_response += '<BR>Access Token Getting Response: ' + rr.text
-                    access_token1 = rr.text.split('{"access_token":"')[1].split('","expires_in"')[0]
+                    access_token = rr.text.split('{"access_token":"')[1].split('","expires_in"')[0]
+                    logging.critical('access_token: '+ access_token)
                     requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', data={'service': 'vk'})
-                    info = json.dumps({'access_token': access_token1, 'MID': str(jd['mid']), 'CreationTime': str(datetime.datetime.now()), 'Proxy': proxy, 'UUID': uuid, "DeviceID": device_id, 'AuthToken': access_token, 'SID': sid, 'FirstName': first_name, 'LastName': last_name, 'Birthday': birthday}, ensure_ascii=False)
+                    info = json.dumps({'access_token': access_token, 'MID': str(jd['mid']), 'CreationTime': str(datetime.datetime.now()), 'Proxy': proxy, 'UUID': uuid, "DeviceID": device_id, 'AuthToken': access_token, 'SID': sid, 'FirstName': first_name, 'LastName': last_name, 'Birthday': birthday}, ensure_ascii=False)
                     save_account(int(phone_jd['phone']), password, info)
                     logging.critical('MISSION ACCOMPLISHED! New Account: ' + phone_jd['phone'] + ':' + password)
                     html_response += '<BR><BR>MISSION ACCOMPLISHED! New Account:<BR>' + phone_jd['phone'] + ':' + password + '<BR>' + info + '<BR>'
