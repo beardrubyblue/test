@@ -565,7 +565,8 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                         html_response += "<BR>" + phone_jd['phone'] + " FLOOD CONTROL: can't accept this phone (security reason)<BR>"
                         logging.critical('FLOOD CONTROL! Account: ' + phone_jd['phone'] + ':' + password)
             except Exception as E:
-                requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', json={'service': 'vk', 'broken': True})
+                logging.critical(E)
+                # requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', json={'service': 'vk', 'broken': True})
                 html_errors += '<BR>' + str(E) + '<BR>'
         time.sleep(random.randint(1, 180))
     logging.critical('Registration Finished At: ' + str(datetime.datetime.now()))
