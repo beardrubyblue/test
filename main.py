@@ -548,7 +548,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                     jd = json.loads(rr.text)['response']
                     logging.critical(jd)
                     time.sleep(8)
-                    rr = get_access_token(proxy_session, phone_string, password)
+                    rr = get_access_token(phone_string, password)
                     logging.critical('Access Token Getting Response: ' + rr.text)
                     html_response += '<BR>Access Token Getting Response: ' + rr.text
                     access_token = rr.text.split('{"access_token":"')[1].split('","expires_in"')[0]
