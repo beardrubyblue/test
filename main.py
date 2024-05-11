@@ -203,33 +203,7 @@ def save_account(phone_jd, password, info):
     return requests.post('https://accman-odata.arbat.dev/create', headers=headers, json=json_data)
 
 
-def get_access_token(phone_string: str, password: str):
-    """Запрос к https://oauth.vk.com/token возвращает access_token"""
-    proxy = get_proxies(1)[0]
-    proxy_session = requests.session()
-    proxy_session.proxies.update(dict(http=proxy.split('|')[0], https=proxy.split('|')[0]))
-    headers = {
-        'authority': 'api.vk.com',
-        'accept': '*/*',
-        'accept-language': 'en-US,en;q=0.9',
-        'cache-control': 'no-cache',
-        'content-type': 'application/x-www-form-urlencoded',
-        'origin': 'https://dev.vk.com',
-        'pragma': 'no-cache',
-        'referer': 'https://dev.vk.com/'}
-    params = {
-        'grant_type': 'password',
-        'v': '5.131',
-        'client_id': '2274003',
-        'client_secret': 'hHbZxrka2uZ6jB1inYsH',
-        'username': phone_string,
-        'password': password,
-        'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'}
-    rr = proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers)
-    return rr
-
-
-async def get_access_token_async(phone_string: str, password: str):
+async def get_access_token(phone_string: str, password: str):
     """Запрос к https://oauth.vk.com/token возвращает access_token"""
     while 0 == 0:
         try:
@@ -547,7 +521,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                     jd = json.loads(rr.text)['response']
                     logging.critical(jd)
                     time.sleep(8)
-                    rr = get_access_token(phone_string, password)
+                    rr = asyncio.run(get_access_token(phone_string, password))
                     logging.critical('Access Token Getting Response: ' + rr.text)
                     html_response += '<BR>Access Token Getting Response: ' + rr.text
                     access_token = rr.text.split('{"access_token":"')[1].split('","expires_in"')[0]
@@ -583,7 +557,7 @@ def revive_vk_access_token(phone_string: str, password: str, credentials: HTTPBa
     """Воскрешение доступа к учётной записи ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
-    html = asyncio.run(get_access_token_async(phone_string, password))
+    html = asyncio.run(get_access_token(phone_string, password))
     return HTMLResponse(content=html, status_code=200)
 
 
