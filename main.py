@@ -198,7 +198,7 @@ def save_account(phone_jd: str, password: str, info: str):
         "kind_id": 2,
         "phone": phone_jd,
         "password": password,
-        "info": info
+        "info": json.loads(info)
     }
     rr = requests.post('https://accman-odata.arbat.dev/create', headers=headers, json=json_data)
     logging.critical(rr.text)
