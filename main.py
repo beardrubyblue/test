@@ -524,7 +524,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                     rt = asyncio.run(get_access_token(phone_string, password))
                     logging.critical('Access Token Getting Response: ' + rt)
                     html_response += '<BR>Access Token Getting Response: ' + rt
-                    access_token = rt.text.split('{"access_token":"')[1].split('","expires_in"')[0]
+                    access_token = rt.split('{"access_token":"')[1].split('","expires_in"')[0]
                     logging.critical('access_token: ' + access_token)
                     requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', data={'service': 'vk'})
                     info = json.dumps({'access_token': access_token, 'MID': str(jd['mid']), 'CreationTime': str(datetime.datetime.now()), 'Proxy': proxy, 'UUID': uuid, "DeviceID": device_id, 'AuthToken': access_token, 'SID': sid, 'FirstName': first_name, 'LastName': last_name, 'Birthday': birthday}, ensure_ascii=False)
