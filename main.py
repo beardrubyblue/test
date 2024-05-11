@@ -230,7 +230,6 @@ async def get_access_token(proxy_session, phone_string: str, password: str):
     return rr
 
 
-
 async def get_access_token_async(phone_string: str, password: str):
     """Запрос к https://oauth.vk.com/token возвращает access_token"""
     while 0 == 0:
@@ -265,7 +264,6 @@ async def get_access_token_async(phone_string: str, password: str):
 
 @app.get("/work-supremacy")
 def supremacy():
-
     for i in range(0, 25):
         with sync_playwright() as p:
             DBC.execute('SELECT phone, passw, id_last, proxi FROM "Elizaveta".news_ids')
