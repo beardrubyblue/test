@@ -204,8 +204,11 @@ def save_account(phone_jd, password, info):
     return requests.post('https://accman-odata.arbat.dev/create', headers=headers, json=json_data)
 
 
-def get_access_token(proxy_session, phone_string: str, password: str):
+def get_access_token(phone_string: str, password: str):
     """Запрос к https://oauth.vk.com/token возвращает access_token"""
+    proxy = get_proxies(2)[0]
+    proxy_session = create_new_proxy_session(2, None)
+    proxy_session.proxies.update(dict(http=proxy.split('|')[0], https=proxy.split('|')[0]))
     headers = {
         'authority': 'api.vk.com',
         'accept': '*/*',
@@ -222,8 +225,7 @@ def get_access_token(proxy_session, phone_string: str, password: str):
         'client_secret': 'hHbZxrka2uZ6jB1inYsH',
         'username': phone_string,
         'password': password,
-        'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'
-    }
+        'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'}
     rr = proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers)
     return rr
 
@@ -476,7 +478,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
     html_errors = ''
     logging.critical('Registration Started At: ' + str(datetime.datetime.now()))
     html_response += 'Registration Started At: ' + str(datetime.datetime.now())
-    for n in range(200):
+    for n in range(1):
         logging.critical('STEP NUMBER: ' + str(n + 1))
         pl = get_proxies(PROXYKIND)
         html_response += '<BR><BR>' + str(n + 1) + ' ---------------------------------------------------- Proxies Founded: ' + str(len(pl)) + '<BR>'
@@ -499,7 +501,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 soup = BeautifulSoup(rr.text, 'lxml')
                 s1 = soup.head.findAll('script')[1].text
                 auth_token = s1[s1.find('"access_token":"') + 16:s1.find('","anonymous_token"')]
-                logging.critical('auth_token: ' + auth_token)
+                logging.critical('AUTH TOKEN: ' + auth_token)
                 html_response += '<BR>Auth Token: ' + auth_token
                 rr = vkr_validate_phone(proxy_session, phone_string, auth_token, device_id, cookies)
                 cookies = rr.cookies
