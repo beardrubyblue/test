@@ -550,7 +550,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                     logging.critical('Access Token Getting Response: ' + rr.text)
                     html_response += '<BR>Access Token Getting Response: ' + rr.text
                     access_token = rr.text.split('{"access_token":"')[1].split('","expires_in"')[0]
-                    logging.critical('access_token: '+ access_token)
+                    logging.critical('access_token: ' + access_token)
                     requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', data={'service': 'vk'})
                     info = json.dumps({'access_token': access_token, 'MID': str(jd['mid']), 'CreationTime': str(datetime.datetime.now()), 'Proxy': proxy, 'UUID': uuid, "DeviceID": device_id, 'AuthToken': access_token, 'SID': sid, 'FirstName': first_name, 'LastName': last_name, 'Birthday': birthday}, ensure_ascii=False)
                     save_account(int(phone_jd['phone']), password, info)
