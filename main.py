@@ -540,7 +540,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 birthday = str(random.randint(10, 28)) + '.0' + str(random.randint(1, 9)) + '.' + str(random.randint(1980, 2004))
                 rr = vkr_signup(proxy_session, phone_string, password, auth_token, device_id, jd['sid'], birthday, first_name, last_name, cookies)
                 html_response += '<BR>Signup Response: ' + rr.text + '<BR>'
-                logging.critical('RR TEXT: ' + rr.text)
+                logging.critical('RR TEXT: ' + rr.text + ' ' + phone_string + ' ' + password)
                 jd = json.loads(rr.text)
                 if 'response' in jd:
                     jd = json.loads(rr.text)['response']
@@ -566,6 +566,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                         logging.critical('FLOOD CONTROL! Account: ' + phone_jd['phone'] + ':' + password)
             except Exception as E:
                 logging.critical(E)
+                logging.critical('----------------------------------------------------------')
                 # requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', json={'service': 'vk', 'broken': True})
                 html_errors += '<BR>' + str(E) + '<BR>'
         time.sleep(random.randint(1, 180))
