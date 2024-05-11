@@ -31,7 +31,6 @@ CC = {
     'pollingInterval': 10}
 SOLVER = TwoCaptcha(**CC)
 HEADERS = {}
-PROXYKIND = 1
 with open('Names.txt', 'r') as F:
     Names = F.readlines()
     F.close()
@@ -206,7 +205,7 @@ def save_account(phone_jd, password, info):
 
 def get_access_token(phone_string: str, password: str):
     """Запрос к https://oauth.vk.com/token возвращает access_token"""
-    proxy = get_proxies(2)[0]
+    proxy = get_proxies(1)[0]
     proxy_session = requests.session()
     proxy_session.proxies.update(dict(http=proxy.split('|')[0], https=proxy.split('|')[0]))
     headers = {
@@ -480,9 +479,9 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
     html_response += 'Registration Started At: ' + str(datetime.datetime.now())
     for n in range(1):
         logging.critical('STEP NUMBER: ' + str(n + 1))
-        pl = get_proxies(PROXYKIND)
+        pl = get_proxies(1)
         html_response += '<BR><BR>' + str(n + 1) + ' ---------------------------------------------------- Proxies Founded: ' + str(len(pl)) + '<BR>'
-        proxy_session = create_new_proxy_session(PROXYKIND, None)
+        proxy_session = requests.session()
         for c, proxy in enumerate(pl):
             html_response += '<BR>' + str(c + 1) + ' ' + str(datetime.datetime.now()) + ' ----------------------------------------------------------------------------------'
             html_response += '<BR>Proxy: ' + proxy
