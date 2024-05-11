@@ -188,7 +188,7 @@ def vkr_signup(proxy_session, phone, password, auth_token, device_id, sid, birth
     return proxy_session.post('https://api.vk.com/method/auth.signup', params=params, cookies=cookies, headers=HEADERS, data=data, timeout=30)
 
 
-def save_account(phone_jd, password, info):
+def save_account(phone_jd: str, password: str, info: str):
     """Отправка нового пользователя в БД"""
     headers = {
         'accept': 'application/json',
@@ -198,9 +198,11 @@ def save_account(phone_jd, password, info):
         "kind_id": 2,
         "phone": phone_jd,
         "password": password,
-        "info": json.loads(info)
+        "info": info
     }
-    return requests.post('https://accman-odata.arbat.dev/create', headers=headers, json=json_data)
+    rr = requests.post('https://accman-odata.arbat.dev/create', headers=headers, json=json_data)
+    logging.critical(rr.text)
+    return rr
 
 
 async def get_access_token(phone_string: str, password: str):
@@ -528,7 +530,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                     logging.critical('access_token: ' + access_token)
                     requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', data={'service': 'vk'})
                     info = json.dumps({'access_token': access_token, 'MID': str(jd['mid']), 'CreationTime': str(datetime.datetime.now()), 'Proxy': proxy, 'UUID': uuid, "DeviceID": device_id, 'AuthToken': access_token, 'SID': sid, 'FirstName': first_name, 'LastName': last_name, 'Birthday': birthday}, ensure_ascii=False)
-                    save_account(int(phone_jd['phone']), password, info)
+                    save_account(phone_jd['phone'], password, info)
                     logging.critical('MISSION ACCOMPLISHED! New Account: ' + phone_jd['phone'] + ':' + password)
                     html_response += '<BR><BR>MISSION ACCOMPLISHED! New Account:<BR>' + phone_jd['phone'] + ':' + password + '<BR>' + info + '<BR>'
                     if kind == '1':
