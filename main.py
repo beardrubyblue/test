@@ -489,7 +489,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
             proxy_session.proxies.update(dict(http=proxy.split('|')[0], https=proxy.split('|')[0]))
             # logging.critical(proxy_session.get('https://icanhazip.com').text)
             phone_jd = json.loads(requests.get('http://10.9.20.135:3000/phones/random?service=vk&bank=virtual').text)
-            logging.critical(phone_jd)
+            # logging.critical(phone_jd)
             phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
             html_response += '<BR>Phone: ' + phone_string
             cookies = {}
@@ -542,7 +542,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 birthday = str(random.randint(10, 28)) + '.0' + str(random.randint(1, 9)) + '.' + str(random.randint(1980, 2004))
                 rr = vkr_signup(proxy_session, phone_string, password, access_token, device_id, jd['sid'], birthday, first_name, last_name, cookies)
                 html_response += '<BR>Signup Response: ' + rr.text + '<BR>'
-                logging.critical(html_response)
+                logging.critical('RR TEXT: ' + rr.text)
                 jd = json.loads(rr.text)
                 if 'response' in jd:
                     jd = json.loads(rr.text)['response']
