@@ -196,14 +196,12 @@ def save_account(phone_jd, password, info):
         'Content-Type': 'application/json',
     }
     json_data = {
-        "id": 451,
         "kind_id": 2,
         "phone": phone_jd,
         "password": password,
-        "info": info,
-        "last_rent_time": "2023-10-09 20:14:40.70"
+        "info": info
     }
-    return requests.post('https://accman-dev.tgbank.dev/add', headers=headers, json=json_data)
+    return requests.post('https://accman-odata.arbat.dev/create', headers=headers, json=json_data)
 
 
 def get_access_token(proxy_session, phone_string: str, password: str):
@@ -501,7 +499,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 soup = BeautifulSoup(rr.text, 'lxml')
                 s1 = soup.head.findAll('script')[1].text
                 access_token = s1[s1.find('"access_token":"') + 16:s1.find('","anonymous_token"')]
-                logging.critical('access_token: ' + access_token)
+                logging.critical('auth_token: ' + access_token)
                 html_response += '<BR>Access Token: ' + access_token
                 rr = vkr_validate_phone(proxy_session, phone_string, access_token, device_id, cookies)
                 cookies = rr.cookies
@@ -546,8 +544,10 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 jd = json.loads(rr.text)
                 if 'response' in jd:
                     jd = json.loads(rr.text)['response']
+                    logging.critical(jd)
                     time.sleep(8)
                     rr = get_access_token(proxy_session, phone_string, password)
+                    logging.critical('Access Token Getting Response: ' + rr.text)
                     html_response += '<BR>Access Token Getting Response: ' + rr.text
                     access_token1 = rr.text.split('{"access_token":"')[1].split('","expires_in"')[0]
                     requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', data={'service': 'vk'})
