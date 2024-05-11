@@ -542,6 +542,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 birthday = str(random.randint(10, 28)) + '.0' + str(random.randint(1, 9)) + '.' + str(random.randint(1980, 2004))
                 rr = vkr_signup(proxy_session, phone_string, password, access_token, device_id, jd['sid'], birthday, first_name, last_name, cookies)
                 html_response += '<BR>Signup Response: ' + rr.text + '<BR>'
+                logging.critical(html_response)
                 jd = json.loads(rr.text)
                 if 'response' in jd:
                     jd = json.loads(rr.text)['response']
