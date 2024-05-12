@@ -19,7 +19,7 @@ import psycopg
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
-app = FastAPI()
+app = FastAPI(title='UniReger')
 SECURITY = HTTPBasic()
 CC = {
     'server': 'rucaptcha.com',
