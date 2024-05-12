@@ -367,6 +367,9 @@ def supremacy():
             if 'Вход в сервис "supremacy.info"' in element.text_content().strip():
                 page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
                 logging.critical("Next")
+            elif "Sign in to supremacy.info" in element.text_content().strip():
+                page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
+                logging.critical("Next")
             else:
                 page.click('#idvPreregisteredPhoneNext')
                 logging.critical("Next")
@@ -389,11 +392,19 @@ def supremacy():
             element = page.query_selector('body')
             if 'wants to access your Google Account' in element.text_content().strip():
                 page.click('button[class="JIE42b"]')
-                logging.critical("Next")
+                page.wait_for_timeout(2000)
+                page.click('#ctaButton')
+                logging.critical("Let's start")
+                page.wait_for_timeout(2000)
+                page.click('#authButton')
                 time.sleep(20)
             elif 'запрашивает разрешение на доступ к вашему аккаунту' in element.text_content().strip():
                 page.click('button[class="JIE42b"]')
-                logging.critical("Next")
+                page.wait_for_timeout(2000)
+                page.click('#ctaButton')
+                logging.critical("Let's start")
+                page.wait_for_timeout(2000)
+                page.click('#authButton')
                 time.sleep(20)
 
             page.wait_for_timeout(2000)
