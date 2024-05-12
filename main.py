@@ -241,7 +241,7 @@ async def get_access_token(phone_string: str, password: str):
 def supremacy():
     DBC.execute('SELECT * FROM "Elizaveta".news_ids')
     result = DBC.fetchall()
-    for i in range(0, 25):
+    for i in range(19, 26):
         with sync_playwright() as p:
             DBC.execute('SELECT * FROM "Elizaveta".news_ids')
             result = DBC.fetchall()
@@ -310,20 +310,19 @@ def supremacy():
             DB.commit()
 
             element = page.query_selector('body')
-
-            if "Choose how you want to sign in:" or "Выберите способ входа:" in element.text_content().strip():
+            if "Choose how you want to sign in:" in element.text_content().strip() or "Выберите способ входа:" in element.text_content().strip():
                 page.wait_for_timeout(2000)
-                logging.critical("Next2")
+                logging.critical("Next1")
                 page.click('button[value="5,SMS"]')
 
             elif "Verify it’s you" in element.text_content().strip():
                 page.wait_for_timeout(2000)
-                logging.critical("Next6")
+                logging.critical("Next2")
                 page.click('button[class="JnOM6e TrZEUc rDisVe"]')
 
             else:
                 page.wait_for_timeout(2000)
-                logging.critical("Next5")
+                logging.critical("Next3")
                 page.click('button[name="action"]')
 
             page.wait_for_timeout(2000)
@@ -349,7 +348,7 @@ def supremacy():
             DB.commit()
 
             element = page.query_selector('body')
-            if 'Вход в сервис "supremacy.info"' or "Sign in to supremacy.info" in element.text_content().strip():
+            if 'Вход в сервис "supremacy.info"' in element.text_content().strip() or "Sign in to supremacy.info" in element.text_content().strip():
                 page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
                 logging.critical("Next")
             else:
@@ -371,7 +370,7 @@ def supremacy():
             DB.commit()
 
             element = page.query_selector('body')
-            if 'wants to access your Google Account' or 'запрашивает разрешение на доступ к вашему аккаунту' in element.text_content().strip():
+            if 'wants to access your Google Account' in element.text_content().strip() or 'запрашивает разрешение на доступ к вашему аккаунту' in element.text_content().strip():
                 page.click('button[class="JIE42b"]')
                 page.wait_for_timeout(2000)
                 page.click('#ctaButton')
