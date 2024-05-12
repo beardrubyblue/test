@@ -241,7 +241,7 @@ async def get_access_token(phone_string: str, password: str):
 def supremacy():
     DBC.execute('SELECT * FROM "Elizaveta".news_ids')
     result = DBC.fetchall()
-    for i in range(19, 26):
+    for i in range(23, 27):
         with sync_playwright() as p:
             DBC.execute('SELECT * FROM "Elizaveta".news_ids')
             result = DBC.fetchall()
@@ -254,7 +254,7 @@ def supremacy():
 
             logging.critical(f"Login {phone}")
             logging.critical(f"Passw {password}")
-            logging.critical(f"id {i}")
+            logging.critical(f"id {i + 1}")
 
             server = result[i][3]
             username = result[i][4]
@@ -377,6 +377,7 @@ def supremacy():
                 logging.critical("Let's start")
                 page.wait_for_timeout(2000)
                 page.click('#authButton')
+                time.sleep(20)
 
             page.wait_for_timeout(2000)
             page.screenshot(path="screenshot7.png", full_page=True)
