@@ -239,9 +239,10 @@ async def get_access_token(phone_string: str, password: str):
 
 @app.get("/work-supremacy")
 def supremacy():
+
     for i in range(0, 25):
         with sync_playwright() as p:
-            DBC.execute('SELECT phone, passw, id_last, proxi FROM "Elizaveta".news_ids')
+            DBC.execute('SELECT * FROM "Elizaveta".news_ids')
             result = DBC.fetchall()
             phone = result[i][0]
             password = result[i][1]
@@ -249,15 +250,14 @@ def supremacy():
                 id = 1
             else:
                 id = result[i][2] + 1
-            proxi = result[i][3]
 
             logging.critical(f"Login {phone}")
             logging.critical(f"Passw {password}")
             logging.critical(f"id {id}")
 
-            server = proxi[0]
-            username = proxi[1]
-            passw = proxi[2]
+            server = result[i][3]
+            username = result[i][4]
+            passw = result[i][5]
             logging.critical(f"proxi {server, username, passw}")
 
             browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"], proxy={'server': server, 'username': username, 'password': passw})
