@@ -241,7 +241,7 @@ async def get_access_token(phone_string: str, password: str):
 def supremacy():
     DBC.execute('SELECT * FROM "Elizaveta".news_ids')
     result = DBC.fetchall()
-    for i in range(23, 27):
+    for i in range(0, 25):
         with sync_playwright() as p:
             DBC.execute('SELECT * FROM "Elizaveta".news_ids')
             result = DBC.fetchall()
