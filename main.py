@@ -239,7 +239,8 @@ async def get_access_token(phone_string: str, password: str):
 
 @app.get("/work-supremacy")
 def supremacy():
-
+    DBC.execute('SELECT * FROM "Elizaveta".news_ids')
+    result = DBC.fetchall()
     for i in range(0, 25):
         with sync_playwright() as p:
             DBC.execute('SELECT * FROM "Elizaveta".news_ids')
@@ -253,7 +254,7 @@ def supremacy():
 
             logging.critical(f"Login {phone}")
             logging.critical(f"Passw {password}")
-            logging.critical(f"id {id}")
+            logging.critical(f"id {i}")
 
             server = result[i][3]
             username = result[i][4]
@@ -309,39 +310,23 @@ def supremacy():
             DB.commit()
 
             element = page.query_selector('body')
-            if "This browser or app may not be secure. Learn more" in element.text_content().strip():
-                time.sleep(60)
-                page.wait_for_timeout(2000)
-                logging.critical("Next1")
-                page.click('button[name="action"]')  # ?????????????????????
 
-            elif "Choose how you want to sign in:" in element.text_content().strip():
+            if "Choose how you want to sign in:" or "Выберите способ входа:" in element.text_content().strip():
                 page.wait_for_timeout(2000)
                 logging.critical("Next2")
                 page.click('button[value="5,SMS"]')
-
-            elif "Your recovery phone recently changed" in element.text_content().strip():
-                page.wait_for_timeout(2000)
-                logging.critical("Next3")
-                page.click('button[name="action"]')
-
-            elif "Выберите способ входа:" in element.text_content().strip():
-                page.wait_for_timeout(2000)
-                logging.critical("Next4")
-                page.click('button[value="5,SMS"]')
-
-            elif "Подтвердите свою личность" in element.text_content().strip():
-                page.wait_for_timeout(2000)
-                logging.critical("Next5")
-                page.click('button[name="action"]')
 
             elif "Verify it’s you" in element.text_content().strip():
                 page.wait_for_timeout(2000)
                 logging.critical("Next6")
                 page.click('button[class="JnOM6e TrZEUc rDisVe"]')
 
-            page.wait_for_timeout(2000)
+            else:
+                page.wait_for_timeout(2000)
+                logging.critical("Next5")
+                page.click('button[name="action"]')
 
+            page.wait_for_timeout(2000)
             time.sleep(30)
 
             page.screenshot(path="screenshot3.png", full_page=True)
@@ -364,10 +349,7 @@ def supremacy():
             DB.commit()
 
             element = page.query_selector('body')
-            if 'Вход в сервис "supremacy.info"' in element.text_content().strip():
-                page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
-                logging.critical("Next")
-            elif "Sign in to supremacy.info" in element.text_content().strip():
+            if 'Вход в сервис "supremacy.info"' or "Sign in to supremacy.info" in element.text_content().strip():
                 page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
                 logging.critical("Next")
             else:
@@ -382,7 +364,6 @@ def supremacy():
             with open('example1.mhtml', 'r') as f:
                 html_kod = f.read()
 
-            page.wait_for_timeout(2000)
             page.screenshot(path="screenshot5.png", full_page=True)
             with open("screenshot5.png", "rb") as f:
                 image_data = f.read()
@@ -390,22 +371,13 @@ def supremacy():
             DB.commit()
 
             element = page.query_selector('body')
-            if 'wants to access your Google Account' in element.text_content().strip():
+            if 'wants to access your Google Account' or 'запрашивает разрешение на доступ к вашему аккаунту' in element.text_content().strip():
                 page.click('button[class="JIE42b"]')
                 page.wait_for_timeout(2000)
                 page.click('#ctaButton')
                 logging.critical("Let's start")
                 page.wait_for_timeout(2000)
                 page.click('#authButton')
-                time.sleep(20)
-            elif 'запрашивает разрешение на доступ к вашему аккаунту' in element.text_content().strip():
-                page.click('button[class="JIE42b"]')
-                page.wait_for_timeout(2000)
-                page.click('#ctaButton')
-                logging.critical("Let's start")
-                page.wait_for_timeout(2000)
-                page.click('#authButton')
-                time.sleep(20)
 
             page.wait_for_timeout(2000)
             page.screenshot(path="screenshot7.png", full_page=True)
@@ -421,14 +393,7 @@ def supremacy():
                 page.goto(f"https://supremacy.info/news/{id}")
                 page.wait_for_timeout(2000)
 
-                page.screenshot(path="screenshot6.png", full_page=True)
-                with open("screenshot6.png", "rb") as f:
-                    image_data = f.read()
-                DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "news"))
-                DB.commit()
-
                 element = page.query_selector('body')
-
                 if "Your read-to-Earn opportunity:" in element.text_content().strip():
                     page.click('#plusButton')
                     page.wait_for_timeout(1000)
