@@ -369,6 +369,7 @@ def supremacy():
             DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name, html) VALUES (%s, %s, %s)', (image_data, "After kod", html_kod))
             DB.commit()
 
+            time.sleep(20)
             element = page.query_selector('body')
             if 'wants to access your Google Account' in element.text_content().strip() or 'запрашивает разрешение на доступ к вашему аккаунту' in element.text_content().strip():
                 page.click('button[class="JIE42b"]')
