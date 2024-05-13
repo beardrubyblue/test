@@ -14,7 +14,7 @@ from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
-from playwright.sync_api import sync_playwright
+from playwright.async_api import async_playwright
 import psycopg
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
@@ -237,184 +237,172 @@ async def get_access_token(phone_string: str, password: str):
             logging.critical(e)
 
 
+def add_loggs(id_user, message):
+    DBC.execute('INSERT INTO "Elizaveta".loggs(id_user, log) VALUES (%s, %s)', (id_user, message))
+    DB.commit()
+
+
+def screen (id_user, message, hnml=' '):
+    with open("screenshot.png", "rb") as f:
+        image_data = f.read()
+    DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name, hnml, id_user) VALUES (%s, %s, %s, %s)', (image_data, message, hnml, id_user))
+    DB.commit()
+
+
 @app.get("/work-supremacy")
-def supremacy():
+async def supremacy():
     DBC.execute('SELECT * FROM "Elizaveta".news_ids')
     result = DBC.fetchall()
     for i in range(0, 24):
-        with sync_playwright() as p:
-            DBC.execute('SELECT * FROM "Elizaveta".news_ids')
-            result = DBC.fetchall()
+        with async_playwright() as p:
             phone = result[i][0]
             password = result[i][1]
+            id_user = result[i][6]
             if result[i][2] is None:
                 id = 1
             else:
                 id = result[i][2] + 1
 
-            logging.critical(f"Login {phone}")
-            logging.critical(f"Passw {password}")
-            logging.critical(f"id {i + 1}")
+            add_loggs(id_user, f"Login {phone}")
+            add_loggs(id_user, f"Passw {password}")
+            add_loggs(id_user, f"id_user {id_user}")
 
             server = result[i][3]
             username = result[i][4]
             passw = result[i][5]
-            logging.critical(f"proxi {server, username, passw}")
+            add_loggs(id_user, f"proxi {server, username, passw}")
 
-            browser = p.chromium.launch(args=["--disable-blink-features=AutomationControlled"], proxy={'server': server, 'username': username, 'password': passw})
-            context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0')
-            page = context.new_page()
-            logging.critical("Browser is open!")
+            browser = await p.chromium.launch(args=["--disable-blink-features=AutomationControlled"], proxy={'server': server, 'username': username, 'password': passw})
+            context = await browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0')
+            page = await context.new_page()
+            add_loggs(id_user, "Browser is open!")
 
-            page.goto(f"https://supremacy.info/news/{id}")
-            logging.critical("Went to the site to login")
-            page.click('#plusButton')
-            logging.critical("Let's start authorization")
-            page.wait_for_timeout(2000)
-            page.click('#authButton')
-            page.fill('input[name="identifier"]', phone)
-            logging.critical("Login entered")
+            await page.goto(f"https://supremacy.info/news/{id}")
+            add_loggs(id_user, "Went to the site to login")
+            await page.click('#plusButton')
+            add_loggs(id_user, "Let's start authorization")
+            await page.wait_for_timeout(2000)
+            await page.click('#authButton')
+            await page.fill('input[name="identifier"]', phone)
+            add_loggs(id_user, "Login entered")
 
-            page.screenshot(path="screenshot0.png", full_page=True)
-            with open("screenshot0.png", "rb") as f:
-                image_data = f.read()
-            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "identifierNext"))
-            DB.commit()
+            await page.screenshot(path="screenshot.png", full_page=True)
+            screen(id_user=id_user, message="identifierNext")
 
-            page.click('#identifierNext')
-            logging.critical("Next")
-            page.fill('input[name="Passwd"]', password)
+            await page.click('#identifierNext')
+            add_loggs(id_user, "Next")
+            await page.fill('input[name="Passwd"]', password)
 
-            page.screenshot(path="screenshot1.png", full_page=True)
-            with open("screenshot1.png", "rb") as f:
-                image_data = f.read()
-            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "passwordNext"))
-            DB.commit()
+            await page.screenshot(path="screenshot.png", full_page=True)
+            screen(id_user=id_user, message="passwordNext")
 
-            page.click('#passwordNext')
-            logging.critical("Next")
-            page.wait_for_timeout(2000)
+            await page.click('#passwordNext')
+            add_loggs(id_user, "Next")
+            await page.wait_for_timeout(2000)
 
-            client = page.context.new_cdp_session(page)
-            mhtml = client.send("Page.captureSnapshot")['data']
+            client = await page.context.new_cdp_session(page)
+            mhtml = await client.send("Page.captureSnapshot")['data']
             with open('example.mhtml', mode='w', encoding='UTF-8', newline='\n') as f:
                 f.write(mhtml)
             with open('example.mhtml', 'r') as f:
                 html_kod = f.read()
 
-            page.screenshot(path="screenshot2.png", full_page=True)
-            with open("screenshot2.png", "rb") as f:
-                image_data = f.read()
+            await page.screenshot(path="screenshot.png", full_page=True)
+            screen(id_user=id_user, message="After passw", hnml=html_kod)
 
-            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name, html) VALUES (%s, %s, %s)', (image_data, "After passw", html_kod))
-            DB.commit()
+            element = await page.query_selector('body')
+            if "Choose how you want to sign in:" in await element.text_content().strip() or "Выберите способ входа:" in await element.text_content().strip():
+                await page.wait_for_timeout(2000)
+                add_loggs(id_user, "Next1")
+                await page.click('button[value="5,SMS"]')
 
-            element = page.query_selector('body')
-            if "Choose how you want to sign in:" in element.text_content().strip() or "Выберите способ входа:" in element.text_content().strip():
-                page.wait_for_timeout(2000)
-                logging.critical("Next1")
-                page.click('button[value="5,SMS"]')
-
-            elif "Verify it’s you" in element.text_content().strip():
-                page.wait_for_timeout(2000)
-                logging.critical("Next2")
-                page.click('button[class="JnOM6e TrZEUc rDisVe"]')
+            elif "Verify it’s you" in await element.text_content().strip():
+                await page.wait_for_timeout(2000)
+                add_loggs(id_user, "Next2")
+                await page.click('button[class="JnOM6e TrZEUc rDisVe"]')
 
             else:
-                page.wait_for_timeout(2000)
-                logging.critical("Next3")
-                page.click('button[name="action"]')
+                await page.wait_for_timeout(2000)
+                add_loggs(id_user, "Next3")
+                await page.click('button[name="action"]')
 
-            page.wait_for_timeout(2000)
+            await page.wait_for_timeout(2000)
             time.sleep(30)
 
-            page.screenshot(path="screenshot3.png", full_page=True)
-            with open("screenshot3.png", "rb") as f:
-                image_data = f.read()
-            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Kod"))
-            DB.commit()
+            await page.screenshot(path="screenshot.png", full_page=True)
+            screen(id_user=id_user, message="Kod")
 
             response = requests.get(f'http://10.9.20.135:3000/phones/messages/{phone}?fromTs=0').json()
             if 'G-' in response['messages'][0]:
                 kod = response['messages'][0][2:8]
 
-            page.fill('input[name="Pin"]', kod)
-            logging.critical("Kod entered")
+            await page.fill('input[name="Pin"]', kod)
+            add_loggs(id_user, "Kod entered")
 
-            page.screenshot(path="screenshot4.png", full_page=True)
-            with open("screenshot4.png", "rb") as f:
-                image_data = f.read()
-            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Kod entered"))
-            DB.commit()
+            await page.screenshot(path="screenshot.png", full_page=True)
+            screen(id_user=id_user, message="Kod entered")
 
-            element = page.query_selector('body')
-            if 'Вход в сервис "supremacy.info"' in element.text_content().strip() or "Sign in to supremacy.info" in element.text_content().strip():
-                page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
-                logging.critical("Next")
+            element = await page.query_selector('body')
+            if 'Вход в сервис "supremacy.info"' in await element.text_content().strip() or "Sign in to supremacy.info" in await element.text_content().strip():
+                await page.click('button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-INsAgc VfPpkd-LgbsSe-OWXEXe-dgl2Hf Rj2Mlf OLiIxf PDpWxe P62QJc LQeN7 BqKGqe pIzcPc TrZEUc lw1w4b"]')
+                add_loggs(id_user, "Next")
             else:
-                page.click('#idvPreregisteredPhoneNext')
-                logging.critical("Next")
+                await page.click('#idvPreregisteredPhoneNext')
+                add_loggs(id_user, "Next")
 
-            page.wait_for_timeout(2000)
-            client = page.context.new_cdp_session(page)
-            html = client.send("Page.captureSnapshot")['data']
+            await page.wait_for_timeout(2000)
+            client = await page.context.new_cdp_session(page)
+            html = await client.send("Page.captureSnapshot")['data']
             with open('example1.mhtml', mode='w', encoding='UTF-8', newline='\n') as f:
                 f.write(html)
             with open('example1.mhtml', 'r') as f:
                 html_kod = f.read()
 
-            page.screenshot(path="screenshot5.png", full_page=True)
-            with open("screenshot5.png", "rb") as f:
-                image_data = f.read()
-            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name, html) VALUES (%s, %s, %s)', (image_data, "After kod", html_kod))
-            DB.commit()
+            await page.screenshot(path="screenshot.png", full_page=True)
+            screen(id_user=id_user, message="After kod", html=html_kod)
 
             time.sleep(20)
-            element = page.query_selector('body')
-            if 'wants to access your Google Account' in element.text_content().strip() or 'запрашивает разрешение на доступ к вашему аккаунту' in element.text_content().strip():
-                page.click('button[class="JIE42b"]')
-                page.wait_for_timeout(2000)
-                page.click('#ctaButton')
-                logging.critical("Let's start")
-                page.wait_for_timeout(2000)
-                page.click('#authButton')
+            element = await page.query_selector('body')
+            if 'wants to access your Google Account' in await element.text_content().strip() or 'запрашивает разрешение на доступ к вашему аккаунту' in await element.text_content().strip():
+                await page.click('button[class="JIE42b"]')
+                await page.wait_for_timeout(2000)
+                await page.click('#ctaButton')
+                add_loggs(id_user, "Let's start")
+                await page.wait_for_timeout(2000)
+                await page.click('#authButton')
                 time.sleep(20)
 
-            page.wait_for_timeout(2000)
-            page.screenshot(path="screenshot7.png", full_page=True)
-            with open("screenshot7.png", "rb") as f:
-                image_data = f.read()
-            DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name) VALUES (%s, %s)', (image_data, "Authorization"))
-            DB.commit()
-
-            logging.critical("Authorization completed!")
+            await page.wait_for_timeout(2000)
+            await page.screenshot(path="screenshot.png", full_page=True)
+            screen(id_user=id_user, message="Authorization")
+            add_loggs(id_user, "Authorization completed!")
 
             while True:
-                logging.critical(f"Went to the article page with ID {id}")
-                page.goto(f"https://supremacy.info/news/{id}")
-                page.wait_for_timeout(2000)
+                add_loggs(id_user, f"Went to the article page with ID {id}")
+                await page.goto(f"https://supremacy.info/news/{id}")
+                await page.wait_for_timeout(2000)
 
-                element = page.query_selector('body')
-                if "Your read-to-Earn opportunity:" in element.text_content().strip():
-                    page.click('#plusButton')
-                    page.wait_for_timeout(1000)
-                    if "You have run out of Pluses for today." in element.text_content().strip():
-                        logging.critical("The news limit has been reached")
+                element = await page.query_selector('body')
+                if "Your read-to-Earn opportunity:" in await element.text_content().strip():
+                    await page.click('#plusButton')
+                    await page.wait_for_timeout(1000)
+                    if "You have run out of Pluses for today." in await element.text_content().strip():
+                        add_loggs(id_user, "The news limit has been reached")
                         break
                     else:
-                        logging.critical("Article appreciated!")
+                        add_loggs(id_user, "Article appreciated!")
                         id = id + 1
                 else:
-                    logging.critical("The article has already been rated or the link is broken!")
+                    add_loggs(id_user, "The article has already been rated or the link is broken!")
                     id = id + 1
             id = id - 1
 
             DBC.execute('UPDATE "Elizaveta".news_ids SET id_last = %s WHERE phone = %s', (id, phone))
-            logging.critical("Id UPDATE")
+            add_loggs(id_user, "Id UPDATE")
             DB.commit()
 
-            browser.close()
-            logging.critical("Browser is closed!")
+            await browser.close()
+            add_loggs(id_user, "Browser is closed!")
 
 
 @app.get("/register")
