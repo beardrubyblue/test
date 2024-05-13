@@ -242,7 +242,7 @@ def add_loggs(id_user, message):
     DB.commit()
 
 
-def screen (id_user, message, hnml=' '):
+def screen(id_user, message, hnml=' '):
     with open("screenshot.png", "rb") as f:
         image_data = f.read()
     DBC.execute('INSERT INTO "Elizaveta".screenshot(photo, name, hnml, id_user) VALUES (%s, %s, %s, %s)', (image_data, message, hnml, id_user))
