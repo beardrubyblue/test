@@ -264,8 +264,8 @@ def save_account(phone_jd: str, password: str, info: str):
         "password": password,
         "info": json.loads(info)
     }
-    # rr = requests.post('https://accman-odata.arbat.dev/create', headers=headers, json=json_data)
-    rr = asyncio.run(make_request('post', 'https://accman-odata.arbat.dev/create', headers=headers, params=json_data))
+    rr = requests.post('https://accman-odata.arbat.dev/create', headers=headers, json=json_data)
+    # rr = asyncio.run(make_request('post', 'https://accman-odata.arbat.dev/create', headers=headers, params=json_data))
     logging.critical(rr.text)
     return rr
 
