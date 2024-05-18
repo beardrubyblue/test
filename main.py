@@ -275,9 +275,6 @@ def get_access_token(phone_string: str, password: str):
     # while 0 == 0:
     try:
         proxy = get_proxies(2)[0]
-        proxy_session = create_new_proxy_session(0, None)
-        proxy_session.proxies.update(dict(http=f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}", https=f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}"))
-        logging.critical(proxy_session.proxies)
         headers = {
             'authority': 'api.vk.com',
             'accept': '*/*',
@@ -296,7 +293,7 @@ def get_access_token(phone_string: str, password: str):
             'password': password,
             'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'
         }
-        rr = proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers)
+        rr = requests.get('https://oauth.vk.com/token', params=params, headers=headers, proxies={'https': f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}"})
         return rr
     except Exception as e:
         logging.critical(e)
