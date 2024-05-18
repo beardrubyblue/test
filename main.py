@@ -311,6 +311,118 @@ def revive_vk_access_token(phone_string: str, password: str, credentials: HTTPBa
     return HTMLResponse(content=html, status_code=200)
 
 
+@app.get("/register")
+def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
+    """регистрация одного или пачки учётных записей ВК"""
+    global REGISTRATION_STARTED
+    if credentials.username != 'AlanD' or credentials.password != 'Bober666':
+        return HTMLResponse(content='В доступе отказано!', status_code=200)
+    if REGISTRATION_STARTED:
+        return HTMLResponse(content='ERROR! Only One Registration Process Allowed!', status_code=404)
+    REGISTRATION_STARTED = True
+    html_response = ''
+    html_errors = ''
+    logging.critical('Registration Started At: ' + str(datetime.datetime.now()))
+    html_response += 'Registration Started At: ' + str(datetime.datetime.now())
+    for n in range(200):
+        logging.critical('STEP NUMBER: ' + str(n + 1))
+        pl = get_proxies(1)
+        html_response += '<BR><BR>' + str(n + 1) + ' ---------------------------------------------------- Proxies Founded: ' + str(len(pl)) + '<BR>'
+        proxy_session = requests.session()
+        for c, proxy in enumerate(pl):
+            html_response += '<BR>' + str(c + 1) + ' ' + str(datetime.datetime.now()) + ' ----------------------------------------------------------------------------------'
+            html_response += '<BR>Proxy: ' + proxy
+            proxy_session.proxies.update(dict(http=proxy.split('|')[0], https=proxy.split('|')[0]))
+            # logging.critical(proxy_session.get('https://icanhazip.com').text)
+            phone_jd = json.loads(requests.get('http://10.9.20.135:3000/phones/random?service=vk&bank=virtual').text)
+            # logging.critical(phone_jd)
+            phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
+            html_response += '<BR>Phone: ' + phone_string
+            cookies = {}
+            uuid = js_userandom_string(21)
+            device_id = js_userandom_string(21)
+            try:
+                rr = vkr_auth(proxy_session, uuid, cookies)
+                cookies = rr.cookies
+                soup = BeautifulSoup(rr.text, 'lxml')
+                s1 = soup.head.findAll('script')[1].text
+                auth_token = s1[s1.find('"access_token":"') + 16:s1.find('","anonymous_token"')]
+                logging.critical('AUTH TOKEN: ' + auth_token)
+                html_response += '<BR>Auth Token: ' + auth_token
+                rr = vkr_validate_phone(proxy_session, phone_string, auth_token, device_id, cookies)
+                cookies = rr.cookies
+                if rr.text[:10] == '{"error":{':
+                    jd = json.loads(rr.text)['error']
+                    if jd['error_code'] != 9:
+                        response = requests.get(jd['captcha_img'])
+                        with open("LastCaptcha.jpg", 'wb') as f:
+                            f.write(response.content)
+                            f.close()
+                        cid = SOLVER.send(file="LastCaptcha.jpg")
+                        time.sleep(20)
+                        ck = SOLVER.get_result(cid)
+                        rr = vkr_validate_phone(proxy_session, phone_string, auth_token, device_id, cookies, ck, jd['captcha_sid'], jd['captcha_ts'], jd['captcha_attempt'])
+                        cookies = rr.cookies
+                jd = json.loads(rr.text)['response']
+                login_sid = jd['sid']
+                logging.critical('Login SID: ' + login_sid)
+                html_response += '<BR>Phone Validation Response: ' + rr.text + '<BR>'
+                time.sleep(1.16)
+                for r in range(50):
+                    rr = requests.get('http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(phone_jd['listenFromTimestamp']))
+                    if rr.text != '{"messages":[]}':
+                        break
+                    time.sleep(0.2)
+                logging.critical('SMS response: ' + rr.text)
+                jd = json.loads(rr.text)['messages']
+                html_response += '<BR>SMS Response: ' + rr.text + '<BR>'
+                rr = vkr_validate_phone_confirm(proxy_session, phone_string, auth_token, device_id, login_sid, str(jd).split(' ')[1], cookies)
+                html_response += '<BR>Phone Validation Confirmation Response: ' + rr.text + '<BR>'
+                cookies = rr.cookies
+                jd = json.loads(rr.text)['response']
+                sid = jd['sid']
+                logging.critical('SID: ' + login_sid)
+                password = js_userandom_string(21)
+                first_name = random.choice(Names).split(' ')[0]
+                last_name = random.choice(Names).split(' ')[1]
+                birthday = str(random.randint(10, 28)) + '.0' + str(random.randint(1, 9)) + '.' + str(random.randint(1980, 2004))
+                rr = vkr_signup(proxy_session, phone_string, password, auth_token, device_id, jd['sid'], birthday, first_name, last_name, cookies)
+                html_response += '<BR>Signup Response: ' + rr.text + '<BR>'
+                logging.critical('RR TEXT: ' + rr.text + ' ' + phone_string + ' ' + password)
+                jd = json.loads(rr.text)
+                if 'response' in jd:
+                    jd = json.loads(rr.text)['response']
+                    time.sleep(8)
+                    rt = asyncio.run(get_access_token(phone_string, password))
+                    logging.critical('Access Token Getting Response: ' + rt)
+                    html_response += '<BR>Access Token Getting Response: ' + rt
+                    access_token = rt.split('{"access_token":"')[1].split('","expires_in"')[0]
+                    requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', data={'service': 'vk'})
+                    info = json.dumps({'access_token': access_token, 'MID': str(jd['mid']), 'CreationTime': str(datetime.datetime.now()), 'Proxy': proxy, 'UUID': uuid, "DeviceID": device_id, 'AuthToken': access_token, 'SID': sid, 'FirstName': first_name, 'LastName': last_name, 'Birthday': birthday}, ensure_ascii=False)
+                    save_account(phone_jd['phone'], password, info)
+                    logging.critical('MISSION ACCOMPLISHED! New Account: ' + phone_jd['phone'] + ':' + password)
+                    html_response += '<BR><BR>MISSION ACCOMPLISHED! New Account:<BR>' + phone_jd['phone'] + ':' + password + '<BR>' + info + '<BR>'
+                    if kind == '1':
+                        return HTMLResponse(content=html_response, status_code=200)
+                elif 'error' in jd:
+                    jd = json.loads(rr.text)['error']
+                    if jd['error_msg'] == "Flood control: can't accept this phone (security reason)":
+                        requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', data={'service': 'vk'})
+                        html_response += "<BR>" + phone_jd['phone'] + " FLOOD CONTROL: can't accept this phone (security reason)<BR>"
+                        logging.critical('FLOOD CONTROL! Account: ' + phone_jd['phone'] + ':' + password)
+            except Exception as E:
+                logging.critical(E)
+                logging.critical('----------------------------------------------------------')
+                # requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', json={'service': 'vk', 'broken': True})
+                html_errors += '<BR>' + str(E) + '<BR>'
+        time.sleep(random.randint(1, 180))
+    logging.critical('Registration Finished At: ' + str(datetime.datetime.now()))
+    html_response += '<BR>Registration Finished At: ' + str(datetime.datetime.now()) + '<BR><BR><BR>'
+    html_response += '<BR>Errors List:<BR>' + html_errors
+    REGISTRATION_STARTED = False
+    return HTMLResponse(content=html_response, status_code=200)
+
+
 @app.get("/balance")
 def balance(credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Проверка баланса рукапчи."""
