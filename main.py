@@ -293,7 +293,7 @@ def get_access_token(phone_string: str, password: str):
             'password': password,
             'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'
         }
-        rr = requests.get('https://oauth.vk.com/token', params=params, headers=headers, proxies={'https': f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}"})
+        rr = requests.get('https://oauth.vk.com/token', params=params, headers=headers, timeout=10, proxies={'https': f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}"})
         return rr
     except Exception as e:
         logging.critical(e)
@@ -305,7 +305,7 @@ def revive_vk_access_token(phone_string: str, password: str, credentials: HTTPBa
     """Воскрешение доступа к учётной записи ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
-    html = get_access_token(phone_string, password)
+    html = get_access_token(phone_string, password).content
     return HTMLResponse(content=html, status_code=200)
 
 
