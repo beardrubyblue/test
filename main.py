@@ -274,8 +274,8 @@ def get_access_token(phone_string: str, password: str):
     """Запрос к https://oauth.vk.com/token возвращает access_token"""
     while 0 == 0:
         try:
-            proxy = get_proxies(0)[0]
-            proxy_session = create_new_proxy_session(2, None)
+            proxy = get_proxies(2)[0]
+            proxy_session = create_new_proxy_session(0, None)
             proxy_session.proxies.update(dict(http=proxy_session.params + proxy.split('|')[0], https=proxy_session.params + proxy.split('|')[0]))
             headers = {
                 'authority': 'api.vk.com',
