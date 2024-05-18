@@ -272,33 +272,34 @@ def save_account(phone_jd: str, password: str, info: str):
 
 def get_access_token(phone_string: str, password: str):
     """Запрос к https://oauth.vk.com/token возвращает access_token"""
-    while 0 == 0:
-        try:
-            proxy = get_proxies(2)[0]
-            proxy_session = create_new_proxy_session(0, None)
-            proxy_session.proxies.update(dict(http=proxy_session.params + proxy.split('|')[0], https=proxy_session.params + proxy.split('|')[0]))
-            headers = {
-                'authority': 'api.vk.com',
-                'accept': '*/*',
-                'accept-language': 'en-US,en;q=0.9',
-                'cache-control': 'no-cache',
-                'content-type': 'application/x-www-form-urlencoded',
-                'origin': 'https://dev.vk.com',
-                'pragma': 'no-cache',
-                'referer': 'https://dev.vk.com/'}
-            params = {
-                'grant_type': 'password',
-                'v': '5.131',
-                'client_id': '2274003',
-                'client_secret': 'hHbZxrka2uZ6jB1inYsH',
-                'username': phone_string,
-                'password': password,
-                'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'
-            }
-            rr = proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers)
-            return rr
-        except Exception as e:
-            logging.critical(e)
+    # while 0 == 0:
+    try:
+        proxy = get_proxies(2)[0]
+        proxy_session = create_new_proxy_session(0, None)
+        f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}"
+        proxy_session.proxies.update(dict(http=proxy_session.params + proxy.split('|')[0], https=proxy_session.params + proxy.split('|')[0]))
+        headers = {
+            'authority': 'api.vk.com',
+            'accept': '*/*',
+            'accept-language': 'en-US,en;q=0.9',
+            'cache-control': 'no-cache',
+            'content-type': 'application/x-www-form-urlencoded',
+            'origin': 'https://dev.vk.com',
+            'pragma': 'no-cache',
+            'referer': 'https://dev.vk.com/'}
+        params = {
+            'grant_type': 'password',
+            'v': '5.131',
+            'client_id': '2274003',
+            'client_secret': 'hHbZxrka2uZ6jB1inYsH',
+            'username': phone_string,
+            'password': password,
+            'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'
+        }
+        rr = proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers)
+        return rr
+    except Exception as e:
+        logging.critical(e)
 
 
 @app.get("/revive-vk-access-token")
