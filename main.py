@@ -276,8 +276,7 @@ def get_access_token(phone_string: str, password: str):
     try:
         proxy = get_proxies(2)[0]
         proxy_session = create_new_proxy_session(0, None)
-        f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}"
-        proxy_session.proxies.update(dict(http=proxy_session.params + proxy.split('|')[0], https=proxy_session.params + proxy.split('|')[0]))
+        proxy_session.proxies.update(dict(http=f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}", https=f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}"))
         headers = {
             'authority': 'api.vk.com',
             'accept': '*/*',
