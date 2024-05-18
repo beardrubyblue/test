@@ -277,6 +277,7 @@ def get_access_token(phone_string: str, password: str):
         proxy = get_proxies(2)[0]
         proxy_session = create_new_proxy_session(0, None)
         proxy_session.proxies.update(dict(http=f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}", https=f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}"))
+        logging.critical(proxy_session.proxies)
         headers = {
             'authority': 'api.vk.com',
             'accept': '*/*',
@@ -299,6 +300,7 @@ def get_access_token(phone_string: str, password: str):
         return rr
     except Exception as e:
         logging.critical(e)
+        return 'ERROR!'
 
 
 @app.get("/revive-vk-access-token")
