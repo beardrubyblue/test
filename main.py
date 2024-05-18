@@ -116,8 +116,8 @@ def get_proxies(kind: int, amount: int = 1000):
                 proxies.append(f'{tds[0].text.strip()}:{tds[1].text.strip()}|{tds[2].text.strip()} 0')
     if kind == 2:
         params = {'limit': amount, 'offset': '0', 'sla': '0.7', "proxy_type": 2}
-        # jd = json.loads(requests.get('https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params).text)
-        jd = json.loads(asyncio.run(make_request('get', 'https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params)))
+        jd = json.loads(requests.get('https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params).text)
+        # jd = json.loads(asyncio.run(make_request('get', 'https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params)))
         for proxy in jd:
             proxies.append(proxy['proxy'])
     if kind == 3:
@@ -270,13 +270,13 @@ def save_account(phone_jd: str, password: str, info: str):
     return rr
 
 
-async def get_access_token(phone_string: str, password: str):
+def get_access_token(phone_string: str, password: str):
     """Запрос к https://oauth.vk.com/token возвращает access_token"""
     while 0 == 0:
         try:
             proxy = get_proxies(2)[0]
-            proxy_session = create_new_proxy_session(2, proxy)
-            # proxy_session.proxies.update(dict(http=proxy_session.params + proxy.split('|')[0], https=proxy_session.params + proxy.split('|')[0]))
+            proxy_session = create_new_proxy_session(2)
+            proxy_session.proxies.update(dict(http=proxy_session.params + proxy.split('|')[0], https=proxy_session.params + proxy.split('|')[0]))
             headers = {
                 'authority': 'api.vk.com',
                 'accept': '*/*',
@@ -295,8 +295,7 @@ async def get_access_token(phone_string: str, password: str):
                 'password': password,
                 'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'
             }
-            async with proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers) as resp:
-                rr = await resp.text(errors='replace')
+            rr = proxy_session.get('https://oauth.vk.com/token', params=params, headers=headers)
             return rr
         except Exception as e:
             logging.critical(e)
@@ -307,7 +306,7 @@ def revive_vk_access_token(phone_string: str, password: str, credentials: HTTPBa
     """Воскрешение доступа к учётной записи ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
-    html = asyncio.run(get_access_token(phone_string, password))
+    html = get_access_token(phone_string, password)
     return HTMLResponse(content=html, status_code=200)
 
 
@@ -393,7 +392,7 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
                 if 'response' in jd:
                     jd = json.loads(rr.text)['response']
                     time.sleep(8)
-                    rt = asyncio.run(get_access_token(phone_string, password))
+                    rt = get_access_token(phone_string, password).text
                     logging.critical('Access Token Getting Response: ' + rt)
                     html_response += '<BR>Access Token Getting Response: ' + rt
                     access_token = rt.split('{"access_token":"')[1].split('","expires_in"')[0]
