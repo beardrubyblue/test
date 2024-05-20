@@ -296,7 +296,7 @@ def vk_revive_access_token(phone_string: str, password: str, credentials: HTTPBa
 
 
 @app.get("/vk-execute-api-method")
-def vk_execute_api_method(account_id: int, method: str, parameters: json, credentials: HTTPBasicCredentials = Depends(SECURITY)):
+def vk_execute_api_method(account_id: int, method: str, group_ids: str, credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Выполнение API методов ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
