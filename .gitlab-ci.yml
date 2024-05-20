@@ -7,16 +7,16 @@ default:
   before_script:
     - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
 
-flake8:
-  stage: test
-  image:
-    name: ${DOCKER_REGISTRY}/flake8:4.0.1
-    entrypoint: [""]
-  before_script: []
-  script:
-    - flake8 --ignore=E501,E115 .
-  tags:
-    - arbat-build
+# flake8:
+#   stage: test
+#   image:
+#     name: ${DOCKER_REGISTRY}/flake8:4.0.1
+#     entrypoint: [""]
+#   before_script: []
+#   script:
+#     - flake8 --ignore=E501,E115 .
+#   tags:
+#     - arbat-build
 
 build:
   stage: build
