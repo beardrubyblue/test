@@ -42,6 +42,14 @@ REGISTRATION_STARTED = False
 random.seed()
 
 
+def finish(reason: str, timeout: int = 100000000):
+    logging.critical(reason)
+    DB.close()
+    logging.critical('Finished At: ' + str(datetime.datetime.now()) + ' Waiting For: ' + str(timeout) + ' Seconds Before Exit.')
+    time.sleep(timeout)
+    exit(666)
+
+
 async def make_request(method: str, url: str, params: Dict = None, headers: Dict = None, cookies: Dict = None, timeout: int = 60):
     async with aiohttp.ClientSession() as session:
         if method == 'get':
@@ -125,27 +133,6 @@ def get_proxies(kind: int, amount: int = 1000):
     random.shuffle(proxies)
     logging.critical('Proxies To Use Length: ' + str(len(proxies)))
     return proxies
-
-
-def finish(reason: str, timeout: int = 100000000):
-    logging.critical(reason)
-    DB.close()
-    logging.critical('Finished At: ' + str(datetime.datetime.now()) + ' Waiting For: ' + str(timeout) + ' Seconds Before Exit.')
-    time.sleep(timeout)
-    exit(666)
-
-
-def create_new_proxy_session(kind: int, proxy):
-    """функция создаёт новую aiohttp прокси сессию"""
-    proxy_user = ''
-    if kind == 2:
-        proxy_user = f"socks5://{proxy['login']}:{proxy['password']}@"
-    if kind == 3:
-        proxy_user = configs.ProxyUserOfKind3
-    if proxy is None:
-        return requests.session()
-    else:
-        return aiohttp.ClientSession(connector=ProxyConnector.from_url(proxy_user + proxy['host'] + ':' + str(proxy['port'])))
 
 
 def js_userandom_string(length):
@@ -299,8 +286,8 @@ def get_access_token(phone_string: str, password: str):
             logging.critical(e)
 
 
-@app.get("/revive-vk-access-token")
-def revive_vk_access_token(phone_string: str, password: str, credentials: HTTPBasicCredentials = Depends(SECURITY)):
+@app.get("/vk-revive-access-token")
+def vk_revive_access_token(phone_string: str, password: str, credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Воскрешение доступа к учётной записи ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
@@ -308,8 +295,17 @@ def revive_vk_access_token(phone_string: str, password: str, credentials: HTTPBa
     return HTMLResponse(content=html, status_code=200)
 
 
-@app.get("/register")
-def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
+@app.get("/vk-execute-api-method")
+def vk_execute_api_method(account_id: int, method: str, parameters: json, credentials: HTTPBasicCredentials = Depends(SECURITY)):
+    """Выполнение API методов ВК."""
+    if credentials.username != 'AlanD' or credentials.password != 'Bober666':
+        return HTMLResponse(content='В доступе отказано!', status_code=200)
+    html = 'Well Done!'
+    return HTMLResponse(content=html, status_code=200)
+
+
+@app.get("/vk_register")
+def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """регистрация одного или пачки учётных записей ВК"""
     global REGISTRATION_STARTED
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
@@ -332,7 +328,6 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
             proxy_session.proxies.update(dict(http=proxy.split('|')[0], https=proxy.split('|')[0]))
             # logging.critical(proxy_session.get('https://icanhazip.com').text)
             phone_jd = json.loads(requests.get('http://10.9.20.135:3000/phones/random?service=vk&bank=virtual').text)
-            # logging.critical(phone_jd)
             phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
             html_response += '<BR>Phone: ' + phone_string
             cookies = {}
@@ -420,8 +415,8 @@ def register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
     return HTMLResponse(content=html_response, status_code=200)
 
 
-@app.get("/balance")
-def balance(credentials: HTTPBasicCredentials = Depends(SECURITY)):
+@app.get("/rucaptcha-balance")
+def rucaptcha_balance(credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Проверка баланса рукапчи."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
@@ -432,7 +427,7 @@ def balance(credentials: HTTPBasicCredentials = Depends(SECURITY)):
 @app.get("/")
 def main():
     """Версия проекта."""
-    html = 'Проект: VKReger<BR>Версия: 26.04.2024 17:18'
+    html = 'Проект: VKReger<BR>Версия: 20.05.2024 12:40'
     return HTMLResponse(content=html, status_code=200)
 
 
