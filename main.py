@@ -3,9 +3,9 @@ import configs
 import datetime
 from typing import Dict
 import requests
-# import asyncio
+import asyncio
 import aiohttp
-# from aiohttp_socks import ProxyConnector
+from aiohttp_socks import ProxyConnector
 import json
 import random
 import time
@@ -50,13 +50,9 @@ def finish(reason: str, timeout: int = 100000000):
     exit(666)
 
 
-async def make_request(method: str, url: str, params: Dict = None, headers: Dict = None, cookies: Dict = None, timeout: int = 60):
+async def make_request(method: str, url: str, params: Dict = None, headers: Dict = None, cookies: Dict = None, data = None, timeout: int = 60):
     async with aiohttp.ClientSession() as session:
-        if method == 'get':
-            async with session.get(url, params=params, headers=headers, cookies=cookies, timeout=timeout) as resp:
-                response = await resp.text(errors='replace')
-        if method == 'put':
-            async with session.put(url, params=params, headers=headers, cookies=cookies, timeout=timeout) as resp:
+        async with eval(f"session.{method}(url, params=params, headers=headers, cookies=cookies, timeout=timeout)") as resp:
                 response = await resp.text(errors='replace')
     return response
 
@@ -296,11 +292,11 @@ def vk_revive_access_token(phone_string: str, password: str, credentials: HTTPBa
 
 
 @app.get("/vk-execute-api-method")
-def vk_execute_api_method(account_id: int, method: str, group_ids: str, credentials: HTTPBasicCredentials = Depends(SECURITY)):
+def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.vk.com/method/users.get', v: str = '5.154', ids: str = '1,2,3,4,5,6,7,8,9,10', credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Выполнение API методов ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
-    html = 'Well Done!'
+    html = asyncio.run(make_request('post', api_method, data={'user_ids': ids, 'access_token': '7b3a9ab07b3a9ab07b3a9ab046782f63ef77b3a7b3a9ab01e1645dc745982e2ca791616', 'v': v}))
     return HTMLResponse(content=html, status_code=200)
 
 
