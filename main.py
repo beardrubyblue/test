@@ -5,7 +5,7 @@ from typing import Dict
 import requests
 # import asyncio
 import aiohttp
-from aiohttp_socks import ProxyConnector
+# from aiohttp_socks import ProxyConnector
 import json
 import random
 import time
