@@ -53,7 +53,7 @@ def finish(reason: str, timeout: int = 100000000):
 async def make_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: Dict = None, headers: Dict = None, cookies: Dict = None, data: Dict = None, json: Dict = None):
     pc = None
     if proxy_url:
-        pc =  ProxyConnector.from_url(proxy_url)
+        pc = ProxyConnector.from_url(proxy_url)
     request = 'url,timeout=timeout'
     if params:
         request += ',params=params'
@@ -65,7 +65,7 @@ async def make_request(method: str, url: str, proxy_url: str = None, timeout: in
         request += ',data=data,'
     if json:
         request += ',json=json'
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(connector=pc) as session:
         async with eval(f"session.{method}(url,timeout=timeout,params=params,headers=headers,cookies=cookies,data=data,json=json)") as resp:
             response = await resp.text(errors='replace')
             await session.close()
