@@ -65,9 +65,10 @@ async def make_request(method: str, url: str, proxy_url: str = None, timeout: in
         request += ',data=data,'
     if json:
         request += ',json=json'
-    async with aiohttp.ClientSession(connector = pc) as session:
+    async with aiohttp.ClientSession() as session:
         async with eval(f"session.{method}(url,timeout=timeout,params=params,headers=headers,cookies=cookies,data=data,json=json)") as resp:
-                response = await resp.text(errors='replace')
+            response = await resp.text(errors='replace')
+            await session.close()
     return response
 
 
