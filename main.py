@@ -50,9 +50,23 @@ def finish(reason: str, timeout: int = 100000000):
     exit(666)
 
 
-async def make_request(method: str, url: str, params: Dict = None, headers: Dict = None, cookies: Dict = None, data = None, timeout: int = 60):
-    async with aiohttp.ClientSession() as session:
-        async with eval(f"session.{method}(url, params=params, headers=headers, cookies=cookies, timeout=timeout)") as resp:
+async def make_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: Dict = None, headers: Dict = None, cookies: Dict = None, data: Dict = None, json: Dict = None):
+    pc = None
+    if proxy_url:
+        pc =  ProxyConnector.from_url(proxy_url)
+    request = 'url,timeout=timeout'
+    if params:
+        request += ',params=params'
+    if headers:
+        request += ',headers=headers'
+    if cookies:
+        request += ',cookies=cookies'
+    if data:
+        request += ',data=data,'
+    if json:
+        request += ',json=json'
+    async with aiohttp.ClientSession(connector = pc) as session:
+        async with eval(f"session.{method}(url,timeout=timeout,params=params,headers=headers,cookies=cookies,data=data,json=json)") as resp:
                 response = await resp.text(errors='replace')
     return response
 
@@ -300,7 +314,7 @@ def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.v
     return HTMLResponse(content=html, status_code=200)
 
 
-@app.get("/vk_register")
+@app.get("/vk-register")
 def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """регистрация одного или пачки учётных записей ВК"""
     global REGISTRATION_STARTED
