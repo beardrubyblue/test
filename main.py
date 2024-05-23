@@ -336,7 +336,7 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
         for c, proxy in enumerate(pl):
             html_response += '<BR>' + str(c + 1) + ' ' + str(datetime.datetime.now()) + ' ----------------------------------------------------------------------------------'
             html_response += '<BR>Proxy: ' + proxy
-            proxy_session.proxies.update(dict(http=proxy, https=proxy)
+            proxy_session.proxies.update(dict(http=proxy, https=proxy))
             # logging.critical(proxy_session.get('https://icanhazip.com').text)
             phone_jd = json.loads(requests.get('http://10.9.20.135:3000/phones/random?service=vk&bank=virtual').text)
             phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
