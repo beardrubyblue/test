@@ -492,7 +492,7 @@ async def send_acc(phone_jd, password, proxy, first_name, last_name, birthday, h
 async def reg_acc(count: Optional[int] = None):
     accounts = []
     count_acc = 0
-    proxy_list = await create_proxy_list()
+    proxy_list = await create_proxy_list(kind=2, ptype=3)
     proxy_index = 0
     if len(proxy_list) == 0:
         finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
