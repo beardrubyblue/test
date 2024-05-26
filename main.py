@@ -1,13 +1,17 @@
 import logging
+import re
+import string
 import configs
 import datetime
-from typing import Dict
+from typing import Dict, Optional
 import requests
 import asyncio
 import aiohttp
 from aiohttp_socks import ProxyConnector
 import json
 import random
+from transliterate import translit
+from playwright.async_api import async_playwright
 import time
 from bs4 import BeautifulSoup
 import uvicorn
@@ -38,6 +42,7 @@ with open('UserAgents.txt', 'r') as F:
     UserAgents = F.readlines()
     F.close()
 STATISTICS = []
+KIND_ID = 3
 REGISTRATION_STARTED = False
 random.seed()
 
@@ -440,6 +445,231 @@ def main():
     """Версия проекта."""
     html = 'Проект: VKReger<BR>Версия: 20.05.2024 12:40'
     return HTMLResponse(content=html, status_code=200)
+
+
+def add_loggs(message, id_log):
+    DBC.execute('INSERT INTO "Testing".logs(log, id_log) VALUES (%s, %s)', (message, id_log))
+    DB.commit()
+
+
+def generate_gmail(first_name, last_name, year):
+    first_name = translit(first_name, 'ru', reversed=True)
+    last_name = translit(last_name, 'ru', reversed=True)
+    gmail = f'{first_name.lower()}.{last_name.lower()}{year + str(random.randint(1, 999))}'
+    gmail = gmail.replace('`', '')
+    gmail = gmail.replace("'", '')
+    return gmail
+
+
+def generate_pass(length):
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(random.choice(characters) for _ in range(length))
+    return password
+
+
+async def send_acc(phone_jd, password, proxy, first_name, last_name, birthday, humanoid_id, last_cookies, gmail):
+    data = {
+        'kind_id': KIND_ID,
+        'phone': phone_jd['phone'],
+        'password': password,
+        'info': {
+            'email': gmail,
+            'Proxy': proxy,
+            'FieldName': first_name,
+            'Surname': last_name,
+            'Birthday': birthday
+        },
+        "humanoid_id": humanoid_id,
+        "last_cookies": last_cookies
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post('https://accman-odata.arbat.dev/create', json=data) as response:
+            rr = await response.text()
+            return rr
+
+
+@app.get("/reg_acc")
+async def reg_acc(count: Optional[int] = None):
+    accounts = []
+    count_acc = 0
+    proxy_list = await create_proxy_list()
+    proxy_index = 0
+    if len(proxy_list) == 0:
+        finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
+    logging.critical(len(proxy_list))
+    while count is None or len(accounts) < count:
+        if proxy_index >= len(proxy_list):
+            proxy_list = await create_proxy_list()
+            proxy_index = 0
+        pr = proxy_list[proxy_index].split('://')[1].split('@')
+        username, password = pr[0].split(':')
+        host, port = pr[1].split(':')
+        proxy = {
+            'server': f'http://{host}:{port}',
+            'username': username,
+            'password': password
+        }
+        add_loggs(f'proxy: {pr}', 1)
+
+        users = json.loads(
+            await make_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={KIND_ID}'))
+
+        async with async_playwright() as playwright:
+            chromium = playwright.firefox
+            browser = await chromium.launch()
+            context = await browser.new_context(proxy=proxy)
+            page = await context.new_page()
+            account = await mine(context, page, users, pr)
+            await browser.close()
+            add_loggs(f'Ответ: {account}', 1)
+            accounts.append(account)
+            add_loggs('------------------------------------', 1)
+
+        proxy_index += 1
+        count_acc += 1
+        logging.critical(count_acc)
+    return {'accounts': accounts}
+
+
+async def mine(context, page, users, proxy):
+
+    # -----params-----
+    humanoid_id = users['id']
+    add_loggs(f'humanoid_id: {humanoid_id}', 1)
+    first_name = users['first_name']
+    last_name = users['last_name']
+    phone_jd = json.loads(await make_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
+    phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + \
+                   phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
+    birthday = users["birth_date"]
+    day = str(users['birth_date'].split('-')[2])
+    month = int(users['birth_date'].split('-')[1])
+    year = str(users['birth_date'].split('-')[0])
+    if users['sex'] == 'female':
+        gender = 1
+    else:
+        gender = 2
+    gmail = generate_gmail(first_name, last_name, year)
+    password = generate_pass(random.randint(15, 20))
+
+    # -----mining-----
+    try:
+        await page.goto('https://google.com/')
+        await page.click('.gb_Ca')
+        await asyncio.sleep(4)
+        await page.locator('xpath=//*[@id="yDmH0d"]/c-wiz/div/div[3]/div/div[2]/div/div/div[1]/div/button').click()
+        await asyncio.sleep(2)
+        await page.locator('xpath=//*[@id="yDmH0d"]/c-wiz/div/div[3]/div/div[2]/div/div/div[2]/div/ul/li[1]').click()
+        await asyncio.sleep(2)
+
+        # -----fullName-----
+        await page.fill('#firstName', first_name)
+        await asyncio.sleep(0.1)
+        await page.fill('#lastName', last_name)
+        await asyncio.sleep(0.1)
+        add_loggs(f'name: {first_name}, {last_name}', 1)
+        await page.click('.VfPpkd-LgbsSe')
+        await page.wait_for_timeout(2000)
+
+        # -----birthday-----
+        await page.fill('#day', day)
+        await asyncio.sleep(0.1)
+        await page.select_option('#month', index=month)
+        await asyncio.sleep(0.1)
+        await page.fill('#year', year)
+        await asyncio.sleep(0.1)
+        add_loggs(f'date: {users["birth_date"]}', 1)
+
+        # -----gender-----
+        await page.select_option('#gender', index=gender)
+        await asyncio.sleep(0.1)
+        add_loggs(f'gender: {users["sex"]}', 1)
+        await page.click('.VfPpkd-LgbsSe')
+        await asyncio.sleep(4)
+
+        # -----gmail-----
+        element = await page.query_selector('body')
+        elem = await element.text_content()
+        if 'Создать собственный адрес Gmail' in elem.strip():
+            await asyncio.sleep(1)
+            await page.click(
+                'xpath=/html/body/div[1]/div[1]/div[2]/c-wiz/div/div[2]/div/div/div/form/span/section/div/div/div[1]/div[1]/div/span/div[3]/div/div[1]/div/div[3]/div')
+            await asyncio.sleep(2)
+            await page.fill('input[name="Username"]', gmail)
+            await asyncio.sleep(0.2)
+            add_loggs(f'gmail: {gmail}', 1)
+            await page.click('#next')
+            await asyncio.sleep(4)
+        else:
+            await page.fill('input[name="Username"]', gmail, timeout=500)
+            await asyncio.sleep(0.1)
+            await page.click('#next', timeout=100)
+            add_loggs(f'gmail: {gmail}', 1)
+
+        # -----password-----
+        await page.fill('input[name="Passwd"]', password)
+        await asyncio.sleep(0.2)
+        await page.fill('input[name="PasswdAgain"]', password)
+        await asyncio.sleep(0.2)
+        add_loggs(f'pass   {password}', 1)
+        await page.click('.VfPpkd-LgbsSe')
+        await asyncio.sleep(5)
+
+        # -----phone-----
+        element = await page.query_selector('body')
+        elem = await element.text_content()
+        if 'wants to access your Google Account' in elem.strip() or 'Не удалось создать аккаунт Google.' in elem.strip():
+            add_loggs('Не удалось создать аккаунт Google.', 1)
+            return {'Ошибка': 'Не удалось создать аккаунт Google.'}
+
+        await page.fill('#phoneNumberId', phone_string, timeout=10000)
+        await asyncio.sleep(0.2)
+        add_loggs(f'phone: {phone_string}', 1)
+        await page.click('.VfPpkd-LgbsSe')
+        await asyncio.sleep(2)
+
+        # -----sms-----
+        for r in range(30):
+            url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(
+                phone_jd['listenFromTimestamp'])
+            sms = await make_request('get', url)
+            if sms != '{"messages":[]}':
+                break
+            await asyncio.sleep(0.2)
+        pattern = r'\d+'
+        sms = re.findall(pattern, sms)
+        sms = ' '.join(sms)
+
+        if not sms:
+            return 'bad proxy or phone'
+
+        await page.fill('#code', sms, timeout=3000)
+        add_loggs(f'sms  {sms}', 1)
+        await asyncio.sleep(0.2)
+        await page.click('.VfPpkd-LgbsSe')
+        await asyncio.sleep(3)
+
+        # -----politic-----
+        await page.click('xpath=/html/body/div[1]/div[1]/div[2]/div/div/div[3]/div/div[1]/div[2]/div/div/button')
+        await asyncio.sleep(3)
+        await page.click('.VfPpkd-LgbsSe')
+        await asyncio.sleep(3)
+        await page.click('xpath=/html/body/div[1]/div[1]/div[2]/c-wiz/div/div[3]/div/div[1]/div/div/button')
+        await asyncio.sleep(3)
+
+        cookies = await context.cookies()
+        cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+
+        res = await send_acc(phone_jd, password, proxy, first_name, last_name, birthday, humanoid_id, cookie_dict, gmail)
+
+        url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
+        data = {'service': 'gmail'}
+        await make_request('post', url, data=data)
+
+        return res
+    except Exception as e:
+        add_loggs(f'Ошибка:   {e}', 1)
+        return e
 
 
 if __name__ == "__main__":
