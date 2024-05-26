@@ -499,7 +499,7 @@ async def reg_acc(count: Optional[int] = None):
     logging.critical(len(proxy_list))
     while count is None or len(accounts) < count:
         if proxy_index >= len(proxy_list):
-            proxy_list = await create_proxy_list()
+            proxy_list = await create_proxy_list(kind=2, ptype=3)
             proxy_index = 0
         pr = proxy_list[proxy_index].split('://')[1].split('@')
         username, password = pr[0].split(':')
