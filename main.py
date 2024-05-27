@@ -388,7 +388,6 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                 html_response += '<BR>Phone Validation Confirmation Response: ' + rr.text + '<BR>'
                 cookies = rr.cookies
                 jd = json.loads(rr.text)['response']
-                sid = jd['sid']
                 logging.critical('SID: ' + login_sid)
                 password = js_userandom_string(21)
                 first_name = random.choice(Names).split(' ')[1]
@@ -541,7 +540,6 @@ async def gmail_account_registration(context, page, users, proxy):
     phone_jd = json.loads(await make_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
     phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + \
                    phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
-    birthday = users["birth_date"]
     day = str(users['birth_date'].split('-')[2])
     month = int(users['birth_date'].split('-')[1])
     year = str(users['birth_date'].split('-')[0])
