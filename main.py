@@ -657,7 +657,7 @@ async def gmail_account_registration(context, page, users, proxy):
         cookies = await context.cookies()
         cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
 
-        res = await send_acc(phone_jd, password, first_name, last_name, day + '.' + month + '.' + year, humanoid_id, cookie_dict, gmail)
+        res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_dict, gmail)
 
         url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
         data = {'service': 'gmail'}
