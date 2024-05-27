@@ -488,8 +488,8 @@ async def send_acc(phone_jd, password, proxy, first_name, last_name, birthday, h
             return rr
 
 
-@app.get("/reg_acc")
-async def reg_acc(count: Optional[int] = None):
+@app.get("/gmail-register")
+async def gmail_register(count: Optional[int] = None):
     accounts = []
     count_acc = 0
     proxy_list = await create_proxy_list(kind=2, ptype=3)
@@ -519,7 +519,7 @@ async def reg_acc(count: Optional[int] = None):
             browser = await chromium.launch()
             context = await browser.new_context(proxy=proxy)
             page = await context.new_page()
-            account = await mine(context, page, users, pr)
+            account = await gmail_account_registration(context, page, users, pr)
             await browser.close()
             add_loggs(f'Ответ: {account}', 1)
             accounts.append(account)
@@ -531,7 +531,7 @@ async def reg_acc(count: Optional[int] = None):
     return {'accounts': accounts}
 
 
-async def mine(context, page, users, proxy):
+async def gmail_account_registration(context, page, users, proxy):
 
     # -----params-----
     humanoid_id = users['id']
