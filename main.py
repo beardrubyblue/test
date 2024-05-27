@@ -16,7 +16,7 @@ import time
 from bs4 import BeautifulSoup
 import uvicorn
 from fastapi import Depends, FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
 import psycopg
@@ -442,8 +442,7 @@ def rucaptcha_balance(credentials: HTTPBasicCredentials = Depends(SECURITY)):
 @app.get("/")
 def main():
     """Версия проекта."""
-    html = 'Проект: VKReger<BR>Версия: 20.05.2024 12:40'
-    return HTMLResponse(content=html, status_code=200)
+    return JSONResponse(content=json.loads(json.dumps({'project': 'UniReger', 'version': '30.05.2024 14:00'})), status_code=200)
 
 
 def add_loggs(message, id_log):
