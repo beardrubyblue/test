@@ -256,7 +256,7 @@ def vkr_signup(proxy_session, phone, password, auth_token, device_id, sid, birth
 
 
 def save_account(phone_jd: str, password: str, info: str):
-    """Отправка нового пользователя в БД"""
+    """Сохранение новой учётной записи в БД"""
     headers = {
         'accept': 'application/json',
         'Content-Type': 'application/json',
@@ -391,8 +391,8 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                 sid = jd['sid']
                 logging.critical('SID: ' + login_sid)
                 password = js_userandom_string(21)
-                first_name = random.choice(Names).split(' ')[0]
-                last_name = random.choice(Names).split(' ')[1]
+                first_name = random.choice(Names).split(' ')[1]
+                last_name = random.choice(Names).split(' ')[0]
                 birthday = str(random.randint(10, 28)) + '.0' + str(random.randint(1, 9)) + '.' + str(random.randint(1980, 2004))
                 rr = vkr_signup(proxy_session, phone_string, password, auth_token, device_id, jd['sid'], birthday, first_name, last_name, cookies)
                 html_response += '<BR>Signup Response: ' + rr.text + '<BR>'
@@ -406,7 +406,7 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                     html_response += '<BR>Access Token Getting Response: ' + rt
                     access_token = rt.split('{"access_token":"')[1].split('","expires_in"')[0]
                     requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', data={'service': 'vk'})
-                    info = json.dumps({'access_token': access_token, 'MID': str(jd['mid']), 'CreationTime': str(datetime.datetime.now()), 'Proxy': proxy, 'UUID': uuid, "DeviceID": device_id, 'AuthToken': access_token, 'SID': sid, 'FirstName': first_name, 'LastName': last_name, 'Birthday': birthday}, ensure_ascii=False)
+                    info = json.dumps({'mid': str(jd['mid']), 'first_name': first_name, 'last_name': last_name, 'birth_date': birthday, 'sccess_token': access_token}, ensure_ascii=False)
                     save_account(phone_jd['phone'], password, info)
                     logging.critical('MISSION ACCOMPLISHED! New Account: ' + phone_jd['phone'] + ':' + password)
                     html_response += '<BR><BR>MISSION ACCOMPLISHED! New Account:<BR>' + phone_jd['phone'] + ':' + password + '<BR>' + info + '<BR>'
@@ -467,17 +467,16 @@ def generate_pass(length):
     return password
 
 
-async def send_acc(phone_jd, password, proxy, first_name, last_name, birthday, humanoid_id, last_cookies, gmail):
+async def send_acc(phone_jd, password, first_name, last_name, birthday, humanoid_id, last_cookies, gmail):
     data = {
         'kind_id': KIND_ID,
         'phone': phone_jd['phone'],
         'password': password,
         'info': {
             'email': gmail,
-            'Proxy': proxy,
-            'FieldName': first_name,
-            'Surname': last_name,
-            'Birthday': birthday
+            'first_name': first_name,
+            'last_name': last_name,
+            'birth_date': birthday
         },
         "humanoid_id": humanoid_id,
         "last_cookies": last_cookies
@@ -490,6 +489,7 @@ async def send_acc(phone_jd, password, proxy, first_name, last_name, birthday, h
 
 @app.get("/gmail-register")
 async def gmail_register(count: Optional[int] = None):
+    """регистрация одного или пачки учётных записей GMail"""
     accounts = []
     count_acc = 0
     proxy_list = await create_proxy_list(kind=2, ptype=3)
@@ -660,7 +660,7 @@ async def gmail_account_registration(context, page, users, proxy):
         cookies = await context.cookies()
         cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
 
-        res = await send_acc(phone_jd, password, proxy, first_name, last_name, birthday, humanoid_id, cookie_dict, gmail)
+        res = await send_acc(phone_jd, password, first_name, last_name, day + '.' + month + '.' + year, humanoid_id, cookie_dict, gmail)
 
         url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
         data = {'service': 'gmail'}
