@@ -539,9 +539,9 @@ async def gmail_account_registration(context, page, users, proxy):
     phone_jd = json.loads(await make_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
     phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + \
                    phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
-    day = str(users['birth_date'].split('-')[2])
-    month = int(users['birth_date'].split('-')[1])
-    year = str(users['birth_date'].split('-')[0])
+    day = users['birth_date'].split('-')[2]
+    month = users['birth_date'].split('-')[1]
+    year = users['birth_date'].split('-')[0]
     if users['sex'] == 'female':
         gender = 1
     else:
@@ -571,7 +571,7 @@ async def gmail_account_registration(context, page, users, proxy):
         # -----birthday-----
         await page.fill('#day', day)
         await asyncio.sleep(0.1)
-        await page.select_option('#month', index=month)
+        await page.select_option('#month', index=int(month))
         await asyncio.sleep(0.1)
         await page.fill('#year', year)
         await asyncio.sleep(0.1)
