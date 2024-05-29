@@ -513,6 +513,8 @@ async def gmail_register(count: Optional[int] = None):
             'username': username,
             'password': password
         }
+
+        add_loggs(f'proxy: {proxy}', 1)
         add_loggs(f'proxy: {pr}', 1)
 
         users = json.loads(
