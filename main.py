@@ -562,6 +562,7 @@ async def gmail_account_registration(context, page, users, proxy):
     # -----mining-----
     try:
         await page.goto('https://www.google.com')
+        await asyncio.sleep(4)
         await page.click('.gb_Ca')
         await asyncio.sleep(4)
         await page.locator('xpath=//*[@id="yDmH0d"]/c-wiz/div/div[3]/div/div[2]/div/div/div[1]/div/button').click()
