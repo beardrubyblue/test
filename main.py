@@ -508,6 +508,8 @@ async def gmail_register(count: Optional[int] = None):
         pr = proxy_list[proxy_index].split('://')[1].split('@')
         username, password = pr[0].split(':')
         host, port = pr[1].split(':')
+        if " " in host:
+            host = host.replace(" ", "")
         proxy = {
             'server': f'http://{host}:{port}',
             'username': username,
@@ -559,7 +561,7 @@ async def gmail_account_registration(context, page, users, proxy):
 
     # -----mining-----
     try:
-        await page.goto('https://www.google.com')
+        await page.goto('https://google.com')
         await page.click('.gb_Ca')
         await asyncio.sleep(4)
         await page.locator('xpath=//*[@id="yDmH0d"]/c-wiz/div/div[3]/div/div[2]/div/div/div[1]/div/button').click()
