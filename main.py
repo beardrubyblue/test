@@ -129,7 +129,7 @@ async def create_proxy_list(kind: int = 3, ptype: str = 3, country: str = 'RU', 
     if kind == 6 and ptype in [2, 3]:
         params = {'pool_id': 'ae49cecb-a4df-4b45-b9f4-9afa496ab5db', 'limit': 10000, 'sla': '0.7'}
         async with aiohttp.ClientSession() as session:
-            response = await session.get('https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params)
+            response = await session.get('https://proxy-manager.arbat.dev/pools/ae49cecb-a4df-4b45-b9f4-9afa496ab5db/proxies', params=params)
             jd = json.loads(await response.text(errors='replace'))
             for proxy in jd:
                 if proxy['proxy']['proxy_type'] == ptype and proxy['proxy']['country_code'] == country:
