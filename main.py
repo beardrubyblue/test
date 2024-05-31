@@ -505,7 +505,7 @@ async def gmail_register(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей GMail"""
     accounts = []
     count_acc = 0
-    proxy_list = await create_proxy_list(kind=6, ptype=3)
+    proxy_list = await create_proxy_list(kind=2, ptype=3)
     proxy_index = 0
     if len(proxy_list) == 0:
         finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
