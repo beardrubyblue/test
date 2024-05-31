@@ -520,7 +520,7 @@ async def gmail_register(count: Optional[int] = None):
         if " " in host:
             host = host.replace(" ", "")
         proxy = {
-            'server': f'http://{host}:{port}',
+            'server': f'{host}:{port}',
             'username': username,
             'password': password
         }
