@@ -34,7 +34,7 @@ build:
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   tags:
-    - arbat-build
+    - base-skeleton-dev
 
 .deploy:
   stage: deploy
