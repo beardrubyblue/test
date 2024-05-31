@@ -1,5 +1,4 @@
-ARG REGISTRY=dockerhub.arbat.dev
-FROM ${REGISTRY}/python:3.11
+FROM dockerhub.arbat.dev/python:3.11
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
