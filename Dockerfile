@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM dockerhub.arbat.dev
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
