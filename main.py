@@ -98,7 +98,7 @@ async def create_proxy_list(kind: int = 3, ptype: str = 3, country: str = 'RU', 
                     proxy_list.append(f'{pt}{tds[0].text.strip()}:{tds[1].text.strip()}')
     # Получение платных https или socks5 прокси указанной страны из объединения proxy6_net_pool сайта [https://proxy-manager.arbat.dev].
     if kind == 2 and ptype in [2, 3]:
-        params = {'pool_id': '9f687b07-b5f5-4227-9d04-4888ac5be496', 'limit': 10000, 'sla': '0'}
+        params = {'pool_id': '9f687b07-b5f5-4227-9d04-4888ac5be496', 'limit': 10000, 'sla': '0.7'}
         async with aiohttp.ClientSession() as session:
             response = await session.get('https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params)
             jd = json.loads(await response.text(errors='replace'))
@@ -125,6 +125,15 @@ async def create_proxy_list(kind: int = 3, ptype: str = 3, country: str = 'RU', 
             jd = json.loads(await response.text(errors='replace'))
             proxy = jd['proxy']
             proxy_list.append(f"{pt}{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}")
+    # Получение мобильных https или socks5 прокси указанной страны из объединения proxy6_net_pool сайта [https://proxy-manager.arbat.dev].
+    if kind == 6 and ptype in [2, 3]:
+        params = {'pool_id': 'ae49cecb-a4df-4b45-b9f4-9afa496ab5db', 'limit': 10000, 'sla': '0.7'}
+        async with aiohttp.ClientSession() as session:
+            response = await session.get('https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params)
+            jd = json.loads(await response.text(errors='replace'))
+            for proxy in jd:
+                if proxy['proxy']['proxy_type'] == ptype and proxy['proxy']['country_code'] == country:
+                    proxy_list.append(f"{pt}{proxy['proxy']['login']}:{proxy['proxy']['password']}@{proxy['proxy']['host']}:{proxy['proxy']['port']}")
     random.shuffle(proxy_list)
     return proxy_list[:max_amount]
 
@@ -496,7 +505,7 @@ async def gmail_register(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей GMail"""
     accounts = []
     count_acc = 0
-    proxy_list = await create_proxy_list(kind=2, ptype=3)
+    proxy_list = await create_proxy_list(kind=6, ptype=3)
     proxy_index = 0
     if len(proxy_list) == 0:
         finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
