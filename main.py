@@ -723,9 +723,6 @@ async def email_register(count: Optional[int] = None):
             'password': password
         }
 
-        add_loggs(f'proxy: {proxy}', 1)
-        add_loggs(f'proxy: {pr}', 1)
-
         user = json.loads(
             await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={KIND_ID}'))
 
