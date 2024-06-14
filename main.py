@@ -58,15 +58,14 @@ def standart_finish(reason: str, timeout: int = 100000000):
     exit(666)
 
 
-async def standart_execute_sql(sql: str):
-    db = await psycopg.AsyncConnection.connect(**configs.db_config(), autocommit=True)
+def execute_sql(sql):
+    """Подключение к БД проекта и выполнение там переданного SQL с возвращением его результатов."""
+    db = psycopg.connect(**configs.db_config())
     dbc = db.cursor()
-    await dbc.execute(sql)
-    if dbc.description:
-        result = await dbc.fetchall()
-    else:
-        result = None
-    await db.close()
+    dbc.execute(sql)
+    db.commit()
+    result = dbc.fetchall()
+    db.close()
     return result
 
 
@@ -843,7 +842,7 @@ async def email_account_registration(context, page, user):
             cookie_list = [cookie_dict]
             while True:
                 email = f'{email}@mail.ru'
-                ids = str(await standart_execute_sql("SELECT max(id) + 1 FROM accounts"))
+                ids = str(await execute_sql("SELECT max(id) + 1 FROM accounts"))
                 pattern = r'\d+'
                 ids = re.findall(pattern, ids)
                 phone_jd = ' '.join(ids)
