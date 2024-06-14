@@ -845,7 +845,7 @@ async def email_account_registration(context, page, user):
                 # ids = re.findall(pattern, ids)
                 # phone_jd = ' '.join(ids)
                 # logging.critical(phone_jd)
-                phone_jd = 'SELECT max(id) + 1 FROM accounts'
+                phone_jd = '275278297'
                 res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
                 logging.critical(res.status)
                 logging.critical('Добавлено')
