@@ -844,7 +844,7 @@ async def email_account_registration(context, page, user):
                 # ids = str(await standart_execute_sql("SELECT max(id) + 1 FROM accounts"))
                 # pattern = r'\d+'
                 # ids = re.findall(pattern, ids)
-                phone_jd = {'phone': 'SELECT max(id) + 1 FROM accounts'}
+                phone_jd = 'SELECT max(id) + 1 FROM accounts'
                 res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
                 add_loggs('Добавлено', 1)
                 add_loggs(f'status: {res.status}', 1)
