@@ -488,6 +488,8 @@ def generate_pass(length):
 
 
 async def send_acc(phone_jd, password, first_name, last_name, birthday, humanoid_id, last_cookies, gmail):
+    if phone_jd is None:
+        phone_jd = 'SELECT max(id) + 1 FROM accounts'
     data = {
         'kind_id': KIND_ID,
         'phone': phone_jd['phone'],
@@ -501,6 +503,7 @@ async def send_acc(phone_jd, password, first_name, last_name, birthday, humanoid
         "humanoid_id": humanoid_id,
         "last_cookies": last_cookies
     }
+    logging.critical(data)
     async with aiohttp.ClientSession() as session:
         async with session.post('https://accman-odata.arbat.dev/create', json=data) as response:
             return response
@@ -844,7 +847,7 @@ async def email_account_registration(context, page, user):
                 # ids = str(await standart_execute_sql("SELECT max(id) + 1 FROM accounts"))
                 # pattern = r'\d+'
                 # ids = re.findall(pattern, ids)
-                phone_jd = 'SELECT max(id) + 1 FROM accounts'
+                phone_jd = None
                 res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
                 add_loggs('Добавлено', 1)
                 add_loggs(f'status: {res.status}', 1)
