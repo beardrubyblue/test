@@ -842,7 +842,7 @@ async def email_account_registration(context, page, user):
             cookie_list = [cookie_dict]
             while True:
                 email = f'{email}@mail.ru'
-                ids = str(await execute_sql("SELECT max(id) + 1 FROM accounts"))
+                ids = str(execute_sql("SELECT max(id) + 1 FROM accounts"))
                 pattern = r'\d+'
                 ids = re.findall(pattern, ids)
                 phone_jd = ' '.join(ids)
