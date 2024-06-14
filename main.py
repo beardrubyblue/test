@@ -21,6 +21,8 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
 import psycopg
 
+from models import AccountCreation
+
 # from models import AccountCreation
 
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
@@ -745,6 +747,7 @@ async def email_register(count: Optional[int] = None):
 
 
 async def email_account_registration(context, page, user):
+
     humanoid_id = user['id']
     add_loggs(f'humanoid_id: {humanoid_id}', 1)
     first_name = user['first_name']
@@ -770,30 +773,30 @@ async def email_account_registration(context, page, user):
         await page.fill('input[name="fname"]', first_name)
         await asyncio.sleep(1)
         await page.fill('input[name="lname"]', last_name)
-        add_loggs(f'Name: {first_name} {last_name}', 1)
+        logging.critical(first_name + last_name)
         await asyncio.sleep(1)
 
         # -----birthday-----
-        await page.click('.daySelect-0-2-135', timeout=2000)
-        await page.click(f'#react-select-2-option-{day-1}', timeout=2000)
+        await page.click('.daySelect-0-2-135')
+        await page.click(f'#react-select-2-option-{day-1}')
 
-        await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/div[6]/div[2]/div/div/div/div[3]', timeout=2000)
-        await page.click(f'#react-select-3-option-{month-1}', timeout=2000)
+        await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/div[6]/div[2]/div/div/div/div[3]')
+        await page.click(f'#react-select-3-option-{month-1}')
 
-        await page.click('.yearSelect-0-2-136', timeout=2000)
-        await page.click(f'[data-test-id="select-value:{year}"]', timeout=2000)
-        add_loggs(f'Birthday: {day} {month} {year}', 1)
+        await page.click('.yearSelect-0-2-136')
+        await page.click(f'[data-test-id="select-value:{year}"]')
+        logging.critical(f'{day} {month} {year}')
 
         # -----gender-----
         if gender == 'male':
             await page.click('input[value="male"]', force=True)
         else:
             await page.click('input[value="female"]', force=True)
-        add_loggs(f'Gender: {gender}', 1)
+        logging.critical(gender)
 
         # -----email-----
         await page.fill('input[name="partial_login"]', email)
-        add_loggs(f'Mail: {email}', 1)
+        logging.critical(email)
 
         # -----password-----
         element = await page.query_selector('body')
@@ -808,13 +811,13 @@ async def email_account_registration(context, page, user):
             return {'Ошибка': 'Регистрация по телефону'}
 
         # -----captcha-----
-        await asyncio.sleep(5)
         await page.locator('img.sHzh3T69FUE-dkHh1-lzl').screenshot(path='LastCaptcha.jpg')
+        await asyncio.sleep(3)
         cid = SOLVER.send(file="LastCaptcha.jpg")
         await asyncio.sleep(15)
         while True:
             r = requests.get(f"https://rucaptcha.com/res.php?key=b7daa375616afc09a250286108ea037d&action=get&id={cid}")
-            add_loggs(f'Captcha: {r.text}', 1)
+            logging.critical(r.text)
             if 'OK' in r.text:
                 break
             await asyncio.sleep(5)
@@ -826,7 +829,7 @@ async def email_account_registration(context, page, user):
             await page.fill('input[placeholder="Код"]', r.text.split("|")[1])
 
         await page.click('button[type="submit"]')
-        add_loggs('Зарегистрировать', 1)
+        logging.critical('Зарегистрировать')
         await asyncio.sleep(20)
 
         # -----finish-----
@@ -834,7 +837,7 @@ async def email_account_registration(context, page, user):
         elem = await element.text_content()
 
         if "Добро пожаловать в Mail.ru!" in elem.strip():
-            add_loggs('Регистрация прошла', 1)
+            logging.critical('Регистрация прошла')
             cookies = await context.cookies()
             cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
             cookie_list = [cookie_dict]
@@ -851,12 +854,16 @@ async def email_account_registration(context, page, user):
                 if res.status == 200:
                     break
         else:
-            add_loggs('Не правильная каптча', 1)
+            logging.critical('Не правильная каптча')
             return {'Ошибка': 'Не правильная каптча'}
-        return res
+        return AccountCreation(
+            phone=phone_jd,
+            password=password,
+            humanoid_id=humanoid_id,
+            last_cookies=cookie_list
+        )
     except Exception as e:
         add_loggs(f'Ошибка:   {e}', 1)
         return e
-
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5000)
