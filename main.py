@@ -20,6 +20,9 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
 import psycopg
+
+from models import AccountCreation
+
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
@@ -47,15 +50,28 @@ REGISTRATION_STARTED = False
 random.seed()
 
 
-def finish(reason: str, timeout: int = 100000000):
+def standart_finish(reason: str, timeout: int = 100000000):
+    """Стандартная финализация работы контейнера."""
     logging.critical(reason)
-    DB.close()
     logging.critical('Finished At: ' + str(datetime.datetime.now()) + ' Waiting For: ' + str(timeout) + ' Seconds Before Exit.')
     time.sleep(timeout)
     exit(666)
 
 
-async def make_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: Dict = None, headers: Dict = None, cookies: Dict = None, data: Dict = None, json: Dict = None):
+async def standart_execute_sql(sql: str):
+    db = await psycopg.AsyncConnection.connect(**configs.db_config(), autocommit=True)
+    dbc = db.cursor()
+    await dbc.execute(sql)
+    if dbc.description:
+        result = await dbc.fetchall()
+    else:
+        result = None
+    await db.close()
+    return result
+
+
+async def standart_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: Dict = None, headers: Dict = None, cookies: Dict = None, data: Dict = None, json: Dict = None):
+    """Стандартный запрос с возвратом текста его ответа."""
     pc = None
     if proxy_url:
         pc = ProxyConnector.from_url(proxy_url)
@@ -77,8 +93,8 @@ async def make_request(method: str, url: str, proxy_url: str = None, timeout: in
     return response
 
 
-async def create_proxy_list(kind: int = 3, ptype: str = 3, country: str = 'RU', max_amount: int = 10000):
-    """Функция создаёт список из URL-строк прокси вида type://login:password@host:port. Прокси для этого берутся с одного из сайтов: [https://free-proxy-list.net или https://www.sslproxies.org] [https://proxy-manager.arbat.dev] [https://proxy6.net]."""
+async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU', max_amount: int = 10000):
+    """Стандартное получение списка URL-строк прокси вида type://login:password@host:port. Прокси для этого берутся с одного из сайтов: [https://free-proxy-list.net или https://www.sslproxies.org] [https://proxy-manager.arbat.dev] [https://proxy6.net]."""
     proxy_list = []
     pt = ''
     if ptype == 1:
@@ -98,7 +114,7 @@ async def create_proxy_list(kind: int = 3, ptype: str = 3, country: str = 'RU', 
                     proxy_list.append(f'{pt}{tds[0].text.strip()}:{tds[1].text.strip()}')
     # Получение платных https или socks5 прокси указанной страны из объединения proxy6_net_pool сайта [https://proxy-manager.arbat.dev].
     if kind == 2 and ptype in [2, 3]:
-        params = {'pool_id': '9f687b07-b5f5-4227-9d04-4888ac5be496', 'limit': 10000, 'sla': '0'}
+        params = {'pool_id': '9f687b07-b5f5-4227-9d04-4888ac5be496', 'limit': 10000, 'sla': '0.7'}
         async with aiohttp.ClientSession() as session:
             response = await session.get('https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params)
             jd = json.loads(await response.text(errors='replace'))
@@ -125,15 +141,6 @@ async def create_proxy_list(kind: int = 3, ptype: str = 3, country: str = 'RU', 
             jd = json.loads(await response.text(errors='replace'))
             proxy = jd['proxy']
             proxy_list.append(f"{pt}{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}")
-    # Получение мобильных https или socks5 прокси указанной страны из объединения proxy6_net_pool сайта [https://proxy-manager.arbat.dev].
-    if kind == 6 and ptype in [2, 3]:
-        params = {'pool_id': 'ae49cecb-a4df-4b45-b9f4-9afa496ab5db', 'limit': 10000, 'sla': '0.7'}
-        async with aiohttp.ClientSession() as session:
-            response = await session.get('https://proxy-manager.arbat.dev/pools/ae49cecb-a4df-4b45-b9f4-9afa496ab5db/proxies', params=params)
-            jd = json.loads(await response.text(errors='replace'))
-            for proxy in jd:
-                if proxy['proxy']['proxy_type'] == ptype and proxy['proxy']['country_code'] == country:
-                    proxy_list.append(f"{pt}{proxy['proxy']['login']}:{proxy['proxy']['password']}@{proxy['proxy']['host']}:{proxy['proxy']['port']}")
     random.shuffle(proxy_list)
     return proxy_list[:max_amount]
 
@@ -326,7 +333,7 @@ def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.v
     """Выполнение API методов ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
-    html = asyncio.run(make_request('post', api_method, data={'user_ids': ids, 'access_token': '7b3a9ab07b3a9ab07b3a9ab046782f63ef77b3a7b3a9ab01e1645dc745982e2ca791616', 'v': v}))
+    html = asyncio.run(standart_request('post', api_method, data={'user_ids': ids, 'access_token': '7b3a9ab07b3a9ab07b3a9ab046782f63ef77b3a7b3a9ab01e1645dc745982e2ca791616', 'v': v}))
     return HTMLResponse(content=html, status_code=200)
 
 
@@ -465,7 +472,7 @@ def add_loggs(message, id_log):
     DB.commit()
 
 
-def generate_gmail(first_name, last_name, year):
+def generate_mail(first_name, last_name, year):
     first_name = translit(first_name, 'ru', reversed=True)
     last_name = translit(last_name, 'ru', reversed=True)
     gmail = f'{first_name.lower()}.{last_name.lower()}{year + str(random.randint(1, 999))}'
@@ -504,14 +511,14 @@ async def gmail_register(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей GMail"""
     accounts = []
     count_acc = 0
-    proxy_list = await create_proxy_list(kind=2, ptype=3)
+    proxy_list = await standart_get_proxies(kind=2, ptype=3)
     proxy_index = 0
     if len(proxy_list) == 0:
-        finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
+        standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
     while count is None or len(accounts) < count:
         if proxy_index >= len(proxy_list):
-            proxy_list = await create_proxy_list(kind=2, ptype=3)
+            proxy_list = await standart_get_proxies(kind=2, ptype=3)
             proxy_index = 0
         pr = proxy_list[proxy_index].split('://')[1].split('@')
         username, password = pr[0].split(':')
@@ -528,7 +535,7 @@ async def gmail_register(count: Optional[int] = None):
         add_loggs(f'proxy: {pr}', 1)
 
         users = json.loads(
-            await make_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={KIND_ID}'))
+            await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={KIND_ID}'))
 
         async with async_playwright() as playwright:
             chromium = playwright.firefox
@@ -547,14 +554,14 @@ async def gmail_register(count: Optional[int] = None):
     return {'accounts': accounts}
 
 
-async def gmail_account_registration(context, page, users, proxy):
+async def gmail_account_registration(context, page, users):
 
     # -----params-----
     humanoid_id = users['id']
     add_loggs(f'humanoid_id: {humanoid_id}', 1)
     first_name = users['first_name']
     last_name = users['last_name']
-    phone_jd = json.loads(await make_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
+    phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
     phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + \
                    phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
     day = users['birth_date'].split('-')[2]
@@ -564,7 +571,7 @@ async def gmail_account_registration(context, page, users, proxy):
         gender = 1
     else:
         gender = 2
-    gmail = generate_gmail(first_name, last_name, year)
+    gmail = generate_mail(first_name, last_name, year)
     password = generate_pass(random.randint(15, 20))
 
     # -----mining-----
@@ -648,7 +655,7 @@ async def gmail_account_registration(context, page, users, proxy):
         for r in range(30):
             url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(
                 phone_jd['listenFromTimestamp'])
-            sms = await make_request('get', url)
+            sms = await standart_request('get', url)
             if sms != '{"messages":[]}':
                 break
             await asyncio.sleep(0.2)
@@ -681,13 +688,179 @@ async def gmail_account_registration(context, page, users, proxy):
             if res.status == 200:
                 break
         url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
-        await make_request('post', url, data={'service': 'gmail'})
+        await standart_request('post', url, data={'service': 'gmail'})
 
         return res
     except Exception as e:
         add_loggs(f'Ошибка:   {e}', 1)
         return e
 
+
+@app.get("/email-register")
+async def email_register(count: Optional[int] = None):
+    """регистрация одного или пачки учётных записей EMail"""
+    accounts = []
+    count_acc = 0
+    proxy_list = await standart_get_proxies(kind=2, ptype=3)
+    proxy_index = 0
+    if len(proxy_list) == 0:
+        standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
+    logging.critical(len(proxy_list))
+    while count is None or len(accounts) < count:
+        if proxy_index >= len(proxy_list):
+            proxy_list = await standart_get_proxies(kind=2, ptype=3)
+            proxy_index = 0
+        pr = proxy_list[proxy_index].split('://')[1].split('@')
+        username, password = pr[0].split(':')
+        host, port = pr[1].split(':')
+        if " " in host:
+            host = host.replace(" ", "")
+        proxy = {
+            'server': f'http://{host}:{port}',
+            'username': username,
+            'password': password
+        }
+
+        add_loggs(f'proxy: {proxy}', 1)
+        add_loggs(f'proxy: {pr}', 1)
+
+        user = json.loads(
+            await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={KIND_ID}'))
+
+        async with async_playwright() as playwright:
+            chromium = playwright.firefox
+            browser = await chromium.launch()
+            context = await browser.new_context(proxy=proxy)
+            page = await context.new_page()
+            account = await email_account_registration(context, page, user)
+            await browser.close()
+            add_loggs(f'Ответ: {account}', 1)
+            accounts.append(account)
+            add_loggs('------------------------------------', 1)
+
+        proxy_index += 1
+        count_acc += 1
+        logging.critical(count_acc)
+    return {'accounts': accounts}
+
+
+async def email_account_registration(context, page, user):
+
+    humanoid_id = user['id']
+    add_loggs(f'humanoid_id: {humanoid_id}', 1)
+    first_name = user['first_name']
+    last_name = user['last_name']
+    day = int(user['birth_date'].split('-')[2])
+    month = int(user['birth_date'].split('-')[1])
+    year = user['birth_date'].split('-')[0]
+
+    if user['sex'] == 'female':
+        gender = 'female'
+    else:
+        gender = 'male'
+
+    email = generate_mail(first_name, last_name, year)
+    password = generate_pass(random.randint(15, 20))
+
+    try:
+        await page.goto("https://account.mail.ru/signup")
+        await asyncio.sleep(2)
+
+        # -----fullName-----
+        await page.wait_for_selector('input[name="fname"]')
+        await page.fill('input[name="fname"]', first_name)
+        await asyncio.sleep(1)
+        await page.fill('input[name="lname"]', last_name)
+        add_loggs(f'Name: {first_name + last_name}', 1)
+        await asyncio.sleep(1)
+
+        # -----birthday-----
+        await page.click('.daySelect-0-2-135')
+        await page.click(f'#react-select-2-option-{day-1}')
+
+        await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/div[6]/div[2]/div/div/div/div[3]')
+        await page.click(f'#react-select-3-option-{month-1}')
+
+        await page.click('.yearSelect-0-2-136')
+        await page.click(f'[data-test-id="select-value:{year}"]')
+        add_loggs(f'Birthday: {day} {month} {year}', 1)
+
+        # -----gender-----
+        if gender == 'male':
+            await page.click('input[value="male"]', force=True)
+        else:
+            await page.click('input[value="female"]', force=True)
+        add_loggs(f'Gender: {gender}', 1)
+
+        # -----email-----
+        await page.fill('input[name="partial_login"]', email)
+        add_loggs(f'Mail: {email}', 1)
+
+        # -----password-----
+        element = await page.query_selector('body')
+        elem = await element.text_content()
+        if "Сгенерировать надёжный пароль" in elem.strip() or "Generate a strong password" in elem.strip():
+            await page.fill('#password', password)
+            await page.fill('#repeatPassword', password)
+
+            await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/button')
+            await asyncio.sleep(3)
+        else:
+            return {'Ошибка': 'Регистрация по телефону'}
+
+        # -----captcha-----
+        await page.locator('img.sHzh3T69FUE-dkHh1-lzl').screenshot(path='LastCaptcha.jpg')
+        await asyncio.sleep(3)
+        cid = SOLVER.send(file="LastCaptcha.jpg")
+        await asyncio.sleep(15)
+        while True:
+            r = requests.get(f"https://rucaptcha.com/res.php?key=b7daa375616afc09a250286108ea037d&action=get&id={cid}")
+            add_loggs(f'Captcha: {r.text}', 1)
+            if 'OK' in r.text:
+                break
+            await asyncio.sleep(5)
+        element = await page.query_selector('body')
+        elem = await element.text_content()
+        if "Please enter code" in elem.strip():
+            await page.fill('input[placeholder="Code"]', r.text.split("|")[1])
+        else:
+            await page.fill('input[placeholder="Код"]', r.text.split("|")[1])
+
+        await page.click('button[type="submit"]')
+        add_loggs('Зарегистрировать', 1)
+        await asyncio.sleep(20)
+
+        # -----finish-----
+        element = await page.query_selector('body')
+        elem = await element.text_content()
+
+        if "Добро пожаловать в Mail.ru!" in elem.strip():
+            add_loggs('Регистрация прошла', 1)
+            cookies = await context.cookies()
+            cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+            cookie_list = [cookie_dict]
+            while True:
+                email = f'{email}@mail.ru'
+                ids = str(standart_execute_sql("SELECT max(id) + 1 FROM accounts"))
+                pattern = r'\d+'
+                ids = re.findall(pattern, ids)
+                phone_jd = ' '.join(ids)
+                res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
+                add_loggs('Добавлено', 1)
+                if res.status == 200:
+                    break
+        else:
+            add_loggs('Не правильная каптча', 1)
+            return {'Ошибка': 'Не правильная каптча'}
+        return AccountCreation(
+            phone=phone_jd,
+            password=password,
+            humanoid_id=humanoid_id,
+            last_cookies=cookie_list
+        )
+    except Exception as e:
+        add_loggs(f'Ошибка:   {e}', 1)
+        return e
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5000)
