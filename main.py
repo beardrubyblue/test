@@ -814,7 +814,6 @@ async def email_account_registration(context, page, user):
         await asyncio.sleep(15)
         while True:
             r = requests.get(f"https://rucaptcha.com/res.php?key=b7daa375616afc09a250286108ea037d&action=get&id={cid}")
-            logging.critical(r.text)
             if 'OK' in r.text:
                 break
             await asyncio.sleep(5)
@@ -844,7 +843,6 @@ async def email_account_registration(context, page, user):
                 ids = re.findall(pattern, ids)
                 phone_jd = ' '.join(ids)
                 res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
-                logging.critical(res.status)
                 add_loggs('Created', 1)
                 if res.status == 200:
                     break
