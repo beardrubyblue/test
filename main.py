@@ -748,6 +748,7 @@ async def email_register(count: Optional[int] = None):
 
 async def email_account_registration(context, page, user):
 
+    # -----params-----
     humanoid_id = user['id']
     add_loggs(f'humanoid_id: {humanoid_id}', 1)
     first_name = user['first_name']
@@ -755,25 +756,23 @@ async def email_account_registration(context, page, user):
     day = int(user['birth_date'].split('-')[2])
     month = int(user['birth_date'].split('-')[1])
     year = user['birth_date'].split('-')[0]
-
     if user['sex'] == 'female':
         gender = 'female'
     else:
         gender = 'male'
-
     email = generate_mail(first_name, last_name, year)
     password = generate_pass(random.randint(15, 20))
 
     try:
         await page.goto("https://account.mail.ru/signup")
         await asyncio.sleep(2)
+        add_loggs('Start Registration', 1)
 
         # -----fullName-----
         await page.wait_for_selector('input[name="fname"]')
         await page.fill('input[name="fname"]', first_name)
         await asyncio.sleep(1)
         await page.fill('input[name="lname"]', last_name)
-        logging.critical(first_name + last_name)
         await asyncio.sleep(1)
 
         # -----birthday-----
@@ -785,18 +784,15 @@ async def email_account_registration(context, page, user):
 
         await page.click('.yearSelect-0-2-136')
         await page.click(f'[data-test-id="select-value:{year}"]')
-        logging.critical(f'{day} {month} {year}')
 
         # -----gender-----
         if gender == 'male':
             await page.click('input[value="male"]', force=True)
         else:
             await page.click('input[value="female"]', force=True)
-        logging.critical(gender)
 
         # -----email-----
         await page.fill('input[name="partial_login"]', email)
-        logging.critical(email)
 
         # -----password-----
         element = await page.query_selector('body')
@@ -808,7 +804,8 @@ async def email_account_registration(context, page, user):
             await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/button')
             await asyncio.sleep(3)
         else:
-            return {'Ошибка': 'Регистрация по телефону'}
+            add_loggs('Error: Registration with phone', 1)
+            return {'Error': 'Registration with phone'}
 
         # -----captcha-----
         await page.locator('img.sHzh3T69FUE-dkHh1-lzl').screenshot(path='LastCaptcha.jpg')
@@ -829,7 +826,6 @@ async def email_account_registration(context, page, user):
             await page.fill('input[placeholder="Код"]', r.text.split("|")[1])
 
         await page.click('button[type="submit"]')
-        logging.critical('Зарегистрировать')
         await asyncio.sleep(20)
 
         # -----finish-----
@@ -837,7 +833,7 @@ async def email_account_registration(context, page, user):
         elem = await element.text_content()
 
         if "Добро пожаловать в Mail.ru!" in elem.strip():
-            logging.critical('Регистрация прошла')
+            add_loggs('Finish registration', 1)
             cookies = await context.cookies()
             cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
             cookie_list = [cookie_dict]
@@ -847,15 +843,14 @@ async def email_account_registration(context, page, user):
                 pattern = r'\d+'
                 ids = re.findall(pattern, ids)
                 phone_jd = ' '.join(ids)
-                logging.critical(phone_jd)
                 res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
                 logging.critical(res.status)
-                logging.critical('Добавлено')
+                add_loggs('Created', 1)
                 if res.status == 200:
                     break
         else:
-            logging.critical('Не правильная каптча')
-            return {'Ошибка': 'Не правильная каптча'}
+            add_loggs('Not right captcha', 1)
+            return {'Error': 'Not right captcha'}
         return AccountCreation(
             phone=phone_jd,
             password=password,
