@@ -810,7 +810,7 @@ async def email_account_registration(context, page, user):
 
         # -----captcha-----
         await page.locator('img.sHzh3T69FUE-dkHh1-lzl').screenshot(path='LastCaptcha.jpg')
-        await asyncio.sleep(3)
+        await asyncio.sleep(5)
         cid = SOLVER.send(file="LastCaptcha.jpg")
         await asyncio.sleep(15)
         while True:
