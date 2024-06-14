@@ -848,8 +848,8 @@ async def email_account_registration(context, page, user):
                 phone_jd = ' '.join(ids)
                 logging.critical(phone_jd)
                 res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
-                add_loggs('Добавлено', 1)
-                add_loggs(f'status: {res.status}', 1)
+                logging.critical(res.status)
+                logging.critical('Добавлено')
                 if res.status == 200:
                     break
         else:
