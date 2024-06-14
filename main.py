@@ -747,7 +747,6 @@ async def email_account_registration(context, page, user):
 
     # -----params-----
     humanoid_id = user['id']
-    add_loggs(f'humanoid_id: {humanoid_id}', 1)
     first_name = user['first_name']
     last_name = user['last_name']
     day = int(user['birth_date'].split('-')[2])
