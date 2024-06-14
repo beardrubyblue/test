@@ -489,13 +489,13 @@ def generate_pass(length):
     return password
 
 
-async def send_acc(phone_jd, password, first_name, last_name, birthday, humanoid_id, last_cookies, gmail):
+async def send_acc(phone_jd: str, password, first_name, last_name, birthday, humanoid_id, last_cookies, email):
     data = {
         'kind_id': MAIL_KIND_ID,
-        'phone': phone_jd['phone'],
+        'phone': phone_jd,
         'password': password,
         'info': {
-            'email': gmail,
+            'email': email,
             'first_name': first_name,
             'last_name': last_name,
             'birth_date': birthday
@@ -865,5 +865,6 @@ async def email_account_registration(context, page, user):
     except Exception as e:
         add_loggs(f'Ошибка:   {e}', 1)
         return e
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5000)
