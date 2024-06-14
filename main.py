@@ -854,12 +854,7 @@ async def email_account_registration(context, page, user):
         else:
             add_loggs('Не правильная каптча', 1)
             return {'Ошибка': 'Не правильная каптча'}
-        return AccountCreation(
-            phone=phone_jd,
-            password=password,
-            humanoid_id=humanoid_id,
-            last_cookies=cookie_list
-        )
+        return res
     except Exception as e:
         add_loggs(f'Ошибка:   {e}', 1)
         return e
