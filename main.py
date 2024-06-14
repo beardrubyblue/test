@@ -771,7 +771,7 @@ async def email_account_registration(context, page, user):
         await page.fill('input[name="fname"]', first_name)
         await asyncio.sleep(1)
         await page.fill('input[name="lname"]', last_name)
-        add_loggs(f'Name: {first_name + last_name}', 1)
+        add_loggs(f'Name: {first_name} {last_name}', 1)
         await asyncio.sleep(1)
 
         # -----birthday-----
@@ -809,8 +809,8 @@ async def email_account_registration(context, page, user):
             return {'Ошибка': 'Регистрация по телефону'}
 
         # -----captcha-----
-        await page.locator('img.sHzh3T69FUE-dkHh1-lzl').screenshot(path='LastCaptcha.jpg')
         await asyncio.sleep(5)
+        await page.locator('img.sHzh3T69FUE-dkHh1-lzl').screenshot(path='LastCaptcha.jpg')
         cid = SOLVER.send(file="LastCaptcha.jpg")
         await asyncio.sleep(15)
         while True:
