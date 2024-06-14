@@ -46,6 +46,7 @@ with open('UserAgents.txt', 'r') as F:
     F.close()
 STATISTICS = []
 KIND_ID = 3
+MAIL_KIND_ID = 19
 REGISTRATION_STARTED = False
 random.seed()
 
@@ -488,7 +489,7 @@ def generate_pass(length):
 
 async def send_acc(phone_jd, password, first_name, last_name, birthday, humanoid_id, last_cookies, gmail):
     data = {
-        'kind_id': KIND_ID,
+        'kind_id': MAIL_KIND_ID,
         'phone': phone_jd['phone'],
         'password': password,
         'info': {
@@ -744,7 +745,6 @@ async def email_register(count: Optional[int] = None):
 
 
 async def email_account_registration(context, page, user):
-
     humanoid_id = user['id']
     add_loggs(f'humanoid_id: {humanoid_id}', 1)
     first_name = user['first_name']
@@ -840,12 +840,11 @@ async def email_account_registration(context, page, user):
             cookie_list = [cookie_dict]
             while True:
                 email = f'{email}@mail.ru'
-                # ids = str(execute_sql("SELECT max(id) + 1 FROM accounts"))
-                # pattern = r'\d+'
-                # ids = re.findall(pattern, ids)
-                # phone_jd = ' '.join(ids)
-                # logging.critical(phone_jd)
-                phone_jd = 275278297
+                ids = str(execute_sql("SELECT max(id) + 1 FROM accounts"))
+                pattern = r'\d+'
+                ids = re.findall(pattern, ids)
+                phone_jd = ' '.join(ids)
+                logging.critical(phone_jd)
                 res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
                 logging.critical(res.status)
                 logging.critical('Добавлено')
