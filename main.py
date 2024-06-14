@@ -842,8 +842,12 @@ async def email_account_registration(context, page, user):
             cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
             cookie_list = [cookie_dict]
             while True:
-                email = email + '@mail.ru'
-
+                email = f'{email}@mail.ru'
+                ids = str(await standart_execute_sql("SELECT max(id) + 1 FROM accounts"))
+                pattern = r'\d+'
+                ids = re.findall(pattern, ids)
+                phone_jd = ' '.join(ids)
+                logging.critical(phone_jd)
                 res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
                 add_loggs('Добавлено', 1)
                 add_loggs(f'status: {res.status}', 1)
