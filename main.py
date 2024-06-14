@@ -496,8 +496,7 @@ async def send_acc(phone_jd, password, first_name, last_name, birthday, humanoid
     }
     async with aiohttp.ClientSession() as session:
         async with session.post('https://accman-odata.arbat.dev/create', json=data) as response:
-            rr = await response.text()
-            return rr
+            return response
 
 
 @app.get("/gmail-register")
@@ -676,12 +675,13 @@ async def gmail_account_registration(context, page, users, proxy):
 
         cookies = await context.cookies()
         cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
-
-        res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_dict, gmail)
-
+        while True:
+            gmail = f'{gmail}@gmail.com'
+            res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_dict, gmail)
+            if res.status == 200:
+                break
         url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
-        data = {'service': 'gmail'}
-        await make_request('post', url, data=data)
+        await make_request('post', url, data={'service': 'gmail'})
 
         return res
     except Exception as e:
