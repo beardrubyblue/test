@@ -758,8 +758,6 @@ async def email_account_registration(context, page, user):
     else:
         gender = 'male'
 
-    phone_jd = 'SELECT max(id) + 1 FROM accounts'
-
     email = generate_mail(first_name, last_name, year)
     password = generate_pass(random.randint(15, 20))
 
@@ -842,11 +840,12 @@ async def email_account_registration(context, page, user):
             cookie_list = [cookie_dict]
             while True:
                 email = f'{email}@mail.ru'
-                ids = str(execute_sql("SELECT max(id) + 1 FROM accounts"))
-                pattern = r'\d+'
-                ids = re.findall(pattern, ids)
-                phone_jd = ' '.join(ids)
-                logging.critical(phone_jd)
+                # ids = str(execute_sql("SELECT max(id) + 1 FROM accounts"))
+                # pattern = r'\d+'
+                # ids = re.findall(pattern, ids)
+                # phone_jd = ' '.join(ids)
+                # logging.critical(phone_jd)
+                phone_jd = 'SELECT max(id) + 1 FROM accounts'
                 res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
                 logging.critical(res.status)
                 logging.critical('Добавлено')
