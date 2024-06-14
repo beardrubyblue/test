@@ -114,7 +114,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
                     proxy_list.append(f'{pt}{tds[0].text.strip()}:{tds[1].text.strip()}')
     # Получение платных https или socks5 прокси указанной страны из объединения proxy6_net_pool сайта [https://proxy-manager.arbat.dev].
     if kind == 2 and ptype in [2, 3]:
-        params = {'pool_id': '9f687b07-b5f5-4227-9d04-4888ac5be496', 'limit': 10000, 'sla': '0.7'}
+        params = {'pool_id': '9f687b07-b5f5-4227-9d04-4888ac5be496', 'limit': 10000, 'sla': '0'}
         async with aiohttp.ClientSession() as session:
             response = await session.get('https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params)
             jd = json.loads(await response.text(errors='replace'))
@@ -845,8 +845,9 @@ async def email_account_registration(context, page, user):
                 pattern = r'\d+'
                 ids = re.findall(pattern, ids)
                 phone_jd = ' '.join(ids)
-                res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
+                res = await send_acc(int(phone_jd), password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
                 add_loggs('Добавлено', 1)
+                add_loggs(f'status: {res.status}', 1)
                 if res.status == 200:
                     break
         else:
