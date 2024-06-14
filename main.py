@@ -775,14 +775,14 @@ async def email_account_registration(context, page, user):
         await asyncio.sleep(1)
 
         # -----birthday-----
-        await page.click('.daySelect-0-2-135', timeout=500)
-        await page.click(f'#react-select-2-option-{day-1}', timeout=500)
+        await page.click('.daySelect-0-2-135', timeout=2000)
+        await page.click(f'#react-select-2-option-{day-1}', timeout=2000)
 
-        await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/div[6]/div[2]/div/div/div/div[3]', timeout=500)
-        await page.click(f'#react-select-3-option-{month-1}', timeout=500)
+        await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/div[6]/div[2]/div/div/div/div[3]', timeout=2000)
+        await page.click(f'#react-select-3-option-{month-1}', timeout=2000)
 
-        await page.click('.yearSelect-0-2-136', timeout=500)
-        await page.click(f'[data-test-id="select-value:{year}"]', timeout=500)
+        await page.click('.yearSelect-0-2-136', timeout=2000)
+        await page.click(f'[data-test-id="select-value:{year}"]', timeout=2000)
         add_loggs(f'Birthday: {day} {month} {year}', 1)
 
         # -----gender-----
