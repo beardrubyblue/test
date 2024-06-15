@@ -821,7 +821,7 @@ async def email_account_registration(context, page, user):
             await page.fill('input[placeholder="Код"]', r.text.split("|")[1])
 
         await page.click('button[type="submit"]')
-        await asyncio.sleep(20)
+        await asyncio.sleep(5)
 
         # -----finish-----
         element = await page.query_selector('body')
