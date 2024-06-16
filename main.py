@@ -772,14 +772,14 @@ async def email_account_registration(context, page, user):
         await asyncio.sleep(1)
 
         # -----birthday-----
-        await page.click('.daySelect-0-2-135')
-        await page.click(f'#react-select-2-option-{day-1}')
+        await page.click('.daySelect-0-2-135', timeout=5000)
+        await page.click(f'#react-select-2-option-{day-1}', timeout=5000)
 
-        await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/div[6]/div[2]/div/div/div/div[3]')
-        await page.click(f'#react-select-3-option-{month-1}')
+        await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/div[6]/div[2]/div/div/div/div[3]', timeout=5000)
+        await page.click(f'#react-select-3-option-{month-1}', timeout=5000)
 
-        await page.click('.yearSelect-0-2-136')
-        await page.click(f'[data-test-id="select-value:{year}"]')
+        await page.click('.yearSelect-0-2-136', timeout=5000)
+        await page.click(f'[data-test-id="select-value:{year}"]', timeout=5000)
 
         # -----gender-----
         if gender == 'male':
