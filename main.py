@@ -696,7 +696,7 @@ async def gmail_account_registration(context, page, users):
         await standart_request('post', url, data={'service': 'gmail'})
 
         return AccountCreation(
-            phone=phone_jd,
+            phone=phone_jd['phone'],
             password=password,
             humanoid_id=humanoid_id,
             last_cookies=cookie_list
