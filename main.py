@@ -689,9 +689,9 @@ async def gmail_account_registration(context, page, users):
             gmail = f'{gmail}@mail.ru'
             res = await send_acc(phone_jd['phone'], password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id,
                                  cookie_list, gmail)
-            add_loggs('Created', 1)
             if res.status == 200:
                 break
+        add_loggs('Created', 1)
         url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
         await standart_request('post', url, data={'service': 'gmail'})
 
