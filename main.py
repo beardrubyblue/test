@@ -544,7 +544,7 @@ async def gmail_register(count: Optional[int] = None):
             browser = await chromium.launch()
             context = await browser.new_context(proxy=proxy)
             page = await context.new_page()
-            account = await gmail_account_registration(context, page, users, pr)
+            account = await gmail_account_registration(context, page, users)
             await browser.close()
             add_loggs(f'Ответ: {account}', 1)
             accounts.append(account)
