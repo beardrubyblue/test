@@ -687,7 +687,7 @@ async def gmail_account_registration(context, page, users):
         cookie_list = [cookie_dict]
         while True:
             gmail = f'{gmail}@mail.ru'
-            res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id,
+            res = await send_acc(phone_jd['phone'], password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id,
                                  cookie_list, gmail)
             add_loggs('Created', 1)
             if res.status == 200:
