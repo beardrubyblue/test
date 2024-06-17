@@ -537,7 +537,7 @@ async def gmail_register(count: Optional[int] = None):
         add_loggs(f'proxy: {pr}', 1)
 
         users = json.loads(
-            await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={KIND_ID}'))
+            await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={GMAIL_KIND_ID}'))
 
         async with async_playwright() as playwright:
             chromium = playwright.firefox
@@ -732,7 +732,7 @@ async def email_register(count: Optional[int] = None):
         }
 
         user = json.loads(
-            await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={KIND_ID}'))
+            await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={MAIL_KIND_ID}'))
 
         async with async_playwright() as playwright:
             chromium = playwright.firefox
