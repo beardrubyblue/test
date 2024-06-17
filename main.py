@@ -47,7 +47,7 @@ with open('UserAgents.txt', 'r') as F:
     UserAgents = F.readlines()
     F.close()
 STATISTICS = []
-KIND_ID = 3
+GMAIL_KIND_ID = 3
 MAIL_KIND_ID = 19
 REGISTRATION_STARTED = False
 random.seed()
@@ -489,9 +489,9 @@ def generate_pass(length):
     return password
 
 
-async def send_acc(phone_jd: str, password, first_name, last_name, birthday, humanoid_id, last_cookies, email):
+async def send_acc(kind_id, phone_jd: str, password, first_name, last_name, birthday, humanoid_id, last_cookies, email):
     data = {
-        'kind_id': MAIL_KIND_ID,
+        'kind_id': kind_id,
         'phone': phone_jd,
         'password': password,
         'info': {
@@ -687,7 +687,7 @@ async def gmail_account_registration(context, page, users):
         cookie_list = [cookie_dict]
         while True:
             gmail = f'{gmail}@mail.ru'
-            res = await send_acc(phone_jd['phone'], password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id,
+            res = await send_acc(GMAIL_KIND_ID, phone_jd['phone'], password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id,
                                  cookie_list, gmail)
             if res.status == 200:
                 break
@@ -846,7 +846,7 @@ async def email_account_registration(context, page, user):
                 pattern = r'\d+'
                 ids = re.findall(pattern, ids)
                 phone_jd = ' '.join(ids)
-                res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
+                res = await send_acc(MAIL_KIND_ID, phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
                 add_loggs('Created', 1)
                 if res.status == 200:
                     break
