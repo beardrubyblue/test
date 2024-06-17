@@ -684,9 +684,16 @@ async def gmail_account_registration(context, page, users):
 
         cookies = await context.cookies()
         cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+        cookie_list = [cookie_dict]
         while True:
-            gmail = f'{gmail}@gmail.com'
-            res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_dict, gmail)
+            email = f'{email}@mail.ru'
+            ids = str(execute_sql("SELECT max(id) + 1 FROM accounts"))
+            pattern = r'\d+'
+            ids = re.findall(pattern, ids)
+            phone_jd = ' '.join(ids)
+            res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id,
+                                 cookie_list, email)
+            add_loggs('Created', 1)
             if res.status == 200:
                 break
         url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
