@@ -687,10 +687,6 @@ async def gmail_account_registration(context, page, users):
         cookie_list = [cookie_dict]
         while True:
             gmail = f'{gmail}@mail.ru'
-            ids = str(execute_sql("SELECT max(id) + 1 FROM accounts"))
-            pattern = r'\d+'
-            ids = re.findall(pattern, ids)
-            phone_jd = ' '.join(ids)
             res = await send_acc(phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id,
                                  cookie_list, gmail)
             add_loggs('Created', 1)
