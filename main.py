@@ -695,7 +695,12 @@ async def gmail_account_registration(context, page, users):
         url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
         await standart_request('post', url, data={'service': 'gmail'})
 
-        return res
+        return AccountCreation(
+            phone=phone_jd,
+            password=password,
+            humanoid_id=humanoid_id,
+            last_cookies=cookie_list
+        )
     except Exception as e:
         add_loggs(f'Ошибка:   {e}', 1)
         return e
