@@ -686,7 +686,7 @@ async def gmail_account_registration(context, page, users):
         cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
         cookie_list = [cookie_dict]
         while True:
-            gmail = f'{gmail}@mail.ru'
+            gmail = f'{gmail}@gmail.ru'
             res = await send_acc(GMAIL_KIND_ID, phone_jd['phone'], password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id,
                                  cookie_list, gmail)
             if res.status == 200:
