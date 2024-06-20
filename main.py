@@ -850,7 +850,6 @@ async def email_account_registration(context, page, user):
             last_cookies=cookie_list
         )
     except Exception as e:
-        add_loggs(f'Ошибка:   {e}', 1)
         return e
 
 if __name__ == "__main__":
