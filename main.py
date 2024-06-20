@@ -796,7 +796,7 @@ async def email_account_registration(context, page, user):
                 await page.click('.passwordEye-0-2-126')
                 await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/button')
             except Exception as e:
-                print(f"Ошибка при заполнении: {e}")
+                return f"Ошибка при заполнении: {e}"
         else:
             add_loggs('Error: Registration with phone', 1)
             return {'Error': 'Registration with phone'}
