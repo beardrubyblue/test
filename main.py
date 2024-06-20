@@ -93,7 +93,7 @@ async def standart_request(method: str, url: str, proxy_url: str = None, timeout
 
 
 async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU', max_amount: int = 10000):
-    """Стандартное получение списка URL-строк прокси вида type://login:password@host:port. Прокси для этого берутся с одного из сайтов: [https://free-proxy-list.net или https://www.sslproxies.org] [https://proxy-manager.arbat.dev] [https://proxy6.net]."""
+    """Функция создаёт список из URL-строк прокси вида type://login:password@host:port. Прокси для этого берутся с одного из сайтов: [https://free-proxy-list.net или https://www.sslproxies.org] [https://proxy-manager.arbat.dev] [https://proxy6.net]."""
     proxy_list = []
     pt = ''
     if ptype == 1:
@@ -113,7 +113,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
                     proxy_list.append(f'{pt}{tds[0].text.strip()}:{tds[1].text.strip()}')
     # Получение платных https или socks5 прокси указанной страны из объединения proxy6_net_pool сайта [https://proxy-manager.arbat.dev].
     if kind == 2 and ptype in [2, 3]:
-        params = {'pool_id': '9f687b07-b5f5-4227-9d04-4888ac5be496', 'limit': 10000, 'sla': '0'}
+        params = {'pool_id': '9f687b07-b5f5-4227-9d04-4888ac5be496', 'limit': 10000, 'sla': '0.7'}
         async with aiohttp.ClientSession() as session:
             response = await session.get('https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params)
             jd = json.loads(await response.text(errors='replace'))
