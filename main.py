@@ -732,7 +732,7 @@ async def email_register(count: Optional[int] = None):
             await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={MAIL_KIND_ID}'))
 
         async with async_playwright() as playwright:
-            chromium = playwright.firefox
+            chromium = playwright.chromium
             browser = await chromium.launch()
             context = await browser.new_context(proxy=proxy)
             page = await context.new_page()
