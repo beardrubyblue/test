@@ -819,7 +819,7 @@ async def email_account_registration(context, page, user):
             await page.fill('input[placeholder="Код"]', r.text.split("|")[1])
 
         await page.click('button[type="submit"]')
-        await asyncio.sleep(5)
+        await asyncio.sleep(10)
 
         # -----finish-----
         element = await page.query_selector('body')
@@ -850,6 +850,7 @@ async def email_account_registration(context, page, user):
             last_cookies=cookie_list
         )
     except Exception as e:
+        add_loggs(f'Ошибка:   {e}', 1)
         return e
 
 if __name__ == "__main__":
