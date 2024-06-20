@@ -708,7 +708,7 @@ async def email_register(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей EMail"""
     accounts = []
     count_acc = 0
-    proxy_list = await standart_get_proxies(kind=2, ptype=3)
+    proxy_list = await standart_get_proxies(kind=2)
     proxy_index = 0
     if len(proxy_list) == 0:
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
