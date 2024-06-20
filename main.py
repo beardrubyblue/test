@@ -20,10 +20,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
 import psycopg
-
 from models import AccountCreation
-
-# from models import AccountCreation
 
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
@@ -773,10 +770,10 @@ async def email_account_registration(context, page, user):
         add_loggs('Start Registration', 1)
 
         # -----fullName-----
-        await page.wait_for_selector('xpath=/html/body/div[1]/div[3]/div/div[4]/div[4]/div/div/div/div[2]/div[2]/div[2]/div[2]/div[4]/div[1]/div/div/form/div/div[2]/div[7]/div[3]/div[2]/div[4]/div[2]/div/div[5]/div[2]/div/div[2]/div/div/input')
-        await page.fill('xpath=/html/body/div[1]/div[3]/div/div[4]/div[4]/div/div/div/div[2]/div[2]/div[2]/div[2]/div[4]/div[1]/div/div/form/div/div[2]/div[7]/div[3]/div[2]/div[4]/div[2]/div/div[5]/div[2]/div/div[2]/div/div/input', first_name)
+        await page.wait_for_selector('input[name="fname"]')
+        await page.fill('input[name="fname"]', first_name)
         await asyncio.sleep(1)
-        await page.fill('xpath=/html/body/div[1]/div[3]/div/div[4]/div[4]/div/div/div/div[2]/div[2]/div[2]/div[2]/div[4]/div[1]/div/div/form/div/div[2]/div[7]/div[3]/div[2]/div[4]/div[2]/div/div[5]/div[4]/div/div[2]/div/div/input', last_name)
+        await page.fill('input[name="lname"]', last_name)
         await asyncio.sleep(1)
 
         # -----birthday-----
