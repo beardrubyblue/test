@@ -840,9 +840,10 @@ async def email_account_registration(context, page, user):
                 add_loggs('Created', 1)
                 if res.status == 200:
                     break
+        elif "Укажите телефон" in elem.strip():
+            return {'Error': 'Registration with phone!!!!!!!!!!'}
         else:
-            add_loggs('Not right captcha', 1)
-            return {'Error': 'Not right captcha'}
+            return 'Error'
         return AccountCreation(
             phone=phone_jd,
             password=password,
