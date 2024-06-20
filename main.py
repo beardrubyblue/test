@@ -769,41 +769,34 @@ async def email_account_registration(context, page, user):
         await asyncio.sleep(2)
         add_loggs('Start Registration', 1)
 
-        # -----fullName-----
-        await page.wait_for_selector('input[name="fname"]')
-        await page.fill('input[name="fname"]', first_name)
-        await asyncio.sleep(1)
-        await page.fill('input[name="lname"]', last_name)
-        await asyncio.sleep(1)
-
-        # -----birthday-----
-        await page.click('.daySelect-0-2-135', timeout=5000)
-        await page.click(f'#react-select-2-option-{day-1}', timeout=5000)
-
-        await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/div[6]/div[2]/div/div/div/div[3]', timeout=5000)
-        await page.click(f'#react-select-3-option-{month-1}', timeout=5000)
-
-        await page.click('.yearSelect-0-2-136', timeout=5000)
-        await page.click(f'[data-test-id="select-value:{year}"]', timeout=5000)
-
-        # -----gender-----
-        if gender == 'male':
-            await page.click('input[value="male"]', force=True)
-        else:
-            await page.click('input[value="female"]', force=True)
-
-        # -----email-----
-        await page.fill('input[name="partial_login"]', email)
-
-        # -----password-----
         element = await page.query_selector('body')
         elem = await element.text_content()
         if "Сгенерировать надёжный пароль" in elem.strip() or "Generate a strong password" in elem.strip():
-            await page.fill('#password', password)
-            await page.fill('#repeatPassword', password)
+            await page.wait_for_selector('.input-0-2-119', timeout=30000)
+            elements = await page.query_selector_all('.input-0-2-119')
+            try:
+                await elements[0].fill(first_name, timeout=1000)
+                await elements[1].fill(last_name, timeout=1000)
 
-            await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/button')
-            await asyncio.sleep(3)
+                await page.click('.daySelect-0-2-135', timeout=1000)
+                await page.click(f'#react-select-2-option-{day - 1}', timeout=1000)
+                await asyncio.sleep(1)
+                await page.click('xpath=/html/body/div[1]/div[3]/div/div[4]/div[4]/div/div/div/div/form/div[6]/div[2]/div/div/div/div[3]', timeout=1000)
+                await page.click(f'#react-select-3-option-{month - 1}', timeout=1000)
+                await asyncio.sleep(1)
+                await page.click('.yearSelect-0-2-136', timeout=1000)
+                await page.click(f'[data-test-id="select-value:{year}"]', timeout=1000)
+
+                if gender == 'male':
+                    await page.click('input[value="male"]', force=True)
+                else:
+                    await page.click('input[value="female"]', force=True)
+                await elements[2].fill(email, timeout=1000)
+                await elements[3].fill(password, timeout=1000)
+                await page.click('.passwordEye-0-2-126')
+                await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/button')
+            except Exception as e:
+                print(f"Ошибка при заполнении: {e}")
         else:
             add_loggs('Error: Registration with phone', 1)
             return {'Error': 'Registration with phone'}
