@@ -814,7 +814,7 @@ async def email_account_registration(context, page, user):
         #         return {'Error': 'ERROR_CAPTCHA_UNSOLVABLE'}
         #     await asyncio.sleep(5)
         logging.critical('старт')
-        captcha = requests.post(f"https://captcher-odata.arbat.dev/solve_text_captcha_file", params={'service': 'rucatpcha'}, files={'file': open('LastCaptcha.jpg', 'r')})
+        captcha = requests.post("https://captcher-odata.arbat.dev/solve_text_captcha_file", params={'service': 'rucatpcha'}, files={'file': open('LastCaptcha.jpg', 'r')})
         # captcha = await standart_request('post', 'https://captcher-odata.arbat.dev/solve_text_captcha_file', params={'service': 'rucatpcha'}, files={'file': open('LastCaptcha.jpg', 'r')})
         await asyncio.sleep(15)
         logging.critical('успешно')
