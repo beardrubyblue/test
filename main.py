@@ -69,7 +69,7 @@ def execute_sql(sql):
     return result
 
 
-async def standart_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: Dict = None, headers: Dict = None, cookies: Dict = None, data: Dict = None, json: Dict = None, files: Dict = None):
+async def standart_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: Dict = None, headers: Dict = None, cookies: Dict = None, data: Dict = None, json: Dict = None):
     """Стандартный запрос с возвратом текста его ответа."""
     pc = None
     if proxy_url:
@@ -85,10 +85,8 @@ async def standart_request(method: str, url: str, proxy_url: str = None, timeout
         request += ',data=data,'
     if json:
         request += ',json=json'
-    if files:
-        request += ',files=files'
     async with aiohttp.ClientSession(connector=pc) as session:
-        async with eval(f"session.{method}(url,timeout=timeout,params=params,headers=headers,cookies=cookies,data=data,json=json,files=files)") as resp:
+        async with eval(f"session.{method}(url,timeout=timeout,params=params,headers=headers,cookies=cookies,data=data,json=json)") as resp:
             response = await resp.text(errors='replace')
             await session.close()
     return response
@@ -816,7 +814,8 @@ async def email_account_registration(context, page, user):
         #         return {'Error': 'ERROR_CAPTCHA_UNSOLVABLE'}
         #     await asyncio.sleep(5)
         logging.critical('старт')
-        captcha = await standart_request('post', 'https://captcher-odata.arbat.dev/solve_text_captcha_file', params={'service': 'rucatpcha'}, files={'file': open('LastCaptcha.jpg', 'r')})
+        captcha = requests.post(f"https://captcher-odata.arbat.dev/solve_text_captcha_file", params={'service': 'rucatpcha'}, files={'file': open('LastCaptcha.jpg', 'r')})
+        # captcha = await standart_request('post', 'https://captcher-odata.arbat.dev/solve_text_captcha_file', params={'service': 'rucatpcha'}, files={'file': open('LastCaptcha.jpg', 'r')})
         await asyncio.sleep(15)
         logging.critical('успешно')
         element = await page.query_selector('body')
