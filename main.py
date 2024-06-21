@@ -811,6 +811,8 @@ async def email_account_registration(context, page, user):
             add_loggs(r.text, 1)
             if 'OK' in r.text:
                 break
+            if 'ERROR_CAPTCHA_UNSOLVABLE' in r.text:
+                break
             await asyncio.sleep(5)
         element = await page.query_selector('body')
         elem = await element.text_content()
