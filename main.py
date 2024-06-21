@@ -69,7 +69,7 @@ def execute_sql(sql):
     return result
 
 
-async def standart_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: Dict = None, headers: Dict = None, cookies: Dict = None, data: Dict = None, json: Dict = None):
+async def standart_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: Dict = None, headers: Dict = None, cookies: Dict = None, data: Dict = None, json: Dict = None, files: Dict = None):
     """Стандартный запрос с возвратом текста его ответа."""
     pc = None
     if proxy_url:
@@ -85,8 +85,10 @@ async def standart_request(method: str, url: str, proxy_url: str = None, timeout
         request += ',data=data,'
     if json:
         request += ',json=json'
+    if files:
+        request += ',files=files'
     async with aiohttp.ClientSession(connector=pc) as session:
-        async with eval(f"session.{method}(url,timeout=timeout,params=params,headers=headers,cookies=cookies,data=data,json=json)") as resp:
+        async with eval(f"session.{method}(url,timeout=timeout,params=params,headers=headers,cookies=cookies,data=data,json=json,files=files)") as resp:
             response = await resp.text(errors='replace')
             await session.close()
     return response
@@ -804,22 +806,25 @@ async def email_account_registration(context, page, user):
         # -----captcha-----
         await page.locator('img.sHzh3T69FUE-dkHh1-lzl').screenshot(path='LastCaptcha.jpg')
         await asyncio.sleep(3)
-        cid = SOLVER.send(file="LastCaptcha.jpg")
+        # cid = SOLVER.send(file="LastCaptcha.jpg")
+        # while True:
+        #     r = requests.get(f"https://rucaptcha.com/res.php?key=b7daa375616afc09a250286108ea037d&action=get&id={cid}")
+        #     add_loggs(r.text, 1)
+        #     if 'OK' in r.text:
+        #         break
+        #     if 'ERROR_CAPTCHA_UNSOLVABLE' in r.text:
+        #         return {'Error': 'ERROR_CAPTCHA_UNSOLVABLE'}
+        #     await asyncio.sleep(5)
+        logging.critical('старт')
+        captcha = await standart_request('post', 'https://captcher-odata.arbat.dev/solve_text_captcha_file', params={'service': 'rucatpcha'}, files={'file': open('LastCaptcha.jpg', 'r')})
         await asyncio.sleep(15)
-        while True:
-            r = requests.get(f"https://rucaptcha.com/res.php?key=b7daa375616afc09a250286108ea037d&action=get&id={cid}")
-            add_loggs(r.text, 1)
-            if 'OK' in r.text:
-                break
-            if 'ERROR_CAPTCHA_UNSOLVABLE' in r.text:
-                return 'ERROR_CAPTCHA_UNSOLVABLE'
-            await asyncio.sleep(5)
+        logging.critical('успешно')
         element = await page.query_selector('body')
         elem = await element.text_content()
         if "Please enter code" in elem.strip():
-            await page.fill('input[placeholder="Code"]', r.text.split("|")[1])
+            await page.fill('input[placeholder="Code"]', captcha['solution'])
         else:
-            await page.fill('input[placeholder="Код"]', r.text.split("|")[1])
+            await page.fill('input[placeholder="Код"]', captcha['solution'])
 
         await page.click('button[type="submit"]')
         await asyncio.sleep(10)
@@ -854,7 +859,6 @@ async def email_account_registration(context, page, user):
             last_cookies=cookie_list
         )
     except Exception as e:
-        add_loggs(f'Ошибка:   {e}', 1)
         return e
 
 if __name__ == "__main__":
