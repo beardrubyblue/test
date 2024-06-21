@@ -808,6 +808,7 @@ async def email_account_registration(context, page, user):
         await asyncio.sleep(15)
         while True:
             r = requests.get(f"https://rucaptcha.com/res.php?key=b7daa375616afc09a250286108ea037d&action=get&id={cid}")
+            add_loggs(r.text, 1)
             if 'OK' in r.text:
                 break
             await asyncio.sleep(5)
