@@ -804,20 +804,7 @@ async def email_account_registration(context, page, user):
         # -----captcha-----
         await page.locator('img.sHzh3T69FUE-dkHh1-lzl').screenshot(path='LastCaptcha.jpg')
         await asyncio.sleep(3)
-        # cid = SOLVER.send(file="LastCaptcha.jpg")
-        # while True:
-        #     r = requests.get(f"https://rucaptcha.com/res.php?key=b7daa375616afc09a250286108ea037d&action=get&id={cid}")
-        #     add_loggs(r.text, 1)
-        #     if 'OK' in r.text:
-        #         break
-        #     if 'ERROR_CAPTCHA_UNSOLVABLE' in r.text:
-        #         return {'Error': 'ERROR_CAPTCHA_UNSOLVABLE'}
-        #     await asyncio.sleep(5)
-        logging.critical('старт')
         captcha = json.loads(requests.post("https://captcher-odata.arbat.dev/solve_text_captcha_file", params={'service': 'rucaptcha'}, files={'file': open('LastCaptcha.jpg', 'rb')}).text)
-        # captcha = await standart_request('post', 'https://captcher-odata.arbat.dev/solve_text_captcha_file', params={'service': 'rucatpcha'}, files={'file': open('LastCaptcha.jpg', 'r')})
-        await asyncio.sleep(15)
-        logging.critical(captcha)
         element = await page.query_selector('body')
         elem = await element.text_content()
         if "Please enter code" in elem.strip():
