@@ -812,7 +812,7 @@ async def email_account_registration(context, page, user):
             if 'OK' in r.text:
                 break
             if 'ERROR_CAPTCHA_UNSOLVABLE' in r.text:
-                break
+                return 'ERROR_CAPTCHA_UNSOLVABLE'
             await asyncio.sleep(5)
         element = await page.query_selector('body')
         elem = await element.text_content()
