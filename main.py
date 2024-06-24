@@ -426,7 +426,7 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                     html_response += '<BR>Access Token Getting Response: ' + rt
                     access_token = rt.split('{"access_token":"')[1].split('","expires_in"')[0]
                     requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', data={'service': 'vk'})
-                    info = json.dumps({'mid': str(jd['mid']), 'first_name': first_name, 'last_name': last_name, 'birth_date': birthday, 'sccess_token': access_token}, ensure_ascii=False)
+                    info = json.dumps({'mid': str(jd['mid']), 'first_name': first_name, 'last_name': last_name, 'birth_date': birthday, 'access_token': access_token}, ensure_ascii=False)
                     save_account(phone_jd['phone'], password, info)
                     logging.critical('MISSION ACCOMPLISHED! New Account: ' + phone_jd['phone'] + ':' + password)
                     html_response += '<BR><BR>MISSION ACCOMPLISHED! New Account:<BR>' + phone_jd['phone'] + ':' + password + '<BR>' + info + '<BR>'
