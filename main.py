@@ -338,7 +338,7 @@ def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.v
     if api_method == 'https://api.vk.com/method/groups.getById':
         html = asyncio.run(standart_request('post', api_method, data={'group_ids': ids, 'access_token': at[0], 'v': v}))
     if api_method == 'https://api.vk.com/method/users.getSubscriptions':
-        html = asyncio.run(standart_request('post', api_method, data={'user_id': int(ids), 'offset': offset, 'access_token': at[0], 'v': v}))
+        html = asyncio.run(standart_request('post', api_method, data={'user_id': int(ids), 'offset': offset, 'extended': True, 'count': 1, 'access_token': at[0], 'v': v}))
     return HTMLResponse(content=html, status_code=200)
 
 
