@@ -329,12 +329,13 @@ def vk_revive_access_token(phone_string: str, password: str, credentials: HTTPBa
 
 
 @app.get("/vk-execute-api-method")
-def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.vk.com/method/groups.getById', v: str = '5.154', groups_ids: str = '1,2,3,4,5,6,7,8,9,10', credentials: HTTPBasicCredentials = Depends(SECURITY)):
+def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.vk.com/method/groups.getById', v: str = '5.154', ids: str = '1,2,3,4,5,6,7,8,9,10', credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Выполнение API методов ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
     at = asyncio.run(standart_execute_sql(f"select info->>'access_token' from accounts where id={account_id}"))
-    html = asyncio.run(standart_request('post', api_method, data={'groups_ids': groups_ids, 'access_token': at[0], 'v': v}))
+    if api_method == 'https://api.vk.com/method/groups.getById':
+        html = asyncio.run(standart_request('post', api_method, data={'group_ids': ids, 'access_token': at[0], 'v': v}))
     return HTMLResponse(content=html, status_code=200)
 
 
