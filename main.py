@@ -21,7 +21,6 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
 import psycopg
 from models import AccountCreation
-
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
@@ -58,18 +57,7 @@ def standart_finish(reason: str, timeout: int = 100000000):
     exit(666)
 
 
-def execute_sql(sql):
-    """Подключение к БД проекта и выполнение там переданного SQL с возвращением его результатов."""
-    db = psycopg.connect(**configs.db_config())
-    dbc = db.cursor()
-    dbc.execute(sql)
-    db.commit()
-    result = dbc.fetchall()
-    db.close()
-    return result
-
-
-async def standart_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: Dict = None, headers: Dict = None, cookies: Dict = None, data: Dict = None, json: Dict = None):
+async def standart_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: dict = None, headers: dict = None, cookies: dict = None, data: dict = None, json: dict = None):
     """Стандартный запрос с возвратом текста его ответа."""
     pc = None
     if proxy_url:
@@ -142,6 +130,19 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
             proxy_list.append(f"{pt}{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}")
     random.shuffle(proxy_list)
     return proxy_list[:max_amount]
+
+
+async def standart_execute_sql(sql: str):
+    """Подключение к БД проекта и выполнение там переданного SQL с возвращением его результатов."""
+    db = await psycopg.AsyncConnection.connect(**configs.db_config(), autocommit=True)
+    dbc = db.cursor()
+    await dbc.execute(sql)
+    if dbc.description:
+        result = await dbc.fetchall()
+    else:
+        result = None
+    await db.close()
+    return result
 
 
 def get_proxies(kind: int, amount: int = 1000):
@@ -332,7 +333,8 @@ def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.v
     """Выполнение API методов ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!', status_code=200)
-    html = asyncio.run(standart_request('post', api_method, data={'user_ids': ids, 'access_token': '7b3a9ab07b3a9ab07b3a9ab046782f63ef77b3a7b3a9ab01e1645dc745982e2ca791616', 'v': v}))
+    at = standart_request(f"select info->>'access_token' from accounts where id={account_id}")
+    html = asyncio.run(standart_request('post', api_method, data={'user_ids': ids, 'access_token': at[0], 'v': v}))
     return HTMLResponse(content=html, status_code=200)
 
 
@@ -826,7 +828,7 @@ async def email_account_registration(context, page, user):
             cookie_list = [cookie_dict]
             while True:
                 email = f'{email}@mail.ru'
-                ids = str(execute_sql("SELECT max(id) + 1 FROM accounts"))
+                ids = str(standart_execute_sql("SELECT max(id) + 1 FROM accounts"))
                 pattern = r'\d+'
                 ids = re.findall(pattern, ids)
                 phone_jd = ' '.join(ids)
