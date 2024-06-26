@@ -3,7 +3,7 @@ import re
 import string
 import configs
 import datetime
-from typing import Dict, Optional
+from typing import Optional
 import requests
 import asyncio
 import aiohttp
