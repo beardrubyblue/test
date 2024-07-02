@@ -709,8 +709,8 @@ async def gmail_account_registration(context, page, users):
         return e
 
 
-@app.get("/email-register")
-async def email_register(count: Optional[int] = None):
+@app.get("/mailru-register")
+async def mailru_register(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей EMail"""
     accounts = []
     count_acc = 0
