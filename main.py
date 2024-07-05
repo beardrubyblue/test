@@ -93,7 +93,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
     # Получение бесплатных https прокси случайных стран с сайтов [https://free-proxy-list.net или https://www.sslproxies.org].
     if kind == 1 and ptype == 3:
         async with aiohttp.ClientSession() as session:
-            response = await session.get('https://free-proxy-list.net')
+            response = await session.get('https://www.sslproxies.org')
             response = await response.text()
             soup = BeautifulSoup(response, 'html.parser')
             for row in soup.find('table', attrs={'class': 'table table-striped table-bordered'}).find_all('tr')[1:]:
