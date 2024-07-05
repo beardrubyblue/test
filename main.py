@@ -93,7 +93,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
     # Получение бесплатных https прокси случайных стран с сайтов [https://free-proxy-list.net или https://www.sslproxies.org].
     if kind == 1 and ptype == 3:
         async with aiohttp.ClientSession() as session:
-            response = await session.get('https://free-proxy-list.net')
+            response = await session.get('https://www.sslproxies.org')
             soup = BeautifulSoup(response.content, 'html.parser')
             for row in soup.find('table', attrs={'class': 'table table-striped table-bordered'}).find_all('tr')[1:]:
                 tds = row.find_all('td')
@@ -714,14 +714,14 @@ async def mailru_register(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей EMail"""
     accounts = []
     count_acc = 0
-    proxy_list = await standart_get_proxies(kind=2)
+    proxy_list = await standart_get_proxies(kind=1)
     proxy_index = 0
     if len(proxy_list) == 0:
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
     while count is None or len(accounts) < count:
         if proxy_index >= len(proxy_list):
-            proxy_list = await standart_get_proxies(kind=2, ptype=3)
+            proxy_list = await standart_get_proxies(kind=1, ptype=3)
             proxy_index = 0
         pr = proxy_list[proxy_index].split('://')[1].split('@')
         username, password = pr[0].split(':')
