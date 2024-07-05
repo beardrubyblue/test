@@ -94,7 +94,8 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
     if kind == 1 and ptype == 3:
         async with aiohttp.ClientSession() as session:
             response = await session.get('https://free-proxy-list.net')
-            soup = BeautifulSoup(response.content, 'html.parser')
+            response = await response.text()
+            soup = BeautifulSoup(response, 'html.parser')
             for row in soup.find('table', attrs={'class': 'table table-striped table-bordered'}).find_all('tr')[1:]:
                 tds = row.find_all('td')
                 if tds[6].text.strip() == 'yes':
