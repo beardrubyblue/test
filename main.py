@@ -1,7 +1,7 @@
 import logging
 import re
 import string
-# import configs
+import configs
 import datetime
 from typing import Optional
 import requests
@@ -22,13 +22,13 @@ from twocaptcha import TwoCaptcha
 import psycopg
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
-DB = psycopg.connect(dbname='postgres', user='postgres', password='svdbjnsj5788393930_sdjdjd', host='10.9.28.54', port=5432)
+DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
 app = FastAPI(title='UniReger')
 SECURITY = HTTPBasic()
 CC = {
     'server': 'rucaptcha.com',
-    'apiKey': 'b7daa375616afc09a250286108ea037d',
+    'apiKey': configs.TwoCaptchaApiKey,
     'softId': '',
     'callback': '',
     'defaultTimeout': 120,
@@ -135,7 +135,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
 
 async def standart_execute_sql(sql: str):
     """Подключение к БД проекта и выполнение там переданного SQL с возвращением его результатов."""
-    db = await psycopg.AsyncConnection.connect(dbname='postgres', user='postgres', password='svdbjnsj5788393930_sdjdjd', host='10.9.28.54', port=5432, autocommit=True)
+    db = await psycopg.AsyncConnection.connect(**configs.db_config())
     dbc = db.cursor()
     await dbc.execute(sql)
     if dbc.description:
@@ -868,14 +868,20 @@ async def email_account_registration(context, page, user):
                 sms = ' '.join(sms)
                 await page.fill('input', sms, timeout=1000)
                 await page.click('button[type="submit"]')
+                await asyncio.sleep(10)
                 element = await page.query_selector('body')
                 elem = await element.text_content()
-
+                phone = phone_jd['phone']
                 if "This VK ID is linked to your phone number." in elem.strip():
-                    vk_user = standart_execute_sql(f'select password from account where phone = {phone_jd["phone"]}')
+                    logging.critical('ggfg')
+                    vk_user = standart_execute_sql(f'select password from accounts where phone = {phone}')
                     logging.critical(vk_user)
+                    logging.critical('ggfg!!!!!!!!!!!!!!!!!!!')
+                    await asyncio.sleep(2000)
                     await page.fill('input', vk_user, timeout=1000)
-
+                    await asyncio.sleep(2000)
+                else:
+                    return 0
             except Exception as e:
                 return f"Ошибка при заполнении: {e}"
 
