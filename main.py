@@ -735,6 +735,7 @@ async def mailru_register(count: Optional[int] = None):
             # 'username': username,
             # 'password': password
         }
+        logging.critical(proxy)
 
         user = json.loads(
             await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={MAIL_KIND_ID}'))
