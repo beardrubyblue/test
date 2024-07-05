@@ -811,6 +811,7 @@ async def email_account_registration(context, page, user):
         await page.locator('img.sHzh3T69FUE-dkHh1-lzl').screenshot(path='LastCaptcha.jpg')
         await asyncio.sleep(3)
         captcha = json.loads(requests.post("https://captcher-odata.arbat.dev/solve_text_captcha_file", params={'service': 'rucaptcha'}, files={'file': open('LastCaptcha.jpg', 'rb')}).text)
+
         element = await page.query_selector('body')
         elem = await element.text_content()
         if "Please enter code" in elem.strip():
