@@ -729,17 +729,17 @@ async def mailru_register(count: Optional[int] = None):
         host, port = pr[0].split(':')
         if " " in host:
             host = host.replace(" ", "")
-        # proxy = {
-        #     'server': f'http://{host}:{port}',
-        #     # 'username': username,
-        #     # 'password': password
-        # }
-
         proxy = {
-            'server': f'http://147.45.52.38:9981',
-            'username': 'jpcmrD',
-            'password': 'MfF3ys'
+            'server': f'http://{host}:{port}',
+            # 'username': username,
+            # 'password': password
         }
+        #
+        # proxy = {
+        #     'server': f'http://147.45.52.38:9981',
+        #     'username': 'jpcmrD',
+        #     'password': 'MfF3ys'
+        # }
 
         user = json.loads(
             await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={MAIL_KIND_ID}'))
