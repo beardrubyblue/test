@@ -726,14 +726,14 @@ async def mailru_register(count: Optional[int] = None):
             proxy_list = await standart_get_proxies(kind=1, ptype=3)
             proxy_index = 0
         pr = proxy_list[proxy_index].split('://')[1].split('@')
-        username, password = pr[0].split(':')
-        host, port = pr[1].split(':')
+        # username, password = pr[0].split(':')
+        host, port = pr[0].split(':')
         if " " in host:
             host = host.replace(" ", "")
         proxy = {
             'server': f'http://{host}:{port}',
-            'username': username,
-            'password': password
+            # 'username': username,
+            # 'password': password
         }
 
         user = json.loads(
