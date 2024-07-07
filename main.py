@@ -28,7 +28,7 @@ app = FastAPI(title='UniReger')
 SECURITY = HTTPBasic()
 CC = {
     'server': 'rucaptcha.com',
-    'apiKey': configs.TwoCaptchaApiKey,
+    'apiKey': 'b7daa375616afc09a250286108ea037d',
     'softId': '',
     'callback': '',
     'defaultTimeout': 120,
@@ -507,6 +507,7 @@ async def send_acc(kind_id, phone_jd: str, password, first_name, last_name, birt
         "humanoid_id": humanoid_id,
         "last_cookies": last_cookies
     }
+    logging.critical(data)
     async with aiohttp.ClientSession() as session:
         async with session.post('https://accman-odata.arbat.dev/create', json=data) as response:
             return response
@@ -735,11 +736,11 @@ async def mailru_register(count: Optional[int] = None):
             # 'password': password
         }
         #
-        # proxy = {
-        #     'server': f'http://147.45.52.38:9981',
-        #     'username': 'jpcmrD',
-        #     'password': 'MfF3ys'
-        # }
+        proxy = {
+            'server': f'http://147.45.52.38:9981',
+            'username': 'jpcmrD',
+            'password': 'MfF3ys'
+        }
 
         user = json.loads(
             await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={MAIL_KIND_ID}'))
@@ -827,6 +828,35 @@ async def email_account_registration(context, page, user):
 
                 await page.click('button[type="submit"]')
                 await asyncio.sleep(10)
+                element = await page.query_selector('body')
+                elem = await element.text_content()
+
+                if "Добро пожаловать в Mail.ru!" in elem.strip():
+                    add_loggs('Finish registration', 1)
+                    cookies = await context.cookies()
+                    cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+                    cookie_list = [cookie_dict]
+                    while True:
+                        email = f'{email}@mail.ru'
+                        ids = str(standart_execute_sql("SELECT max(id) + 1 FROM accounts"))
+                        pattern = r'\d+'
+                        ids = re.findall(pattern, ids)
+                        phone_jd = ' '.join(ids)
+                        res = await send_acc(MAIL_KIND_ID, phone_jd, password, first_name, last_name,
+                                             f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
+                        add_loggs('Created', 1)
+                        if res.status == 200:
+                            break
+                elif "Укажите телефон" in elem.strip():
+                    return {'Error': 'Registration with phone!!!!!!!!!!'}
+                else:
+                    return 'Error'
+                return AccountCreation(
+                    phone=phone_jd,
+                    password=password,
+                    humanoid_id=humanoid_id,
+                    last_cookies=cookie_list
+                )
             except Exception as e:
                 return f"Ошибка при заполнении: {e}"
         else:
@@ -855,6 +885,10 @@ async def email_account_registration(context, page, user):
                 await elements[2].fill(email, timeout=1000)
                 await elements[3].fill(phone_string, timeout=1000)
                 await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/button')
+                element = await page.query_selector('body')
+                elem = await element.text_content()
+                if "Номер уже используется другим пользователем" in elem.strip():
+                    return {'Error': 'this phone is already in use'}
                 await asyncio.sleep(10)
                 for r in range(30):
                     url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(
@@ -867,53 +901,52 @@ async def email_account_registration(context, page, user):
                 sms = re.findall(pattern, sms)
                 sms = ' '.join(sms)
                 await page.fill('input', sms, timeout=1000)
-                await page.click('button[type="submit"]')
+                # await page.click('button[type="submit"]')
                 await asyncio.sleep(10)
+                phone = phone_jd['phone']
                 element = await page.query_selector('body')
                 elem = await element.text_content()
-                phone = phone_jd['phone']
-                if "This VK ID is linked to your phone number." in elem.strip():
-                    logging.critical('ggfg')
-                    vk_user = standart_execute_sql(f'select password from accounts where phone = {phone}')
+                if "This VK ID is linked to your phone number." in elem.strip() or "Забыли пароль?" in elem.strip():
+                    logging.critical(phone)
+                    vk_user = await standart_execute_sql(f"SELECT password FROM accounts WHERE phone = '{phone}'")
                     logging.critical(vk_user)
                     logging.critical('ggfg!!!!!!!!!!!!!!!!!!!')
-                    await asyncio.sleep(2000)
                     await page.fill('input', vk_user, timeout=1000)
-                    await asyncio.sleep(2000)
+                    await asyncio.sleep(1)
                 else:
-                    return 0
+                    if user['sex'] == 'female':
+                        await page.click('xpath=//*[@id="signupForm"]/div[1]/div[2]/div/label[2]')
+                    await asyncio.sleep(1)
+                    await page.click('button[type="submit"]')
+                    await asyncio.sleep(10)
+
+                    # -----finish-----
+                    element = await page.query_selector('body')
+                    elem = await element.text_content()
+                if "Добро пожаловать в Mail.ru!" in elem.strip():
+                    add_loggs('Finish registration', 1)
+                    while True:
+                        email = f'{email}@mail.ru'
+                        password = ''
+                        cookies = await context.cookies()
+                        cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+                        cookie_list = [cookie_dict]
+                        res = await send_acc(MAIL_KIND_ID, phone, password, first_name, last_name,
+                                             f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
+                        url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
+                        await standart_request('post', url, data={'service': 'mail'})
+                        if res.status == 200:
+                            break
+                        await asyncio.sleep(60)
+                    add_loggs('Created', 1)
+                return AccountCreation(
+                    phone=phone,
+                    password=password,
+                    humanoid_id=humanoid_id,
+                    last_cookies=cookie_list
+                )
             except Exception as e:
                 return f"Ошибка при заполнении: {e}"
-
-        # -----finish-----
-        element = await page.query_selector('body')
-        elem = await element.text_content()
-
-        if "Добро пожаловать в Mail.ru!" in elem.strip():
-            add_loggs('Finish registration', 1)
-            cookies = await context.cookies()
-            cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
-            cookie_list = [cookie_dict]
-            while True:
-                email = f'{email}@mail.ru'
-                ids = str(standart_execute_sql("SELECT max(id) + 1 FROM accounts"))
-                pattern = r'\d+'
-                ids = re.findall(pattern, ids)
-                phone_jd = ' '.join(ids)
-                res = await send_acc(MAIL_KIND_ID, phone_jd, password, first_name, last_name, f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
-                add_loggs('Created', 1)
-                if res.status == 200:
-                    break
-        elif "Укажите телефон" in elem.strip():
-            return {'Error': 'Registration with phone!!!!!!!!!!'}
-        else:
-            return 'Error'
-        return AccountCreation(
-            phone=phone_jd,
-            password=password,
-            humanoid_id=humanoid_id,
-            last_cookies=cookie_list
-        )
     except Exception as e:
         return e
 
