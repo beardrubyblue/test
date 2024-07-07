@@ -735,19 +735,13 @@ async def mailru_register(count: Optional[int] = None):
             # 'username': username,
             # 'password': password
         }
-        #
-        proxy = {
-            'server': f'http://147.45.52.38:9981',
-            'username': 'jpcmrD',
-            'password': 'MfF3ys'
-        }
 
         user = json.loads(
             await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={MAIL_KIND_ID}'))
 
         async with async_playwright() as playwright:
             chromium = playwright.chromium
-            browser = await chromium.launch(headless=False)
+            browser = await chromium.launch()
             context = await browser.new_context(proxy=proxy)
             page = await context.new_page()
             account = await email_account_registration(context, page, user)
