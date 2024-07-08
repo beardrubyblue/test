@@ -906,7 +906,7 @@ async def email_account_registration(context, page, user):
                     vk_user = await standart_execute_sql(f"SELECT password FROM accounts WHERE phone = '{phone}'")
                     logging.critical(vk_user)
                     logging.critical('ggfg!!!!!!!!!!!!!!!!!!!')
-                    await page.fill('input', vk_user, timeout=1000)
+                    await page.fill('input', vk_user[0][0], timeout=1000)
                     await asyncio.sleep(1)
                 else:
                     if user['sex'] == 'female':
