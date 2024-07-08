@@ -717,24 +717,24 @@ async def mailru_register(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей EMail"""
     accounts = []
     count_acc = 0
-    proxy_list = await standart_get_proxies(kind=1)
+    proxy_list = await standart_get_proxies(kind=2)
     proxy_index = 0
     if len(proxy_list) == 0:
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
     while count is None or len(accounts) < count:
         if proxy_index >= len(proxy_list):
-            proxy_list = await standart_get_proxies(kind=1, ptype=3)
+            proxy_list = await standart_get_proxies(kind=2, ptype=3)
             proxy_index = 0
         pr = proxy_list[proxy_index].split('://')[1].split('@')
-        # username, password = pr[0].split(':')
+        username, password = pr[0].split(':')
         host, port = pr[0].split(':')
         if " " in host:
             host = host.replace(" ", "")
         proxy = {
             'server': f'http://{host}:{port}',
-            # 'username': username,
-            # 'password': password
+            'username': username,
+            'password': password
         }
 
         user = json.loads(
