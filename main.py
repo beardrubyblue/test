@@ -979,7 +979,6 @@ async def vk_mail_ru(count: Optional[int] = None):
             context = await browser.new_context(proxy=proxy)
             page = await context.new_page()
             account = await vk_mail_ru_registration(context, page, user)
-            logging.critical(account)
             await browser.close()
             add_loggs(f'Ответ: {account}', 1)
             accounts.append(account)
