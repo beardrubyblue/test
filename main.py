@@ -45,6 +45,7 @@ with open('UserAgents.txt', 'r') as F:
 STATISTICS = []
 GMAIL_KIND_ID = 3
 MAIL_KIND_ID = 19
+VK_MAIL_RU_REVIVED = 36
 REGISTRATION_STARTED = False
 random.seed()
 
@@ -942,6 +943,175 @@ async def email_account_registration(context, page, user):
             except Exception as e:
                 return f"Ошибка при заполнении: {e}"
     except Exception as e:
+        return e
+
+
+@app.get("/@vk-mail-ru-register")
+async def vk_mail_ru(count: Optional[int] = None):
+    """регистрация одного или пачки учётных записей EMail"""
+    accounts = []
+    count_acc = 0
+    proxy_list = await standart_get_proxies(kind=2)
+    proxy_index = 0
+    if len(proxy_list) == 0:
+        standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
+    logging.critical(len(proxy_list))
+    while count is None or len(accounts) < count:
+        if proxy_index >= len(proxy_list):
+            proxy_list = await standart_get_proxies(kind=2, ptype=3)
+            proxy_index = 0
+        pr = proxy_list[proxy_index].split('://')[1].split('@')
+        username, password = pr[0].split(':')
+        host, port = pr[1].split(':')
+        if " " in host:
+            host = host.replace(" ", "")
+        proxy = {
+            'server': f'http://{host}:{port}',
+            'username': username,
+            'password': password
+        }
+        user = json.loads(
+            await standart_request('get',
+                                   'https://accman-odata.arbat.dev/rent-free-random?kind_id=21&json_answer=true'))
+        async with async_playwright() as playwright:
+            chromium = playwright.chromium
+            browser = await chromium.launch()
+            context = await browser.new_context(proxy=proxy)
+            page = await context.new_page()
+            account = await vk_mail_ru_registration(context, page, user)
+            logging.critical(account)
+            await browser.close()
+            add_loggs(f'Ответ: {account}', 1)
+            accounts.append(account)
+            add_loggs('------------------------------------', 1)
+
+        proxy_index += 1
+        count_acc += 1
+        logging.critical(count_acc)
+    return {'accounts': accounts}
+
+
+async def vk_mail_ru_registration(context, page, user):
+
+    # -----params-----
+    user_id = user['id']
+    humanoid_id = user['humanoid_id']
+    phone = user['phone']
+    password = user['password']
+    try:
+        await page.goto("https://id.vk.com/")
+        await asyncio.sleep(2)
+        add_loggs('Start Registration', 1)
+        await page.click('xpath=//*[@id="about_section"]/section/div[1]/div/div[1]/button')
+        await asyncio.sleep(2)
+        await page.fill('input', phone)
+        await page.click('button[type="submit"]')
+        await asyncio.sleep(1)
+        element = await page.query_selector('body')
+        elem = await element.text_content()
+        if "Войти при помощи пароля" in elem.strip():
+            await page.click('.vkc__Bottom__switchToPassword')
+            await page.fill('input[name="password"]', password)
+            await page.click('button[type="submit"]')
+        else:
+            await page.fill('input[name="password"]', password)
+            await page.click('button[type="submit"]')
+        await asyncio.sleep(2)
+
+        if humanoid_id is None:
+            await asyncio.sleep(2)
+            await page.goto("https://id.vk.com/account/#/main")
+            await asyncio.sleep(2)
+            await page.goto("https://id.vk.com/account/#/personal")
+            await asyncio.sleep(2)
+            humanoid = json.loads(
+                await standart_request('get',
+                                       'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id=21'))
+            humanoid_first_name = humanoid['first_name']
+            humanoid_last_name = humanoid['last_name']
+            humanoid_sex = humanoid['sex']
+            humanoid_day = int(humanoid['birth_date'].split('-')[2])
+            humanoid_month = int(humanoid['birth_date'].split('-')[1])
+            humanoid_year = humanoid['birth_date'].split('-')[0]
+            await asyncio.sleep(1)
+            await page.fill('input[name="first_name"]', humanoid_first_name)
+            await page.fill('input[name="last_name"]', humanoid_last_name)
+            await asyncio.sleep(1)
+            await page.click(
+                'xpath=//*[@id="personal"]/div/div[3]/div/div[1]/div/section/form/div[2]/div[1]/div/div')
+            await asyncio.sleep(1)
+            await page.click(f'div[title="{humanoid_sex.title()}"]')
+            await asyncio.sleep(1)
+            await page.click('.vkuiDatePicker__year')
+            await asyncio.sleep(1)
+            await page.click(f'div[title="{humanoid_year}"]')
+            await asyncio.sleep(1)
+            await page.click('.vkuiDatePicker__month')
+            await asyncio.sleep(1)
+            if humanoid_sex == 'female':
+                await page.click(f'div[id=":r5:-{humanoid_month}"]')
+                await page.click('.vkuiDatePicker__day')
+                await asyncio.sleep(1)
+                await page.click(f'div[id=":r4:-{humanoid_day}"]')
+            else:
+                await page.click(f'div[id=":r2:-{humanoid_month}"]')
+                await page.click('.vkuiDatePicker__day')
+                await asyncio.sleep(1)
+                await page.click(f'div[id=":r1:-{humanoid_day}"]')
+            await page.click('button[data-test-id="personal-form-submit"]')
+            new_info = {
+                "mid": user['info']['mid'],
+                "first_name": humanoid_first_name,
+                "last_name": humanoid_last_name,
+                "birth_date": humanoid['birth_date'],
+                "access_token": user['info']['access_token']
+            }
+            await standart_request('put', f'https://accman-odata.arbat.dev/change-info?account_id={user_id}',
+                                   json=new_info)
+            DBC.execute(f'update accounts set humanoid_id = {humanoid["id"]} where id = {user_id}')
+            await asyncio.sleep(2)
+        await page.goto("https://vk.mail.ru")
+        await asyncio.sleep(1)
+        await page.click('button[type="submit"]')
+        await asyncio.sleep(10)
+        element = await page.query_selector('body')
+        elem = await element.text_content()
+        if "Verify it's you" in elem.strip():
+            for r in range(30):
+                url = 'http://10.9.20.135:3000/phones/messages/' + user['phone'] + '?fromTs=0'
+                sms = await standart_request('get', url)
+                if sms != '{"messages":[]}':
+                    break
+                await asyncio.sleep(0.2)
+            pattern = r"MailRu: \d+"
+            sms = re.findall(pattern, sms)
+            sms = ' '.join(sms)
+            await page.fill('input', sms)
+        await asyncio.sleep(10)
+        input_element = await page.query_selector('input')
+        input_value = await input_element.input_value()
+        await page.click('button[type="submit"]')
+        await asyncio.sleep(10)
+        cookies = await context.cookies()
+        cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+        cookie_list = [cookie_dict]
+        while True:
+            email = input_value + '@vk.com'
+            res = await send_acc(VK_MAIL_RU_REVIVED, user['phone'], user['password'], humanoid_first_name,
+                                 humanoid_last_name, humanoid['birth_date'], humanoid["id"],
+                                 cookie_list, email)
+            if res.status == 200:
+                break
+        return AccountCreation(
+            kind_id=36,
+            phone=user['phone'],
+            password=user['password'],
+            info=new_info,
+            humanoid_id=humanoid_id,
+            last_cookies=cookie_list
+        )
+    except Exception as e:
+        add_loggs(f'Ошибка:   {e}', 1)
         return e
 
 if __name__ == "__main__":
