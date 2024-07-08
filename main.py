@@ -1091,10 +1091,10 @@ async def vk_mail_ru_registration(context, page, user):
         input_value = await input_element.input_value()
         await page.click('button[type="submit"]')
         await asyncio.sleep(10)
-        cookies = await context.cookies()
-        cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
-        cookie_list = [cookie_dict]
         while True:
+            cookies = await context.cookies()
+            cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+            cookie_list = [cookie_dict]
             email = input_value + '@vk.com'
             res = await send_acc(VK_MAIL_RU_REVIVED, user['phone'], user['password'], humanoid_first_name,
                                  humanoid_last_name, humanoid['birth_date'], humanoid["id"],
