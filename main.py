@@ -1043,6 +1043,8 @@ async def vk_mail_ru_registration(context, page, user):
             await asyncio.sleep(1)
             await page.click('.vkuiDatePicker__year')
             await asyncio.sleep(1)
+            if int(humanoid_year) > 2010:
+                return {'Error': 'birthday year > 2010'}
             await page.click(f'div[title="{humanoid_year}"]')
             await asyncio.sleep(1)
             await page.click('.vkuiDatePicker__month')
@@ -1053,10 +1055,10 @@ async def vk_mail_ru_registration(context, page, user):
                 await asyncio.sleep(1)
                 await page.click(f'div[id=":r4:-{humanoid_day}"]')
             else:
-                await page.click(f'div[id=":r2:-{humanoid_month}"]')
+                await page.click(f'div[id=":r3:-{humanoid_month}"]')
                 await page.click('.vkuiDatePicker__day')
                 await asyncio.sleep(1)
-                await page.click(f'div[id=":r1:-{humanoid_day}"]')
+                await page.click(f'div[id=":r2:-{humanoid_day}"]')
             await page.click('button[data-test-id="personal-form-submit"]')
             new_info = {
                 "mid": user['info']['mid'],
