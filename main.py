@@ -728,7 +728,7 @@ async def mailru_register(count: Optional[int] = None):
             proxy_index = 0
         pr = proxy_list[proxy_index].split('://')[1].split('@')
         username, password = pr[0].split(':')
-        host, port = pr[0].split(':')
+        host, port = pr[1].split(':')
         if " " in host:
             host = host.replace(" ", "")
         proxy = {
