@@ -736,7 +736,6 @@ async def mailru_register(count: Optional[int] = None):
             'username': username,
             'password': password
         }
-        logging.critical(proxy)
         user = json.loads(
             await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={MAIL_KIND_ID}'))
 
@@ -825,12 +824,11 @@ async def email_account_registration(context, page, user):
                 await asyncio.sleep(10)
                 element = await page.query_selector('body')
                 elem = await element.text_content()
-
+                cookies = await context.cookies()
+                cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+                cookie_list = [cookie_dict]
                 if "Добро пожаловать в Mail.ru!" in elem.strip():
                     add_loggs('Finish registration', 1)
-                    cookies = await context.cookies()
-                    cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
-                    cookie_list = [cookie_dict]
                     while True:
                         email = f'{email}@mail.ru'
                         ids = str(standart_execute_sql("SELECT max(id) + 1 FROM accounts"))
@@ -902,9 +900,7 @@ async def email_account_registration(context, page, user):
                 element = await page.query_selector('body')
                 elem = await element.text_content()
                 if "This VK ID is linked to your phone number." in elem.strip() or "Забыли пароль?" in elem.strip():
-                    logging.critical(phone)
                     vk_user = await standart_execute_sql(f"SELECT password FROM accounts WHERE phone = '{phone}'")
-                    logging.critical(vk_user)
                     logging.critical('ggfg!!!!!!!!!!!!!!!!!!!')
                     await page.fill('input', vk_user[0][0], timeout=1000)
                     await asyncio.sleep(1)
