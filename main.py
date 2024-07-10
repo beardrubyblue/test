@@ -918,14 +918,14 @@ async def email_account_registration(context, page, user):
                     # -----finish-----
                     element = await page.query_selector('body')
                     elem = await element.text_content()
+                cookies = await context.cookies()
+                cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+                cookie_list = [cookie_dict]
                 if "Добро пожаловать в Mail.ru!" in elem.strip():
                     add_loggs('Finish registration', 1)
                     while True:
                         email = f'{email}@mail.ru'
                         password = ''
-                        cookies = await context.cookies()
-                        cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
-                        cookie_list = [cookie_dict]
                         res = await send_acc(MAIL_KIND_ID, phone, password, first_name, last_name,
                                              f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
                         url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
@@ -1050,10 +1050,10 @@ async def vk_mail_ru_registration(context, page, user):
             await page.click('.vkuiDatePicker__month')
             await asyncio.sleep(1)
             if humanoid_sex == 'female':
-                await page.click(f'div[id=":r5:-{humanoid_month}"]')
+                await page.click(f'div[id=":r6:-{humanoid_month}"]')
                 await page.click('.vkuiDatePicker__day')
                 await asyncio.sleep(1)
-                await page.click(f'div[id=":r4:-{humanoid_day}"]')
+                await page.click(f'div[id=":r5:-{humanoid_day}"]')
             else:
                 await page.click(f'div[id=":r3:-{humanoid_month}"]')
                 await page.click('.vkuiDatePicker__day')
