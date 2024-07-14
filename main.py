@@ -901,7 +901,6 @@ async def email_account_registration(context, page, user):
                 elem = await element.text_content()
                 if "This VK ID is linked to your phone number." in elem.strip() or "Забыли пароль?" in elem.strip():
                     vk_user = await standart_execute_sql(f"SELECT password FROM accounts WHERE phone = '{phone}'")
-                    logging.critical('ggfg!!!!!!!!!!!!!!!!!!!')
                     await page.fill('input', vk_user[0][0], timeout=1000)
                     await asyncio.sleep(1)
                 else:
