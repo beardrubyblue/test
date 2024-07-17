@@ -1,7 +1,6 @@
 import logging
 import re
 import string
-import configs
 import datetime
 from typing import Optional
 import requests
@@ -20,6 +19,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
 import psycopg
+import configs
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
@@ -943,7 +943,7 @@ async def email_account_registration(context, page, user):
 
 @app.get("/@vk-mail-ru-register")
 async def vk_mail_ru(count: Optional[int] = None):
-    """регистрация одного или пачки учётных записей EMail"""
+    """регистрация одного или пачки учётных записей VKMail"""
     accounts = []
     count_acc = 0
     proxy_list = await standart_get_proxies(kind=2)
@@ -1041,19 +1041,18 @@ async def vk_mail_ru_registration(context, page, user):
             if int(humanoid_year) > 2010:
                 return {'Error': 'birthday year > 2010'}
             await page.click(f'div[title="{humanoid_year}"]')
-            await asyncio.sleep(1)
             await page.click('.vkuiDatePicker__month')
             await asyncio.sleep(1)
-            if humanoid_sex == 'female':
-                await page.click(f'div[id=":r6:-{humanoid_month}"]')
-                await page.click('.vkuiDatePicker__day')
-                await asyncio.sleep(1)
-                await page.click(f'div[id=":r5:-{humanoid_day}"]')
-            else:
-                await page.click(f'div[id=":r3:-{humanoid_month}"]')
-                await page.click('.vkuiDatePicker__day')
-                await asyncio.sleep(1)
-                await page.click(f'div[id=":r2:-{humanoid_day}"]')
+            months = {
+                1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
+                7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
+            }
+
+            month = months.get(humanoid_month)
+            await page.click(f'div[title="{month}"]')
+            await page.click('.vkuiDatePicker__day')
+            await asyncio.sleep(1)
+            await page.click(f'div[title="{humanoid_day}"]')
             await page.click('button[data-test-id="personal-form-submit"]')
             new_info = {
                 "mid": user['info']['mid'],
