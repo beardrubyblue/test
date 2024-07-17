@@ -28,7 +28,7 @@ app = FastAPI(title='UniReger')
 SECURITY = HTTPBasic()
 CC = {
     'server': 'rucaptcha.com',
-    'apiKey': 'b7daa375616afc09a250286108ea037d',
+    'apiKey': configs.TwoCaptchaApiKey,
     'softId': '',
     'callback': '',
     'defaultTimeout': 120,
