@@ -990,6 +990,8 @@ async def vk_mail_ru_registration(context, page, user):
     # -----params-----
     user_id = user['id']
     humanoid_id = user['humanoid_id']
+    if humanoid_id:
+        return {'Error': 'Registred'}
     phone = user['phone']
     password = user['password']
     try:
@@ -1003,7 +1005,7 @@ async def vk_mail_ru_registration(context, page, user):
         await asyncio.sleep(1)
         element = await page.query_selector('body')
         elem = await element.text_content()
-        if "Войти при помощи пароля" in elem.strip():
+        if "Войти при помощи пароля" in elem.strip() or "Sign in using password" in elem.strip():
             await page.click('.vkc__Bottom__switchToPassword')
             await page.fill('input[name="password"]', password)
             await page.click('button[type="submit"]')
@@ -1013,7 +1015,7 @@ async def vk_mail_ru_registration(context, page, user):
         await asyncio.sleep(2)
 
         if humanoid_id is None:
-            await asyncio.sleep(2)
+            await asyncio.sleep(5)
             await page.goto("https://id.vk.com/account/#/main")
             await asyncio.sleep(2)
             await page.goto("https://id.vk.com/account/#/personal")
