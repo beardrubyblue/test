@@ -45,7 +45,7 @@ with open('UserAgents.txt', 'r') as F:
 STATISTICS = []
 GMAIL_KIND_ID = 3
 MAIL_KIND_ID = 19
-VK_MAIL_RU_REVIVED = 36
+VK_MAIL_RU = 35
 REGISTRATION_STARTED = False
 random.seed()
 
@@ -967,7 +967,7 @@ async def vk_mail_ru(count: Optional[int] = None):
         }
         user = json.loads(
             await standart_request('get',
-                                   'https://accman-odata.arbat.dev/rent-free-random?kind_id=21&json_answer=true'))
+                                   'https://accman-odata.arbat.dev/rent-free-random?kind_id=2&json_answer=true'))
         async with async_playwright() as playwright:
             chromium = playwright.chromium
             browser = await chromium.launch()
@@ -1022,7 +1022,7 @@ async def vk_mail_ru_registration(context, page, user):
             await asyncio.sleep(2)
             humanoid = json.loads(
                 await standart_request('get',
-                                       'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id=21'))
+                                       'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id=35'))
             humanoid_first_name = humanoid['first_name']
             humanoid_last_name = humanoid['last_name']
             humanoid_sex = humanoid['sex']
@@ -1049,7 +1049,6 @@ async def vk_mail_ru_registration(context, page, user):
                 1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
                 7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
             }
-
             month = months.get(humanoid_month)
             await page.click(f'div[title="{month}"]')
             await page.click('.vkuiDatePicker__day')
@@ -1094,13 +1093,13 @@ async def vk_mail_ru_registration(context, page, user):
             cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
             cookie_list = [cookie_dict]
             email = input_value + '@vk.com'
-            res = await send_acc(VK_MAIL_RU_REVIVED, user['phone'], user['password'], humanoid_first_name,
+            res = await send_acc(VK_MAIL_RU, user['phone'], user['password'], humanoid_first_name,
                                  humanoid_last_name, humanoid['birth_date'], humanoid["id"],
                                  cookie_list, email)
             if res.status == 200:
                 break
         return AccountCreation(
-            kind_id=36,
+            kind_id=VK_MAIL_RU,
             phone=user['phone'],
             password=user['password'],
             info=new_info,
