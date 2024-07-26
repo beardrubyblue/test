@@ -967,7 +967,7 @@ async def vk_mail_ru(count: Optional[int] = None):
         }
         user = json.loads(
             await standart_request('get',
-                                   'https://accman-odata.arbat.dev/rent-free-random?kind_id=2&json_answer=true'))
+                                   'https://accman-odata.arbat.dev/rent-free-random?kind_id=2&renter=unireger&json_answer=true'))
         async with async_playwright() as playwright:
             chromium = playwright.chromium
             browser = await chromium.launch()
