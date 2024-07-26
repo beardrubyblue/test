@@ -986,7 +986,7 @@ async def vk_mail_ru(count: Optional[int] = None):
 
 
 async def vk_mail_ru_registration(context, page, user):
-
+    logging.critical(user)
     # -----params-----
     user_id = user['id']
     humanoid_id = user['humanoid_id']
