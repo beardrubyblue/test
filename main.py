@@ -1162,8 +1162,7 @@ async def ya_mail_ru_registration(context, page, user):
     password = generate_pass(random.randint(15, 20))
     ya_mail = generate_mail(first_name, last_name, year)
     phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
-    phone_string = phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + \
-                   phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
+    phone_string = phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
     try:
         await page.goto("https://passport.yandex.ru/registration/mail?from=mail&require_hint=1&origin=hostroot_homer_reg_ru&retpath=https%3A%2F%2Fmail.yandex.ru&backpath=https%3A%2F%2Fmail.yandex.ru%3Fnoretpath%3D1")
         await asyncio.sleep(2)
