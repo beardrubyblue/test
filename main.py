@@ -774,7 +774,6 @@ async def email_account_registration(context, page, user):
     phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
     phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + \
                    phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
-
     try:
         await page.goto("https://account.mail.ru/signup")
         await asyncio.sleep(2)
