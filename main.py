@@ -1108,124 +1108,124 @@ async def vk_mail_ru_registration(context, page, user):
         add_loggs(f'Ошибка:   {e}', 1)
         return e
 
-    @app.get("/@ya-mail-ru-register")
-    async def ya_mail_ru(count: Optional[int] = None):
-        """регистрация одного или пачки учётных записей YAmail"""
-        accounts = []
-        count_acc = 0
-        proxy_list = await standart_get_proxies(kind=2)
-        proxy_index = 0
-        if len(proxy_list) == 0:
-            standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
-        logging.critical(len(proxy_list))
-        while count is None or len(accounts) < count:
-            if proxy_index >= len(proxy_list):
-                proxy_list = await standart_get_proxies(kind=2, ptype=3)
-                proxy_index = 0
-            pr = proxy_list[proxy_index].split('://')[1].split('@')
-            username, password = pr[0].split(':')
-            host, port = pr[1].split(':')
-            if " " in host:
-                host = host.replace(" ", "")
-            proxy = {
-                'server': f'http://{host}:{port}',
-                'username': username,
-                'password': password
-            }
-            user = json.loads(
-                await standart_request('get',
-                                       f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={YANDEX_KIND_ID}'))
-            async with async_playwright() as playwright:
-                chromium = playwright.chromium
-                browser = await chromium.launch(headless=False)
-                context = await browser.new_context(proxy=proxy)
-                page = await context.new_page()
-                account = await ya_mail_ru_registration(context, page, user)
-                logging.critical(account)
-                await browser.close()
-                add_loggs(f'Ответ: {account}', 1)
-                accounts.append(account)
-                add_loggs('------------------------------------', 1)
+@app.get("/@ya-mail-ru-register")
+async def ya_mail_ru(count: Optional[int] = None):
+    """регистрация одного или пачки учётных записей YAmail"""
+    accounts = []
+    count_acc = 0
+    proxy_list = await standart_get_proxies(kind=2)
+    proxy_index = 0
+    if len(proxy_list) == 0:
+        standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
+    logging.critical(len(proxy_list))
+    while count is None or len(accounts) < count:
+        if proxy_index >= len(proxy_list):
+            proxy_list = await standart_get_proxies(kind=2, ptype=3)
+            proxy_index = 0
+        pr = proxy_list[proxy_index].split('://')[1].split('@')
+        username, password = pr[0].split(':')
+        host, port = pr[1].split(':')
+        if " " in host:
+            host = host.replace(" ", "")
+        proxy = {
+            'server': f'http://{host}:{port}',
+            'username': username,
+            'password': password
+        }
+        user = json.loads(
+            await standart_request('get',
+                                   f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={YANDEX_KIND_ID}'))
+        async with async_playwright() as playwright:
+            chromium = playwright.chromium
+            browser = await chromium.launch(headless=False)
+            context = await browser.new_context(proxy=proxy)
+            page = await context.new_page()
+            account = await ya_mail_ru_registration(context, page, user)
+            logging.critical(account)
+            await browser.close()
+            add_loggs(f'Ответ: {account}', 1)
+            accounts.append(account)
+            add_loggs('------------------------------------', 1)
 
-            proxy_index += 1
-            count_acc += 1
-            logging.critical(count_acc)
-        return {'accounts': accounts}
+        proxy_index += 1
+        count_acc += 1
+        logging.critical(count_acc)
+    return {'accounts': accounts}
 
-    async def ya_mail_ru_registration(context, page, user):
-        # -----params-----
-        humanoid_id = user['id']
-        first_name = user['first_name']
-        last_name = user['last_name']
-        year = user['birth_date'].split('-')[0]
-        password = generate_pass(random.randint(15, 20))
-        ya_mail = generate_mail(first_name, last_name, year)
-        phone_jd = json.loads(
-            await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
-        phone_string = phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + \
-                       phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
-        try:
-            await page.goto(
-                "https://passport.yandex.ru/registration/mail?from=mail&require_hint=1&origin=hostroot_homer_reg_ru&retpath=https%3A%2F%2Fmail.yandex.ru&backpath=https%3A%2F%2Fmail.yandex.ru%3Fnoretpath%3D1")
-            await asyncio.sleep(2)
-            add_loggs('Start Registration', 1)
-            await page.fill('input[name="firstname"]', first_name)
-            await page.fill('input[name="lastname"]', last_name)
-            await page.fill('input[name="login"]', ya_mail)
-            await page.fill('input[name="password"]', password)
-            await page.fill('input[name="password_confirm"]', password)
-            await page.fill('input[name="phone"]', phone_string)
-            await asyncio.sleep(2)
-            await page.click('button[type="submit"]')
-            await asyncio.sleep(2)
-            for r in range(30):
-                url = 'http://10.9.20.135:3000/phones/messages/' + phone_jd['phone'] + '?fromTs=0' + str(
-                    phone_jd['listenFromTimestamp'])
-                sms = await standart_request('get', url)
-                if sms != '{"messages":[]}':
+async def ya_mail_ru_registration(context, page, user):
+    # -----params-----
+    humanoid_id = user['id']
+    first_name = user['first_name']
+    last_name = user['last_name']
+    year = user['birth_date'].split('-')[0]
+    password = generate_pass(random.randint(15, 20))
+    ya_mail = generate_mail(first_name, last_name, year)
+    phone_jd = json.loads(
+        await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
+    phone_string = phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + \
+                   phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
+    try:
+        await page.goto(
+            "https://passport.yandex.ru/registration/mail?from=mail&require_hint=1&origin=hostroot_homer_reg_ru&retpath=https%3A%2F%2Fmail.yandex.ru&backpath=https%3A%2F%2Fmail.yandex.ru%3Fnoretpath%3D1")
+        await asyncio.sleep(2)
+        add_loggs('Start Registration', 1)
+        await page.fill('input[name="firstname"]', first_name)
+        await page.fill('input[name="lastname"]', last_name)
+        await page.fill('input[name="login"]', ya_mail)
+        await page.fill('input[name="password"]', password)
+        await page.fill('input[name="password_confirm"]', password)
+        await page.fill('input[name="phone"]', phone_string)
+        await asyncio.sleep(2)
+        await page.click('button[type="submit"]')
+        await asyncio.sleep(2)
+        for r in range(30):
+            url = 'http://10.9.20.135:3000/phones/messages/' + phone_jd['phone'] + '?fromTs=0' + str(
+                phone_jd['listenFromTimestamp'])
+            sms = await standart_request('get', url)
+            if sms != '{"messages":[]}':
+                break
+            await asyncio.sleep(0.2)
+        pattern = r'(\d{3}-\d{3})'
+        match = re.search(pattern, sms)
+        if match:
+            code = match.group(1)
+        else:
+            code = ""
+        await asyncio.sleep(2)
+        await page.fill('input[name="phoneCode"]', code)
+        await asyncio.sleep(2)
+        await page.click('button[type="submit"]')
+        await asyncio.sleep(5)
+        await page.click('xpath=//*[@id="root"]/div/div[1]/div[2]/main/div/div/div/div[3]/div/span/a')
+        await asyncio.sleep(5)
+        cookies = await context.cookies()
+        cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+        cookie_list = [cookie_dict]
+        element = await page.query_selector('body')
+        elem = await element.text_content()
+        if "В папке «Входящие» нет писем" in elem.strip():
+            while True:
+                mail = ya_mail + '@yandex.ru'
+                res = await send_acc(YANDEX_KIND_ID, phone_jd['phone'], password, first_name, last_name,
+                                     user['birth_date'], humanoid_id,
+                                     cookie_list, mail)
+                if res.status == 200:
                     break
-                await asyncio.sleep(0.2)
-            pattern = r'(\d{3}-\d{3})'
-            match = re.search(pattern, sms)
-            if match:
-                code = match.group(1)
-            else:
-                code = ""
-            await asyncio.sleep(2)
-            await page.fill('input[name="phoneCode"]', code)
-            await asyncio.sleep(2)
-            await page.click('button[type="submit"]')
-            await asyncio.sleep(5)
-            await page.click('xpath=//*[@id="root"]/div/div[1]/div[2]/main/div/div/div/div[3]/div/span/a')
-            await asyncio.sleep(5)
-            cookies = await context.cookies()
-            cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
-            cookie_list = [cookie_dict]
-            element = await page.query_selector('body')
-            elem = await element.text_content()
-            if "В папке «Входящие» нет писем" in elem.strip():
-                while True:
-                    mail = ya_mail + '@yandex.ru'
-                    res = await send_acc(YANDEX_KIND_ID, phone_jd['phone'], password, first_name, last_name,
-                                         user['birth_date'], humanoid_id,
-                                         cookie_list, mail)
-                    if res.status == 200:
-                        break
-                url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
-                await standart_request('post', url, data={'service': 'yandex'})
-            # await page.goto('https://id.yandex.ru/security/enter-methods')
-            # await page.click('div[data-testid="password-only-list-item"]')
-            await asyncio.sleep(3)
-            return AccountCreation(
-                kind_id=YANDEX_KIND_ID,
-                phone=phone_jd['phone'],
-                password=password,
-                humanoid_id=humanoid_id,
-                last_cookies=cookie_list
-            )
-        except Exception as e:
-            add_loggs(f'Ошибка:   {e}', 1)
-            return e
+            url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
+            await standart_request('post', url, data={'service': 'yandex'})
+        # await page.goto('https://id.yandex.ru/security/enter-methods')
+        # await page.click('div[data-testid="password-only-list-item"]')
+        await asyncio.sleep(3)
+        return AccountCreation(
+            kind_id=YANDEX_KIND_ID,
+            phone=phone_jd['phone'],
+            password=password,
+            humanoid_id=humanoid_id,
+            last_cookies=cookie_list
+        )
+    except Exception as e:
+        add_loggs(f'Ошибка:   {e}', 1)
+        return e
 
 
 @app.get("/@ya-mail-ru-register")
