@@ -286,8 +286,8 @@ def save_account(phone_jd: str, password: str, info: str, humanoid_id: int = Non
         "info": json.loads(info),
         "humanoid_id": humanoid_id
     }
-    rr = requests.post('https://accman-odata.arbat.dev/create', headers=headers, json=json_data)
-    # rr = asyncio.run(make_request('post', 'https://accman-odata.arbat.dev/create', headers=headers, params=json_data))
+    rr = requests.post('https://accman.ad.dev.arbat.dev/create', headers=headers, json=json_data)
+    # rr = asyncio.run(make_request('post', 'https://accman.ad.dev.arbat.dev/create', headers=headers, params=json_data))
     logging.critical(rr.text)
     return rr
 
@@ -414,7 +414,7 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                 jd = json.loads(rr.text)['response']
                 logging.critical('SID: ' + login_sid)
                 password = js_userandom_string(21)
-                # hrr = requests.get('https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id=7')
+                # hrr = requests.get('https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=7')
                 # humanoid = json.loads(hrr.text)
                 # first_name = humanoid['first_name']
                 # last_name = humanoid['last_name']
@@ -510,7 +510,7 @@ async def send_acc(kind_id, phone_jd: str, password, first_name, last_name, birt
     }
     logging.critical(data)
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://accman-odata.arbat.dev/create', json=data) as response:
+        async with session.post('https://accman.ad.dev.arbat.dev/create', json=data) as response:
             return response
 
 
@@ -543,7 +543,7 @@ async def gmail_register(count: Optional[int] = None):
         add_loggs(f'proxy: {pr}', 1)
 
         users = json.loads(
-            await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={GMAIL_KIND_ID}'))
+            await standart_request('get', f'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id={GMAIL_KIND_ID}'))
 
         async with async_playwright() as playwright:
             chromium = playwright.firefox
@@ -737,7 +737,7 @@ async def mailru_register(count: Optional[int] = None):
             'password': password
         }
         user = json.loads(
-            await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={MAIL_KIND_ID}'))
+            await standart_request('get', f'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id={MAIL_KIND_ID}'))
 
         async with async_playwright() as playwright:
             chromium = playwright.chromium
@@ -966,7 +966,7 @@ async def vk_mail_ru(count: Optional[int] = None):
         }
         user = json.loads(
             await standart_request('get',
-                                   'https://accman-odata.arbat.dev/rent-free-random?kind_id=2&renter=unireger&json_answer=true'))
+                                   'https://accman.ad.dev.arbat.dev/rent-free-random?kind_id=2&renter=unireger&json_answer=true'))
         async with async_playwright() as playwright:
             chromium = playwright.chromium
             browser = await chromium.launch()
@@ -1020,7 +1020,7 @@ async def vk_mail_ru_registration(context, page, user):
             await asyncio.sleep(2)
             humanoid = json.loads(
                 await standart_request('get',
-                                       'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id=35'))
+                                       'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=35'))
             humanoid_first_name = humanoid['first_name']
             humanoid_last_name = humanoid['last_name']
             humanoid_sex = humanoid['sex']
@@ -1060,7 +1060,7 @@ async def vk_mail_ru_registration(context, page, user):
                 "birth_date": humanoid['birth_date'],
                 "access_token": user['info']['access_token']
             }
-            await standart_request('put', f'https://accman-odata.arbat.dev/change-info?account_id={user_id}',
+            await standart_request('put', f'https://accman.ad.dev.arbat.dev/change-info?account_id={user_id}',
                                    json=new_info)
             DBC.execute(f'update accounts set humanoid_id = {humanoid["id"]} where id = {user_id}')
             await asyncio.sleep(2)
