@@ -811,7 +811,6 @@ async def email_account_registration(context, page, user):
                 captcha = json.loads(requests.post("https://captcher.ad.dev.arbat.dev/solve_text_captcha_file",
                                                    params={'service': 'rucaptcha'},
                                                    files={'file': open('LastCaptcha.jpg', 'rb')}).text)
-
                 element = await page.query_selector('body')
                 elem = await element.text_content()
                 if "Please enter code" in elem.strip():
