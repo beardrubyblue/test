@@ -809,7 +809,7 @@ async def email_account_registration(context, page, user):
                 # -----captcha-----
                 await page.locator('img.sHzh3T69FUE-dkHh1-lzl').screenshot(path='LastCaptcha.jpg')
                 await asyncio.sleep(3)
-                captcha = json.loads(requests.post("https://captcher-odata.arbat.dev/solve_text_captcha_file",
+                captcha = json.loads(requests.post("https://captcher.ad.dev.arbat.dev/solve_text_captcha_file",
                                                    params={'service': 'rucaptcha'},
                                                    files={'file': open('LastCaptcha.jpg', 'rb')}).text)
 
@@ -986,7 +986,6 @@ async def vk_mail_ru(count: Optional[int] = None):
 
 
 async def vk_mail_ru_registration(context, page, user):
-    logging.critical(user)
     # -----params-----
     user_id = user['id']
     humanoid_id = user['humanoid_id']
