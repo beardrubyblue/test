@@ -981,6 +981,7 @@ async def vk_mail_ru(count: Optional[int] = None):
         proxy_index += 1
         count_acc += 1
         logging.critical(count_acc)
+    standart_finish('MISSION ACCOMPLISHED!')
     return {'accounts': accounts}
 
 
