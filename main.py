@@ -951,6 +951,8 @@ async def vk_mail_ru(count: Optional[int] = None):
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
     while count is None or len(accounts) < count:
+        if len(accounts) == count:
+            standart_finish('MISSION ACCOMPLISHED!')
         if proxy_index >= len(proxy_list):
             proxy_list = await standart_get_proxies(kind=2, ptype=3)
             proxy_index = 0
@@ -964,15 +966,15 @@ async def vk_mail_ru(count: Optional[int] = None):
             'username': username,
             'password': password
         }
-        user = json.loads(
-            await standart_request('get',
-                                   'https://accman.ad.dev.arbat.dev/rent-free-random?kind_id=2&renter=unireger&json_answer=true'))
+
+        users = await standart_execute_sql('select * from accounts where kind_id = 2 and humanoid_id is NULL and block = false')
+        logging.critical(len(users))
         async with async_playwright() as playwright:
             chromium = playwright.chromium
             browser = await chromium.launch()
             context = await browser.new_context(proxy=proxy)
             page = await context.new_page()
-            account = await vk_mail_ru_registration(context, page, user)
+            account = await vk_mail_ru_registration(context, page, users[count_acc])
             await browser.close()
             add_loggs(f'Ответ: {account}', 1)
             accounts.append(account)
@@ -987,12 +989,10 @@ async def vk_mail_ru(count: Optional[int] = None):
 
 async def vk_mail_ru_registration(context, page, user):
     # -----params-----
-    user_id = user['id']
-    humanoid_id = user['humanoid_id']
-    if humanoid_id:
-        return {'Error': 'Registred'}
-    phone = user['phone']
-    password = user['password']
+    user_id = user[0]
+    humanoid_id = user[7]
+    phone = user[2]
+    password = user[3]
     try:
         await page.goto("https://id.vk.com/")
         await asyncio.sleep(2)
