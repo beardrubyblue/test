@@ -92,7 +92,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
         pt = 'socks5://'
     if ptype == 3:
         pt = 'http://'
-    # Получение бесплатных https прокси случайных стран с сайтов [https://free-proxy-list.net или https://www.sslproxies.org].
+    # Получение бесплатных https прокси случайных стран с сайтов [https://free-proxy-list.net  или https://www.sslproxies.org].
     if kind == 1 and ptype == 3:
         async with aiohttp.ClientSession() as session:
             response = await session.get('https://www.sslproxies.org')
