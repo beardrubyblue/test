@@ -950,6 +950,9 @@ async def vk_mail_ru(count: Optional[int] = None):
     if len(proxy_list) == 0:
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
+    users = await standart_execute_sql(
+        'select * from accounts where kind_id = 2 and humanoid_id is NULL and block = false')
+    logging.critical(len(users))
     while count is None or len(accounts) < count:
         if len(accounts) == count:
             standart_finish('MISSION ACCOMPLISHED!')
@@ -966,9 +969,6 @@ async def vk_mail_ru(count: Optional[int] = None):
             'username': username,
             'password': password
         }
-
-        users = await standart_execute_sql('select * from accounts where kind_id = 2 and humanoid_id is NULL and block = false')
-        logging.critical(len(users))
         async with async_playwright() as playwright:
             chromium = playwright.chromium
             browser = await chromium.launch()
@@ -989,6 +989,7 @@ async def vk_mail_ru(count: Optional[int] = None):
 
 async def vk_mail_ru_registration(context, page, user):
     # -----params-----
+    logging.critical(user)
     user_id = user[0]
     humanoid_id = user[7]
     phone = user[2]
