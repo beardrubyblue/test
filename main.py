@@ -1055,11 +1055,11 @@ async def vk_mail_ru_registration(context, page, user):
             await page.click(f'div[title="{humanoid_day}"]')
             await page.click('button[data-test-id="personal-form-submit"]')
             new_info = {
-                "mid": user['info']['mid'],
+                "mid": user[4]['mid'],
                 "first_name": humanoid_first_name,
                 "last_name": humanoid_last_name,
                 "birth_date": humanoid['birth_date'],
-                "access_token": user['info']['access_token']
+                "access_token": user[4]['access_token']
             }
             await standart_request('put', f'https://accman.ad.dev.arbat.dev/change-info?account_id={user_id}',
                                    json=new_info)
@@ -1073,7 +1073,7 @@ async def vk_mail_ru_registration(context, page, user):
         elem = await element.text_content()
         if "Verify it's you" in elem.strip():
             for r in range(30):
-                url = 'http://10.9.20.135:3000/phones/messages/' + user['phone'] + '?fromTs=0'
+                url = 'http://10.9.20.135:3000/phones/messages/' + user[2] + '?fromTs=0'
                 sms = await standart_request('get', url)
                 if sms != '{"messages":[]}':
                     break
@@ -1099,8 +1099,8 @@ async def vk_mail_ru_registration(context, page, user):
                 break
         return AccountCreation(
             kind_id=VK_MAIL_RU,
-            phone=user['phone'],
-            password=user['password'],
+            phone=user[2],
+            password=user[3],
             info=new_info,
             humanoid_id=humanoid_id,
             last_cookies=cookie_list
