@@ -415,14 +415,14 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                 jd = json.loads(rr.text)['response']
                 logging.critical('SID: ' + login_sid)
                 password = js_userandom_string(21)
-                # hrr = requests.get('https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=7')
-                # humanoid = json.loads(hrr.text)
-                # first_name = humanoid['first_name']
-                # last_name = humanoid['last_name']
-                # birthday = f"{humanoid['birth_date'][8:10]}.{humanoid['birth_date'][5:7]}.{humanoid['birth_date'][0:4]}"
-                first_name = random.choice(Names).split(' ')[1]
-                last_name = random.choice(Names).split(' ')[0]
-                birthday = str(random.randint(10, 28)) + '.0' + str(random.randint(1, 9)) + '.' + str(random.randint(1980, 2004))
+                hrr = requests.get('https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=7')
+                humanoid = json.loads(hrr.text)
+                first_name = humanoid['first_name']
+                last_name = humanoid['last_name']
+                birthday = f"{humanoid['birth_date'][8:10]}.{humanoid['birth_date'][5:7]}.{humanoid['birth_date'][0:4]}"
+                # first_name = random.choice(Names).split(' ')[1]
+                # last_name = random.choice(Names).split(' ')[0]
+                # birthday = str(random.randint(10, 28)) + '.0' + str(random.randint(1, 9)) + '.' + str(random.randint(1980, 2004))
                 rr = vkr_signup(proxy_session, phone_string, password, auth_token, device_id, jd['sid'], birthday, first_name, last_name, cookies)
                 html_response += '<BR>Signup Response: ' + rr.text + '<BR>'
                 logging.critical('RR TEXT: ' + rr.text + ' ' + phone_string + ' ' + password)
@@ -436,7 +436,7 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                     access_token = rt.split('{"access_token":"')[1].split('","expires_in"')[0]
                     requests.post('http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?', data={'service': 'vk'})
                     info = json.dumps({'mid': str(jd['mid']), 'first_name': first_name, 'last_name': last_name, 'birth_date': birthday, 'access_token': access_token}, ensure_ascii=False)
-                    save_account(phone_jd['phone'], password, info)
+                    save_account(phone_jd['phone'], password, info, humanoid['id'])
                     logging.critical('MISSION ACCOMPLISHED! New Account: ' + phone_jd['phone'] + ':' + password)
                     html_response += '<BR><BR>MISSION ACCOMPLISHED! New Account:<BR>' + phone_jd['phone'] + ':' + password + '<BR>' + info + '<BR>'
                     if kind == '1':
