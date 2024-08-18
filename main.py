@@ -1317,6 +1317,12 @@ async def rambler_mail_ru_registration(context, page, user):
         pages = context.pages
         logging.critical(pages[0])
         logging.critical(pages)
+        installed_extensions = await page.evaluate("""() => {
+            const extensions = chrome.runtime.getManifest ? chrome.runtime.getManifest() : null;
+            return extensions;
+        }""")
+
+        logging.critical(installed_extensions)
         await page.screenshot(path="screen.png", full_page=True)
         screen(id_user=2, message="good", id_screen=3)
 
