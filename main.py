@@ -1241,7 +1241,7 @@ async def rambler_mail_ru(count: Optional[int] = None):
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
 
-    path_to_extension = "/Captcha-Solver-Chrome"
+    path_to_extension = "./Captcha-Solver-Chrome"
     user_data_dir = "./tmp/test-user-data-dir"
 
     while count is None or len(accounts) < count:
@@ -1339,7 +1339,14 @@ async def rambler_mail_ru_registration(context, page, user):
         #     await page.click('button[id="connect"]')
         #     await asyncio.sleep(0.5)
         # await asyncio.sleep(3)
-
+        extensions = await page.evaluate("""
+            return new Promise((resolve) => {
+                chrome.management.getAll((extensions) => {
+                    resolve(extensions.map(ext => ({ id: ext.id, name: ext.name })));
+                });
+            });
+        """)
+        logging.critical(f"Installed extensions: {extensions}")
         await page.goto("https://id.rambler.ru/login-20/mail-registration")
         await page.wait_for_selector('.rui-Input-input', timeout=30000)
         elements = await page.query_selector_all('.rui-Input-input')
