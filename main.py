@@ -1303,7 +1303,9 @@ async def rambler_mail_ru_registration(context, page, user):
     phone_string = phone_jd['phone'][1:11]
     try:
         await page.goto('https://captcha-api.yandex.ru/demo')
-        extension_installed = await page.evaluate("typeof window.typeof window.smartCaptcha")
+        extension_installed = await page.evaluate(
+            "() => typeof window.smartCaptcha !== 'undefined'"
+        )
         logging.critical(extension_installed)
         current_url = page.url
         logging.critical(current_url)
