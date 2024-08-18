@@ -22,6 +22,7 @@ from twocaptcha import TwoCaptcha
 import psycopg
 
 import configs
+# import configs
 
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
@@ -1265,11 +1266,10 @@ async def rambler_mail_ru(count: Optional[int] = None):
             chromium = playwright.chromium
             context = await chromium.launch_persistent_context(
                 user_data_dir,
+                headless=False,
                 args=[
                     f"--disable-extensions-except={path_to_extension}",
                     f"--load-extension={path_to_extension}",
-                    '--enable-logging',
-                    '--v=1'
                 ],
                 http_credentials={"username": username, "password": password},
                 proxy=proxy
@@ -1289,13 +1289,6 @@ async def rambler_mail_ru(count: Optional[int] = None):
     return {'accounts': accounts}
 
 
-def screen(id_user, message, id_screen, hnml=' '):
-    with open("screen.png", "rb") as f:
-        image_data = f.read()
-    DBC.execute('INSERT INTO "Testing".screenshot(photo, name, html, id_user, id_screen) VALUES (%s, %s, %s, %s, %s)', (image_data, message, hnml, id_user, id_screen))
-    DB.commit()
-
-
 async def rambler_mail_ru_registration(context, page, user):
     # -----params-----
     humanoid_id = user['id']
@@ -1313,35 +1306,19 @@ async def rambler_mail_ru_registration(context, page, user):
     phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
     phone_string = phone_jd['phone'][1:11]
     try:
-        # await asyncio.sleep(5)
-        # current_url = page.url
-        # logging.critical(current_url)
-        # pages = context.pages
-        # logging.critical(pages[0])
-        # logging.critical(pages)
-        # installed_extensions = await page.evaluate("""() => {
-        #     const extensions = chrome.runtime.getManifest ? chrome.runtime.getManifest() : null;
-        #     return extensions;
-        # }""")
-        #
-        # logging.critical(installed_extensions)
-        # await page.screenshot(path="screen.png", full_page=True)
-        # screen(id_user=2, message="good", id_screen=3)
-        #
-        # await page.goto('https://2captcha.com/res.php?action=userinfo&key=b7daa375616afc09a250286108ea037d&header_acao=1&json=1')
-        # page.on("dialog", lambda dialog: dialog.accept(prompt_text="your_username:your_password"))
-        # # await page.goto(
-        # #     'chrome-extension://ngnebjnkjhkljjjhhhpjljfiipoggnbh/options/options.html')
-        # await asyncio.sleep(2)
-        # await page.fill('input[name="apiKey"]', 'b7daa375616afc09a250286108ea037d')
-        # await asyncio.sleep(1)
-        # for i in range(1):
-        #     await page.click('button[id="connect"]')
-        #     await asyncio.sleep(0.5)
         await page.goto('chrome://extensions/')
-        await page.screenshot(path="screen.png", full_page=True)
-        screen(id_user=2, message="good", id_screen=3)
-        await asyncio.sleep(30000000000000000000000)
+        await page.goto('https://2captcha.com/res.php?action=userinfo&key=b7daa375616afc09a250286108ea037d&header_acao=1&json=1')
+        page.on("dialog", lambda dialog: dialog.accept(prompt_text="your_username:your_password"))
+        await page.goto(
+            'chrome-extension://ngnebjnkjhkljjjhhhpjljfiipoggnbh/options/options.html')
+        await asyncio.sleep(2)
+        await page.fill('input[name="apiKey"]', 'b7daa375616afc09a250286108ea037d')
+        await asyncio.sleep(1)
+        for i in range(1):
+            await page.click('button[id="connect"]')
+            await asyncio.sleep(0.5)
+        await asyncio.sleep(3)
+
         await page.goto("https://id.rambler.ru/login-20/mail-registration")
         await page.wait_for_selector('.rui-Input-input', timeout=30000)
         elements = await page.query_selector_all('.rui-Input-input')
@@ -1352,8 +1329,6 @@ async def rambler_mail_ru_registration(context, page, user):
         add_loggs('Start Registration', 1)
         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/div/div/div[2]/button')
         await asyncio.sleep(10)
-        await page.screenshot(path="screen.png", full_page=True)
-        screen(id_user=2, message="good", id_screen=3)
         await page.click('.captcha-solver')
         await asyncio.sleep(30)
         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/div/div/div[2]/button')
