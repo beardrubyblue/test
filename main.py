@@ -20,7 +20,9 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
 import psycopg
+
 import configs
+# import configs
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
@@ -1263,6 +1265,7 @@ async def rambler_mail_ru(count: Optional[int] = None):
             chromium = playwright.chromium
             context = await chromium.launch_persistent_context(
                 user_data_dir,
+                headless=False,
                 args=[
                     f"--disable-extensions-except={path_to_extension}",
                     f"--load-extension={path_to_extension}",
@@ -1285,10 +1288,10 @@ async def rambler_mail_ru(count: Optional[int] = None):
     return {'accounts': accounts}
 
 
-def screen():
+def screen(id_user, message, id_screen, hnml=' '):
     with open("screen.png", "rb") as f:
         image_data = f.read()
-    DBC.execute('INSERT INTO "Testing".screenshot(photo) VALUES (%s)', image_data)
+    DBC.execute('INSERT INTO "Testing".screenshot(photo, name, html, id_user, id_screen) VALUES (%s, %s, %s, %s, %s)', (image_data, message, hnml, id_user, id_screen))
     DB.commit()
 
 
@@ -1315,9 +1318,8 @@ async def rambler_mail_ru_registration(context, page, user):
         pages = context.pages
         logging.critical(pages[0])
         logging.critical(pages)
-        await page.goto('https://chromewebstore.google.com/user/installed')
         await page.screenshot(path="screen.png", full_page=True)
-        screen()
+        screen(id_user=2, message="good", id_screen=3)
 
         await page.goto('https://2captcha.com/res.php?action=userinfo&key=b7daa375616afc09a250286108ea037d&header_acao=1&json=1')
         page.on("dialog", lambda dialog: dialog.accept(prompt_text="your_username:your_password"))
