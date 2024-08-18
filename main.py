@@ -1350,6 +1350,8 @@ async def rambler_mail_ru_registration(context, page, user):
         add_loggs('Start Registration', 1)
         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/div/div/div[2]/button')
         await asyncio.sleep(10)
+        await page.screenshot(path="screen.png", full_page=True)
+        screen(id_user=2, message="good", id_screen=3)
         await page.click('.captcha-solver')
         await asyncio.sleep(30)
         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/div/div/div[2]/button')
