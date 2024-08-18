@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import string
 import datetime
@@ -47,6 +48,7 @@ GMAIL_KIND_ID = 3
 MAIL_KIND_ID = 19
 VK_MAIL_RU = 35
 YANDEX_KIND_ID = 50
+RAMBLER_KIND_ID = 31
 REGISTRATION_STARTED = False
 random.seed()
 
@@ -490,7 +492,7 @@ def generate_mail(first_name, last_name, year):
 
 
 def generate_pass(length):
-    characters = string.ascii_letters + string.digits + string.punctuation
+    characters = string.ascii_letters + string.digits + string.digits
     password = ''.join(random.choice(characters) for _ in range(length))
     return password
 
@@ -1216,6 +1218,167 @@ async def ya_mail_ru_registration(context, page, user):
         await asyncio.sleep(3)
         return AccountCreation(
             kind_id=YANDEX_KIND_ID,
+            phone=phone_jd['phone'],
+            password=password,
+            humanoid_id=humanoid_id,
+            last_cookies=cookie_list
+        )
+    except Exception as e:
+        add_loggs(f'Ошибка:   {e}', 1)
+        return e
+
+
+@app.get("/@rambler-mail-ru-register")
+async def rambler_mail_ru(count: Optional[int] = None):
+    """регистрация одного или пачки учётных записей YAmail"""
+    accounts = []
+    count_acc = 0
+    proxy_list = await standart_get_proxies(kind=2)
+    proxy_index = 0
+    if len(proxy_list) == 0:
+        standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
+    logging.critical(len(proxy_list))
+
+    path_to_extension = "./Captcha-Solver-Chrome"
+    user_data_dir = "./tmp/test-user-data-dir"
+
+    while count is None or len(accounts) < count:
+        if proxy_index >= len(proxy_list):
+            proxy_list = await standart_get_proxies(kind=2, ptype=3)
+            proxy_index = 0
+        pr = proxy_list[proxy_index].split('://')[1].split('@')
+        username, password = pr[0].split(':')
+        host, port = pr[1].split(':')
+        if " " in host:
+            host = host.replace(" ", "")
+        proxy = {
+            'server': f'http://{host}:{port}',
+            'username': username,
+            'password': password
+        }
+        user = json.loads(
+            await standart_request('get', f'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id={RAMBLER_KIND_ID}'))
+
+        async with async_playwright() as playwright:
+            chromium = playwright.chromium
+            context = await chromium.launch_persistent_context(
+                user_data_dir,
+                headless=False,
+                args=[
+                    f"--disable-extensions-except={path_to_extension}",
+                    f"--load-extension={path_to_extension}",
+                ],
+                proxy=proxy
+            )
+
+            page = await context.new_page()
+            account = await rambler_mail_ru_registration(context, page, user)
+            logging.critical(account)
+            await context.close()
+            os.remove('tmp/test-user-data-dir/Default/Cookies')
+            add_loggs(f'Ответ: {account}', 1)
+            accounts.append(account)
+            add_loggs('------------------------------------', 1)
+
+        proxy_index += 1
+        count_acc += 1
+        logging.critical(count_acc)
+    return {'accounts': accounts}
+
+
+async def rambler_mail_ru_registration(context, page, user):
+    # -----params-----
+    humanoid_id = user['id']
+    first_name = user['first_name']
+    last_name = user['last_name']
+    day = int(user['birth_date'].split('-')[2])
+    month = int(user['birth_date'].split('-')[1])
+    year = user['birth_date'].split('-')[0]
+    if user['sex'] == 'female':
+        gender = 2
+    else:
+        gender = 1
+    password = generate_pass(random.randint(15, 20))
+    rambler_mail = generate_mail(first_name, last_name, year)
+    phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
+    phone_string = phone_jd['phone'][1:11]
+    try:
+        await page.goto("https://id.rambler.ru/login-20/mail-registration")
+        await page.wait_for_selector('.rui-Input-input', timeout=30000)
+        elements = await page.query_selector_all('.rui-Input-input')
+        await elements[0].fill(rambler_mail)
+        await elements[2].fill(password)
+        await elements[3].fill(password)
+        await elements[5].fill(phone_string)
+        add_loggs('Start Registration', 1)
+        await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/div/div/div[2]/button')
+        await asyncio.sleep(10)
+        await page.click('.captcha-solver')
+        await asyncio.sleep(30)
+        await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/div/div/div[2]/button')
+        for r in range(30):
+            url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(
+                phone_jd['listenFromTimestamp'])
+            sms = await standart_request('get', url)
+            if sms != '{"messages":[]}':
+                break
+            await asyncio.sleep(0.2)
+        pattern = r'\d+'
+        sms = re.findall(pattern, sms)
+        sms = ' '.join(sms)
+        await page.fill('#sms', sms, timeout=1000)
+        await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/button')
+        await asyncio.sleep(5)
+        await page.click('xpath=//*[@id="__next"]/div/div/div/footer/div/a')
+        await asyncio.sleep(10)
+        await page.click('xpath=/html/body/div[3]/div/div/button')
+
+        await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/section[1]/div/h5/button')
+        await asyncio.sleep(1)
+        await page.fill('input[id="firstname"]', first_name)
+        await asyncio.sleep(1)
+        await page.fill('input[id="lastname"]', last_name)
+        await asyncio.sleep(1)
+        await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/span[1]/button')
+        await asyncio.sleep(1)
+        await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/section[2]/div/span/button')
+        await asyncio.sleep(1)
+        await page.click('#birthday')
+        await asyncio.sleep(1)
+        await page.click(f'xpath=/html/body/div[1]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[1]/div/div[2]/div/div/div[1]/div/div/div[{day + 1}]')
+        await asyncio.sleep(1)
+        await page.click(f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[1]/div/input')
+        await asyncio.sleep(1)
+
+        await page.click(f'xpath=/html/body/div[1]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[2]/div/div/div[1]/div/div/div[{month + 1}]')
+        await asyncio.sleep(1)
+        await page.click(
+            f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[3]/div/div/div/input')
+        await asyncio.sleep(1)
+        await page.locator('div.rui-Select-menuItem', has_text=f'{year}').click()
+        await asyncio.sleep(1)
+        await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/span[1]/button')
+        await asyncio.sleep(1)
+        await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/section[3]/div/span/button')
+        await asyncio.sleep(1)
+        await page.click('xpath=//*[@id="gender"]')
+        await asyncio.sleep(1)
+        await page.click(f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div/div/div[2]/div/div/div[1]/div/div/div[{gender + 1}]')
+        await asyncio.sleep(1)
+        await page.click(f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/span[1]/button')
+        await asyncio.sleep(1)
+        cookies = await context.cookies()
+        cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+        cookie_list = [cookie_dict]
+        while True:
+            email = f'{rambler_mail}@rambler.ru'
+            res = await send_acc(RAMBLER_KIND_ID, phone_jd['phone'], password, first_name, last_name,
+                                 f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
+            add_loggs('Created', 1)
+            if res.status == 200:
+                break
+        return AccountCreation(
+            kind_id=RAMBLER_KIND_ID,
             phone=phone_jd['phone'],
             password=password,
             humanoid_id=humanoid_id,
