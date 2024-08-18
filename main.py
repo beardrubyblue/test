@@ -1241,7 +1241,7 @@ async def rambler_mail_ru(count: Optional[int] = None):
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
 
-    path_to_extension = "./Captcha-Solver-Chrome"
+    path_to_extension = "/app/Captcha-Solver-Chrome"
     user_data_dir = "./tmp/test-user-data-dir"
 
     while count is None or len(accounts) < count:
