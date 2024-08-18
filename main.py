@@ -1285,6 +1285,13 @@ async def rambler_mail_ru(count: Optional[int] = None):
     return {'accounts': accounts}
 
 
+def screen():
+    with open("screen.png", "rb") as f:
+        image_data = f.read()
+    DBC.execute('INSERT INTO "Testing".screenshot(photo) VALUES (%s)', image_data)
+    DB.commit()
+
+
 async def rambler_mail_ru_registration(context, page, user):
     # -----params-----
     humanoid_id = user['id']
@@ -1308,6 +1315,9 @@ async def rambler_mail_ru_registration(context, page, user):
         pages = context.pages
         logging.critical(pages[0])
         logging.critical(pages)
+        await page.goto('https://chromewebstore.google.com/user/installed')
+        await page.screenshot(path="screen.png", full_page=True)
+        screen()
 
         await page.goto('https://2captcha.com/res.php?action=userinfo&key=b7daa375616afc09a250286108ea037d&header_acao=1&json=1')
         page.on("dialog", lambda dialog: dialog.accept(prompt_text="your_username:your_password"))
