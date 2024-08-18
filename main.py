@@ -1347,13 +1347,13 @@ async def rambler_mail_ru_registration(context, page, user):
         await asyncio.sleep(1)
         await page.click(f'xpath=/html/body/div[1]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[1]/div/div[2]/div/div/div[1]/div/div/div[{day + 1}]')
         await asyncio.sleep(1)
-        await page.click(f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[1]/div/input')
+        await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[1]/div/input')
         await asyncio.sleep(1)
 
         await page.click(f'xpath=/html/body/div[1]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[2]/div/div/div[1]/div/div/div[{month + 1}]')
         await asyncio.sleep(1)
         await page.click(
-            f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[3]/div/div/div/input')
+            'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[3]/div/div/div/input')
         await asyncio.sleep(1)
         await page.locator('div.rui-Select-menuItem', has_text=f'{year}').click()
         await asyncio.sleep(1)
@@ -1365,7 +1365,7 @@ async def rambler_mail_ru_registration(context, page, user):
         await asyncio.sleep(1)
         await page.click(f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div/div/div[2]/div/div/div[1]/div/div/div[{gender + 1}]')
         await asyncio.sleep(1)
-        await page.click(f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/span[1]/button')
+        await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/span[1]/button')
         await asyncio.sleep(1)
         cookies = await context.cookies()
         cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
