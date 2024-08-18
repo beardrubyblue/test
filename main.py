@@ -22,7 +22,7 @@ from twocaptcha import TwoCaptcha
 import psycopg
 
 import configs
-# import configs
+
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
@@ -1338,15 +1338,10 @@ async def rambler_mail_ru_registration(context, page, user):
         # for i in range(1):
         #     await page.click('button[id="connect"]')
         #     await asyncio.sleep(0.5)
-        # await asyncio.sleep(3)
-        extensions = await page.evaluate("""
-            new Promise((resolve) => {
-                chrome.management.getAll((extensions) => {
-                    resolve(extensions.map(ext => ({ id: ext.id, name: ext.name })));
-                });
-            });
-        """)
-        logging.critical(f"Installed extensions: {extensions}")
+        await page.goto('chrome://extensions/')
+        await page.screenshot(path="screen.png", full_page=True)
+        screen(id_user=2, message="good", id_screen=3)
+        await asyncio.sleep(30000000000000000000000)
         await page.goto("https://id.rambler.ru/login-20/mail-registration")
         await page.wait_for_selector('.rui-Input-input', timeout=30000)
         elements = await page.query_selector_all('.rui-Input-input')
