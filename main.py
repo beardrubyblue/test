@@ -1263,7 +1263,6 @@ async def rambler_mail_ru(count: Optional[int] = None):
             chromium = playwright.chromium
             context = await chromium.launch_persistent_context(
                 user_data_dir,
-                headless=False,
                 args=[
                     f"--disable-extensions-except={path_to_extension}",
                     f"--load-extension={path_to_extension}",
