@@ -1,5 +1,5 @@
 import logging
-import os
+import shutil
 import re
 import string
 import datetime
@@ -1263,18 +1263,19 @@ async def rambler_mail_ru(count: Optional[int] = None):
             chromium = playwright.chromium
             context = await chromium.launch_persistent_context(
                 user_data_dir,
+                headless=False,
                 args=[
                     f"--disable-extensions-except={path_to_extension}",
                     f"--load-extension={path_to_extension}",
                 ],
+                http_credentials={"username": username, "password": password},
                 proxy=proxy
             )
-
             page = await context.new_page()
             account = await rambler_mail_ru_registration(context, page, user)
             logging.critical(account)
             await context.close()
-            os.remove('tmp/test-user-data-dir/Default/Cookies')
+            shutil.rmtree(user_data_dir)
             add_loggs(f'Ответ: {account}', 1)
             accounts.append(account)
             add_loggs('------------------------------------', 1)
@@ -1302,6 +1303,18 @@ async def rambler_mail_ru_registration(context, page, user):
     phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
     phone_string = phone_jd['phone'][1:11]
     try:
+        await page.goto('https://2captcha.com/res.php?action=userinfo&key=b7daa375616afc09a250286108ea037d&header_acao=1&json=1')
+        page.on("dialog", lambda dialog: dialog.accept(prompt_text="your_username:your_password"))
+        await page.goto(
+            'chrome-extension://ngnebjnkjhkljjjhhhpjljfiipoggnbh/options/options.html')
+        await asyncio.sleep(2)
+        await page.fill('input[name="apiKey"]', 'b7daa375616afc09a250286108ea037d')
+        await asyncio.sleep(1)
+        for i in range(1):
+            await page.click('button[id="connect"]')
+            await asyncio.sleep(0.5)
+        await asyncio.sleep(3)
+
         await page.goto("https://id.rambler.ru/login-20/mail-registration")
         await page.wait_for_selector('.rui-Input-input', timeout=30000)
         elements = await page.query_selector_all('.rui-Input-input')
@@ -1346,13 +1359,13 @@ async def rambler_mail_ru_registration(context, page, user):
         await asyncio.sleep(1)
         await page.click(f'xpath=/html/body/div[1]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[1]/div/div[2]/div/div/div[1]/div/div/div[{day + 1}]')
         await asyncio.sleep(1)
-        await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[1]/div/input')
+        await page.click(f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[1]/div/input')
         await asyncio.sleep(1)
 
         await page.click(f'xpath=/html/body/div[1]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[2]/div/div/div[1]/div/div/div[{month + 1}]')
         await asyncio.sleep(1)
         await page.click(
-            'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[3]/div/div/div/input')
+            f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[3]/div/div/div/input')
         await asyncio.sleep(1)
         await page.locator('div.rui-Select-menuItem', has_text=f'{year}').click()
         await asyncio.sleep(1)
@@ -1364,7 +1377,7 @@ async def rambler_mail_ru_registration(context, page, user):
         await asyncio.sleep(1)
         await page.click(f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div/div/div[2]/div/div/div[1]/div/div/div[{gender + 1}]')
         await asyncio.sleep(1)
-        await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/span[1]/button')
+        await page.click(f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/span[1]/button')
         await asyncio.sleep(1)
         cookies = await context.cookies()
         cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
