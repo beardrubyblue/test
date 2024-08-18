@@ -1305,7 +1305,7 @@ async def rambler_mail_ru_registration(context, page, user):
         current_url = page.url
         logging.critical(current_url)
         pages = context.pages()
-        print(pages)
+        print(pages[0])
         await page.goto('https://2captcha.com/res.php?action=userinfo&key=b7daa375616afc09a250286108ea037d&header_acao=1&json=1')
         page.on("dialog", lambda dialog: dialog.accept(prompt_text="your_username:your_password"))
         # await page.goto(
