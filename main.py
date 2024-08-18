@@ -1340,7 +1340,7 @@ async def rambler_mail_ru_registration(context, page, user):
         #     await asyncio.sleep(0.5)
         # await asyncio.sleep(3)
         extensions = await page.evaluate("""
-            return new Promise((resolve) => {
+            new Promise((resolve) => {
                 chrome.management.getAll((extensions) => {
                     resolve(extensions.map(ext => ({ id: ext.id, name: ext.name })));
                 });
