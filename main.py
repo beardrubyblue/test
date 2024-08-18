@@ -1268,6 +1268,8 @@ async def rambler_mail_ru(count: Optional[int] = None):
                 args=[
                     f"--disable-extensions-except={path_to_extension}",
                     f"--load-extension={path_to_extension}",
+                    '--enable-logging',
+                    '--v=1'
                 ],
                 http_credentials={"username": username, "password": password},
                 proxy=proxy
