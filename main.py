@@ -955,8 +955,7 @@ async def vk_mail_ru(count: Optional[int] = None):
     if len(proxy_list) == 0:
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
-    users = await standart_execute_sql(
-            'select * from accounts where kind_id = 2 and block = false and humanoid_id not in (select humanoid_id from accounts where kind_id = 35 and humanoid_id is not null)')
+    users = await standart_execute_sql('select * from accounts where kind_id = 2 and block = false and humanoid_id not in (select humanoid_id from accounts where kind_id = 35 and humanoid_id is not null)')
     logging.critical(len(users))
     while count is None or len(accounts) < count:
         if len(accounts) == count:
