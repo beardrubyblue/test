@@ -20,9 +20,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
 import psycopg
-
 import configs
-# import configs
 
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
@@ -955,7 +953,7 @@ async def vk_mail_ru(count: Optional[int] = None):
     if len(proxy_list) == 0:
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
-    users = await standart_execute_sql('select * from accounts where kind_id = 2 and block = false and humanoid_id not in (select humanoid_id from accounts where kind_id = 35 and humanoid_id is not null)')
+    users = await standart_execute_sql('select count(*) from accounts where kind_id = 2 and block = false and phone not in (select phone from accounts where kind_id = 35)')
     logging.critical(len(users))
     while count is None or len(accounts) < count:
         if len(accounts) == count:
@@ -1327,7 +1325,7 @@ async def rambler_mail_ru_registration(context, page, user):
         await elements[5].fill(phone_string)
         add_loggs('Start Registration', 1)
         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/div/div/div[2]/button')
-        await asyncio.sleep(10)
+        await asyncio.sleep(5)
         await page.click('.captcha-solver')
         await asyncio.sleep(30)
         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/div/div/div[2]/button')
@@ -1344,7 +1342,7 @@ async def rambler_mail_ru_registration(context, page, user):
         await page.fill('#sms', sms, timeout=1000)
         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/button')
         await asyncio.sleep(5)
-        await page.click('xpath=//*[@id="__next"]/div/div/div/footer/div/a')
+        await page.click('xpath=/html/body/div/div/div/div/footer/div/a')
         await asyncio.sleep(10)
         await page.click('xpath=/html/body/div[3]/div/div/button')
 
