@@ -1016,58 +1016,59 @@ async def vk_mail_ru_registration(context, page, user):
             await page.click('button[type="submit"]')
         await asyncio.sleep(2)
 
-        if humanoid_id is None:
-            await asyncio.sleep(5)
-            await page.goto("https://id.vk.com/account/#/main")
-            await asyncio.sleep(2)
-            await page.goto("https://id.vk.com/account/#/personal")
-            await asyncio.sleep(2)
-            humanoid = json.loads(
-                await standart_request('get',
-                                       'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=35'))
-            humanoid_first_name = humanoid['first_name']
-            humanoid_last_name = humanoid['last_name']
-            humanoid_sex = humanoid['sex']
-            humanoid_day = int(humanoid['birth_date'].split('-')[2])
-            humanoid_month = int(humanoid['birth_date'].split('-')[1])
-            humanoid_year = humanoid['birth_date'].split('-')[0]
-            await asyncio.sleep(1)
-            await page.fill('input[name="first_name"]', humanoid_first_name)
-            await page.fill('input[name="last_name"]', humanoid_last_name)
-            await asyncio.sleep(1)
-            await page.click(
-                'xpath=//*[@id="personal"]/div/div[3]/div/div[1]/div/section/form/div[2]/div[1]/div/div')
-            await asyncio.sleep(1)
-            await page.click(f'div[title="{humanoid_sex.title()}"]')
-            await asyncio.sleep(1)
-            await page.click('.vkuiDatePicker__year')
-            await asyncio.sleep(1)
-            if int(humanoid_year) > 2010:
-                return {'Error': 'birthday year > 2010'}
-            await page.click(f'div[title="{humanoid_year}"]')
-            await page.click('.vkuiDatePicker__month')
-            await asyncio.sleep(1)
-            months = {
-                1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
-                7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
-            }
-            month = months.get(humanoid_month)
-            await page.click(f'div[title="{month}"]')
-            await page.click('.vkuiDatePicker__day')
-            await asyncio.sleep(1)
-            await page.click(f'div[title="{humanoid_day}"]')
-            await page.click('button[data-test-id="personal-form-submit"]')
-            new_info = {
-                "mid": user[4]['mid'],
-                "first_name": humanoid_first_name,
-                "last_name": humanoid_last_name,
-                "birth_date": humanoid['birth_date'],
-                "access_token": user[4]['access_token']
-            }
-            await standart_request('put', f'https://accman.ad.dev.arbat.dev/change-info?account_id={user_id}',
-                                   json=new_info)
-            DBC.execute(f'update accounts set humanoid_id = {humanoid["id"]} where id = {user_id}')
-            await asyncio.sleep(2)
+        # if humanoid_id is None:
+        #     await asyncio.sleep(5)
+        #     await page.goto("https://id.vk.com/account/#/main")
+        #     await asyncio.sleep(2)
+        #     await page.goto("https://id.vk.com/account/#/personal")
+        #     await asyncio.sleep(2)
+        #     humanoid = json.loads(
+        #         await standart_request('get',
+        #                                'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=35'))
+        #     humanoid_first_name = humanoid['first_name']
+        #
+        #     humanoid_last_name = humanoid['last_name']
+        #     humanoid_sex = humanoid['sex']
+        #     humanoid_day = int(humanoid['birth_date'].split('-')[2])
+        #     humanoid_month = int(humanoid['birth_date'].split('-')[1])
+        #     humanoid_year = humanoid['birth_date'].split('-')[0]
+        #     await asyncio.sleep(1)
+        #     await page.fill('input[name="first_name"]', humanoid_first_name)
+        #     await page.fill('input[name="last_name"]', humanoid_last_name)
+        #     await asyncio.sleep(1)
+        #     await page.click(
+        #         'xpath=//*[@id="personal"]/div/div[3]/div/div[1]/div/section/form/div[2]/div[1]/div/div')
+        #     await asyncio.sleep(1)
+        #     await page.click(f'div[title="{humanoid_sex.title()}"]')
+        #     await asyncio.sleep(1)
+        #     await page.click('.vkuiDatePicker__year')
+        #     await asyncio.sleep(1)
+        #     if int(humanoid_year) > 2010:
+        #         return {'Error': 'birthday year > 2010'}
+        #     await page.click(f'div[title="{humanoid_year}"]')
+        #     await page.click('.vkuiDatePicker__month')
+        #     await asyncio.sleep(1)
+        #     months = {
+        #         1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
+        #         7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
+        #     }
+        #     month = months.get(humanoid_month)
+        #     await page.click(f'div[title="{month}"]')
+        #     await page.click('.vkuiDatePicker__day')
+        #     await asyncio.sleep(1)
+        #     await page.click(f'div[title="{humanoid_day}"]')
+        #     await page.click('button[data-test-id="personal-form-submit"]')
+        #     new_info = {
+        #         "mid": user[4]['mid'],
+        #         "first_name": humanoid_first_name,
+        #         "last_name": humanoid_last_name,
+        #         "birth_date": humanoid['birth_date'],
+        #         "access_token": user[4]['access_token']
+        #     }
+        #     await standart_request('put', f'https://accman.ad.dev.arbat.dev/change-info?account_id={user_id}',
+        #                            json=new_info)
+        #     DBC.execute(f'update accounts set humanoid_id = {humanoid["id"]} where id = {user_id}')
+        #     await asyncio.sleep(2)
         await page.goto("https://vk.mail.ru")
         await asyncio.sleep(1)
         await page.click('button[type="submit"]')
