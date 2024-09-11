@@ -996,6 +996,10 @@ async def vk_mail_ru_registration(context, page, user):
     humanoid_id = user[7]
     phone = user[2]
     password = user[3]
+    humanoid_first_name = user[4]['first_name']
+    humanoid_last_name = user[4]['last_name']
+    humanoid_birth_date = user[4]['birth_date']
+    logging.critical(humanoid_first_name)
     try:
         await page.goto("https://id.vk.com/")
         await asyncio.sleep(2)
@@ -1097,7 +1101,7 @@ async def vk_mail_ru_registration(context, page, user):
             cookie_list = [cookie_dict]
             email = input_value + '@vk.com'
             res = await send_acc(VK_MAIL_RU, user[2], user[3], humanoid_first_name,
-                                 humanoid_last_name, humanoid['birth_date'], humanoid["id"],
+                                 humanoid_last_name, humanoid_birth_date, humanoid_id,
                                  cookie_list, email)
             if res.status == 200:
                 break
@@ -1105,7 +1109,7 @@ async def vk_mail_ru_registration(context, page, user):
             kind_id=VK_MAIL_RU,
             phone=user[2],
             password=user[3],
-            info=new_info,
+            info=user[4],
             humanoid_id=humanoid_id,
             last_cookies=cookie_list
         )
