@@ -990,7 +990,6 @@ async def vk_mail_ru(count: Optional[int] = None):
 
 async def vk_mail_ru_registration(context, page, user):
     # -----params-----
-    logging.critical(user)
     # user_id = user[0]
     humanoid_id = user[7]
     phone = user[2]
