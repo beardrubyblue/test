@@ -1132,7 +1132,7 @@ async def vk_mail_ru_registration(context, page, user):
                 last_cookies=cookie_list
             )
         else:
-            add_loggs(f'Ошибка: No email', 1)
+            add_loggs('Ошибка: No email', 1)
             return {'Error': 'No email'}
     except Exception as e:
         add_loggs(f'Ошибка: {e}', 1)
