@@ -21,7 +21,6 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
 import psycopg
 import configs
-
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
@@ -1018,7 +1017,7 @@ async def vk_mail_ru_registration(context, page, user):
         else:
             await page.fill('input[name="password"]', password)
             await page.click('button[type="submit"]')
-        await asyncio.sleep(2)
+        await asyncio.sleep(10)
 
         # if humanoid_id is None:
         #     await asyncio.sleep(5)
@@ -1074,8 +1073,9 @@ async def vk_mail_ru_registration(context, page, user):
         #     DBC.execute(f'update accounts set humanoid_id = {humanoid["id"]} where id = {user_id}')
         #     await asyncio.sleep(2)
         await page.goto("https://vk.mail.ru")
-        await asyncio.sleep(1)
+        await asyncio.sleep(5)
         await page.click('button[type="submit"]')
+
         await asyncio.sleep(10)
         element = await page.query_selector('body')
         elem = await element.text_content()
@@ -1090,7 +1090,25 @@ async def vk_mail_ru_registration(context, page, user):
             sms = re.findall(pattern, sms)
             sms = ' '.join(sms)
             await page.fill('input', sms)
-        await asyncio.sleep(10)
+        elif "Привет от VK Почты!" in elem.strip():
+            email = await page.locator('img.ph-avatar-img').get_attribute('alt')
+            while True:
+                cookies = await context.cookies()
+                cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+                cookie_list = [cookie_dict]
+                res = await send_acc(VK_MAIL_RU, user[2], user[3], humanoid_first_name,
+                                     humanoid_last_name, humanoid_birth_date, humanoid_id,
+                                     cookie_list, email)
+                if res.status == 200:
+                    break
+                return AccountCreation(
+                    kind_id=VK_MAIL_RU,
+                    phone=user[2],
+                    password=user[3],
+                    info=user[4],
+                    humanoid_id=humanoid_id,
+                    last_cookies=cookie_list
+                )
         input_element = await page.query_selector('input')
         input_value = await input_element.input_value()
         await page.click('button[type="submit"]')
