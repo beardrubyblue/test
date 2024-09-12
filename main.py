@@ -998,7 +998,6 @@ async def vk_mail_ru_registration(context, page, user):
     humanoid_first_name = user[4]['first_name']
     humanoid_last_name = user[4]['last_name']
     humanoid_birth_date = user[4]['birth_date']
-    logging.critical(humanoid_first_name)
     try:
         await page.goto("https://id.vk.com/")
         await asyncio.sleep(2)
