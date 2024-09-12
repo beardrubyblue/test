@@ -1110,28 +1110,32 @@ async def vk_mail_ru_registration(context, page, user):
                 )
         input_element = await page.query_selector('input')
         input_value = await input_element.input_value()
-        await page.click('button[type="submit"]')
-        await asyncio.sleep(10)
-        while True:
-            cookies = await context.cookies()
-            cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
-            cookie_list = [cookie_dict]
-            email = input_value + '@vk.com'
-            res = await send_acc(VK_MAIL_RU, user[2], user[3], humanoid_first_name,
-                                 humanoid_last_name, humanoid_birth_date, humanoid_id,
-                                 cookie_list, email)
-            if res.status == 200:
-                break
-        return AccountCreation(
-            kind_id=VK_MAIL_RU,
-            phone=user[2],
-            password=user[3],
-            info=user[4],
-            humanoid_id=humanoid_id,
-            last_cookies=cookie_list
-        )
+        if input_value:
+            await page.click('button[type="submit"]')
+            await asyncio.sleep(10)
+            while True:
+                cookies = await context.cookies()
+                cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+                cookie_list = [cookie_dict]
+                email = input_value + '@vk.com'
+                res = await send_acc(VK_MAIL_RU, user[2], user[3], humanoid_first_name,
+                                     humanoid_last_name, humanoid_birth_date, humanoid_id,
+                                     cookie_list, email)
+                if res.status == 200:
+                    break
+            return AccountCreation(
+                kind_id=VK_MAIL_RU,
+                phone=user[2],
+                password=user[3],
+                info=user[4],
+                humanoid_id=humanoid_id,
+                last_cookies=cookie_list
+            )
+        else:
+            add_loggs(f'Ошибка: No email', 1)
+            return {'Error': 'No email'}
     except Exception as e:
-        add_loggs(f'Ошибка:   {e}', 1)
+        add_loggs(f'Ошибка: {e}', 1)
         return e
 
 
