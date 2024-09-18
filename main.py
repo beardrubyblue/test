@@ -393,10 +393,11 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                 #         cookies = rr.cookies
                 soup = BeautifulSoup(rr.text, 'lxml')
                 # logging.critical(soup)
+                logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
+                logging.critical(soup)
+                logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
                 s1 = soup.head.findAll('script')[1].text
-                logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
-                logging.critical(s1)
-                logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
+
                 auth_token = s1[s1.find('"access_token":"') + 16:s1.find('","anonymous_token"')]
                 logging.critical('AUTH TOKEN: ' + auth_token)
                 html_response += '<BR>Auth Token: ' + auth_token
