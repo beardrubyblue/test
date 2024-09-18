@@ -396,14 +396,14 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                 s1 = soup.head.findAll('script')[1].text
                 auth_token = s1[s1.find('"access_token":"') + 16:s1.find('","anonymous_token"')]
                 logging.critical('AUTH TOKEN: ' + auth_token)
+                logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
+                logging.critical(auth_token)
+                logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
                 html_response += '<BR>Auth Token: ' + auth_token
                 rr = vkr_validate_phone(proxy_session, phone_string, auth_token, device_id, cookies)
                 cookies = rr.cookies
                 if rr.text[:10] == '{"error":{':
                     jd = json.loads(rr.text)['error']
-                    logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
-                    logging.critical(jd)
-                    logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
                     if jd['error_code'] != 9:
                         response = requests.get(jd['captcha_img'])
                         with open("LastCaptcha.jpg", 'wb') as f:
