@@ -399,11 +399,11 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                 html_response += '<BR>Auth Token: ' + auth_token
                 rr = vkr_validate_phone(proxy_session, phone_string, auth_token, device_id, cookies)
                 cookies = rr.cookies
-                logging.critical(cookies)
                 if rr.text[:10] == '{"error":{':
                     jd = json.loads(rr.text)['error']
                     if jd['error_code'] != 9:
                         response = requests.get(jd['captcha_img'])
+
                         with open("LastCaptcha.jpg", 'wb') as f:
                             f.write(response.content)
                             f.close()
@@ -411,6 +411,7 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                         time.sleep(20)
                         ck = SOLVER.get_result(cid)
                         rr = vkr_validate_phone(proxy_session, phone_string, auth_token, device_id, cookies, ck, jd['captcha_sid'], jd['captcha_ts'], jd['captcha_attempt'])
+                        logging.critical(rr.text)
                         cookies = rr.cookies
                 jd = json.loads(rr.text)['response']
                 login_sid = jd['sid']
