@@ -182,7 +182,7 @@ def js_userandom_string(length):
     return s
 
 
-def vkr_auth(proxy_session, uuid, cookies):
+def vkr_auth(proxy_session, uuid, cookies, captcha_key='', captcha_sid='', captcha_ts='', captcha_attempt=''):
     """запрос к https://id.vk.com/auth возвращает html страницу регистрации нового пользователя или входа старого"""
     global HEADERS
     HEADERS = {
@@ -378,8 +378,20 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
             device_id = js_userandom_string(21)
             try:
                 rr = vkr_auth(proxy_session, uuid, cookies)
-                # logging.critical(f'Response {rr.text}')
+                logging.critical(f'Response {rr.text}')
                 cookies = rr.cookies
+                # if rr.text[:10] == '{"error":{':
+                #     jd = json.loads(rr.text)['error']
+                #     if jd['error_code'] != 9:
+                #         response = requests.get(jd['captcha_img'])
+                #         with open("LastCaptcha.jpg", 'wb') as f:
+                #             f.write(response.content)
+                #             f.close()
+                #         cid = SOLVER.send(file="LastCaptcha.jpg")
+                #         time.sleep(20)
+                #         ck = SOLVER.get_result(cid)
+                #         rr = vkr_auth(proxy_session, uuid, cookies, ck, jd['captcha_sid'], jd['captcha_ts'], jd['captcha_attempt'])
+                #         cookies = rr.cookies
                 soup = BeautifulSoup(rr.text, 'lxml')
                 s1 = soup.head.findAll('script')[1].text
                 auth_token = s1[s1.find('"access_token":"') + 16:s1.find('","anonymous_token"')]
