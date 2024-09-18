@@ -378,7 +378,6 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
             device_id = js_userandom_string(21)
             try:
                 rr = vkr_auth(proxy_session, uuid, cookies)
-                logging.critical(f'Response {rr.text}')
                 cookies = rr.cookies
                 # if rr.text[:10] == '{"error":{':
                 #     jd = json.loads(rr.text)['error']
@@ -393,10 +392,11 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                 #         rr = vkr_auth(proxy_session, uuid, cookies, ck, jd['captcha_sid'], jd['captcha_ts'], jd['captcha_attempt'])
                 #         cookies = rr.cookies
                 soup = BeautifulSoup(rr.text, 'lxml')
+                logging.critical(soup)
                 s1 = soup.head.findAll('script')[1].text
+                logging.critical(s1)
                 auth_token = s1[s1.find('"access_token":"') + 16:s1.find('","anonymous_token"')]
-                logging.critical('-----------------------------------------------------------')
-                logging.critical(auth_token)
+                logging.critical('NEWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW')
                 logging.critical('AUTH TOKEN: ' + auth_token)
                 html_response += '<BR>Auth Token: ' + auth_token
                 rr = vkr_validate_phone(proxy_session, phone_string, auth_token, device_id, cookies)
