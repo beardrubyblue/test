@@ -401,11 +401,11 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                 cookies = rr.cookies
                 if rr.text[:10] == '{"error":{':
                     jd = json.loads(rr.text)['error']
+                    logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
+                    logging.critical(jd)
+                    logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
                     if jd['error_code'] != 9:
                         response = requests.get(jd['captcha_img'])
-                        logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
-                        logging.critical(response)
-                        logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
                         with open("LastCaptcha.jpg", 'wb') as f:
                             f.write(response.content)
                             f.close()
