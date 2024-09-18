@@ -392,6 +392,7 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                 #         rr = vkr_auth(proxy_session, uuid, cookies, ck, jd['captcha_sid'], jd['captcha_ts'], jd['captcha_attempt'])
                 #         cookies = rr.cookies
                 soup = BeautifulSoup(rr.text, 'lxml')
+
                 s1 = soup.head.findAll('script')[2].text
                 logging.critical('bvadgbfdgbabfbfbfdbdfbdfdf')
                 logging.critical(s1)
