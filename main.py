@@ -395,12 +395,11 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                 # logging.critical(soup)
                 s1 = soup.head.findAll('script')[1].text
                 auth_token = s1[s1.find('"access_token":"') + 16:s1.find('","anonymous_token"')]
-                logging.critical(auth_token)
-                logging.critical('NEWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW')
                 logging.critical('AUTH TOKEN: ' + auth_token)
                 html_response += '<BR>Auth Token: ' + auth_token
                 rr = vkr_validate_phone(proxy_session, phone_string, auth_token, device_id, cookies)
                 cookies = rr.cookies
+                logging.critical(cookies)
                 if rr.text[:10] == '{"error":{':
                     jd = json.loads(rr.text)['error']
                     if jd['error_code'] != 9:
