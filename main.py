@@ -378,11 +378,13 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
             device_id = js_userandom_string(21)
             try:
                 rr = vkr_auth(proxy_session, uuid, cookies)
-                logging.critical(f'Response {rr.text}')
+                # logging.critical(f'Response {rr.text}')
                 cookies = rr.cookies
                 soup = BeautifulSoup(rr.text, 'lxml')
                 s1 = soup.head.findAll('script')[1].text
                 auth_token = s1[s1.find('"access_token":"') + 16:s1.find('","anonymous_token"')]
+                logging.critical('-----------------------------------------------------------')
+                logging.critical(auth_token)
                 logging.critical('AUTH TOKEN: ' + auth_token)
                 html_response += '<BR>Auth Token: ' + auth_token
                 rr = vkr_validate_phone(proxy_session, phone_string, auth_token, device_id, cookies)
