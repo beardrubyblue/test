@@ -403,7 +403,7 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                     jd = json.loads(rr.text)['error']
                     if jd['error_code'] != 9:
                         response = requests.get(jd['captcha_img'])
-
+                        logging.critical(response)
                         with open("LastCaptcha.jpg", 'wb') as f:
                             f.write(response.content)
                             f.close()
