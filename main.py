@@ -1278,7 +1278,7 @@ async def rambler_mail_ru(count: Optional[int] = None):
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
 
-    path_to_extension = "./app/Captcha-Solver-Chrome"
+    path_to_extension = "./Captcha-Solver-Chrome"
     user_data_dir = "./tmp/test-user-data-dir"
 
     while count is None or len(accounts) < count:
@@ -1342,7 +1342,7 @@ async def rambler_mail_ru_registration(context, page, user):
     phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
     phone_string = phone_jd['phone'][1:11]
     try:
-        await page.goto('chrome://extensions/')
+        # await page.goto('chrome://extensions/')
         await page.goto('https://2captcha.com/res.php?action=userinfo&key=b7daa375616afc09a250286108ea037d&header_acao=1&json=1')
         page.on("dialog", lambda dialog: dialog.accept(prompt_text="your_username:your_password"))
         await page.goto(
