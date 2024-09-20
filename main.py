@@ -1343,16 +1343,16 @@ async def rambler_mail_ru_registration(context, page, user):
     phone_string = phone_jd['phone'][1:11]
     try:
         logging.critical("Инициализация браузера для регистрации на Rambler.")
-        await page.goto('https://2captcha.com/res.php?action=userinfo&key=b7daa375616afc09a250286108ea037d&header_acao=1&json=1')
-        page.on("dialog", lambda dialog: dialog.accept(prompt_text="your_username:your_password"))
-        await page.goto('chrome-extension://ngnebjnkjhkljjjhhhpjljfiipoggnbh/options/options.html')
-        await asyncio.sleep(2)
-        await page.fill('input[name="apiKey"]', 'b7daa375616afc09a250286108ea037d')
-        await asyncio.sleep(1)
-        for i in range(1):
-            await page.click('button[id="connect"]')
-            await asyncio.sleep(0.5)
-        await asyncio.sleep(3)
+        # await page.goto('https://2captcha.com/res.php?action=userinfo&key=b7daa375616afc09a250286108ea037d&header_acao=1&json=1')
+        # page.on("dialog", lambda dialog: dialog.accept(prompt_text="your_username:your_password"))
+        # await page.goto('chrome-extension://ngnebjnkjhkljjjhhhpjljfiipoggnbh/options/options.html')
+        # await asyncio.sleep(2)
+        # await page.fill('input[name="apiKey"]', 'b7daa375616afc09a250286108ea037d')
+        # await asyncio.sleep(1)
+        # for i in range(1):
+        #     await page.click('button[id="connect"]')
+        #     await asyncio.sleep(0.5)
+        # await asyncio.sleep(3)
 
         logging.critical("Заполнение формы регистрации на Rambler.")
         await page.goto("https://id.rambler.ru/login-20/mail-registration")
