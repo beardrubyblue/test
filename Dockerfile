@@ -8,4 +8,4 @@ RUN playwright install firefox
 RUN playwright install chromium
 COPY . .
 COPY Captcha-Solver-Chrome /app/Captcha-Solver-Chrome
-ENTRYPOINT ["xvfb-run", "--auto-servernum", "python", "main.py"]
+ENTRYPOINT ["xvfb-run", "--auto-servernum", "--server-args='-screen 0 1920x1080x24'", "python", "main.py"]
