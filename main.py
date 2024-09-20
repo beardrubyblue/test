@@ -1342,7 +1342,9 @@ async def rambler_mail_ru_registration(context, page, user):
     phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
     phone_string = phone_jd['phone'][1:11]
     try:
+        await asyncio.sleep(3)
         logging.critical("Инициализация браузера для регистрации на Rambler.")
+        await page.goto('chrome://extensions/')
         await page.goto('https://2captcha.com/res.php?action=userinfo&key=b7daa375616afc09a250286108ea037d&header_acao=1&json=1')
         page.on("dialog", lambda dialog: dialog.accept(prompt_text="your_username:your_password"))
         await page.goto('chrome-extension://ngnebjnkjhkljjjhhhpjljfiipoggnbh/options/options.html')
