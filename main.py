@@ -1342,11 +1342,11 @@ async def rambler_mail_ru_registration(context, page, user):
     phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
     phone_string = phone_jd['phone'][1:11]
     try:
-        # await page.goto('chrome://extensions/')
+        logging.critical("Инициализация браузера для регистрации на Rambler.")
+        await page.goto('chrome://extensions/')
         await page.goto('https://2captcha.com/res.php?action=userinfo&key=b7daa375616afc09a250286108ea037d&header_acao=1&json=1')
         page.on("dialog", lambda dialog: dialog.accept(prompt_text="your_username:your_password"))
-        await page.goto(
-            'chrome-extension://ngnebjnkjhkljjjhhhpjljfiipoggnbh/options/options.html')
+        await page.goto('chrome-extension://ngnebjnkjhkljjjhhhpjljfiipoggnbh/options/options.html')
         await asyncio.sleep(2)
         await page.fill('input[name="apiKey"]', 'b7daa375616afc09a250286108ea037d')
         await asyncio.sleep(1)
@@ -1355,6 +1355,7 @@ async def rambler_mail_ru_registration(context, page, user):
             await asyncio.sleep(0.5)
         await asyncio.sleep(3)
 
+        logging.critical("Заполнение формы регистрации на Rambler.")
         await page.goto("https://id.rambler.ru/login-20/mail-registration")
         await page.wait_for_selector('.rui-Input-input', timeout=30000)
         elements = await page.query_selector_all('.rui-Input-input')
@@ -1364,27 +1365,33 @@ async def rambler_mail_ru_registration(context, page, user):
         await elements[5].fill(phone_string)
         add_loggs('Start Registration', 1)
         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/div/div/div[2]/button')
-        await asyncio.sleep(5)
+        await asyncio.sleep(10)
         await page.click('.captcha-solver')
         await asyncio.sleep(30)
         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/div/div/div[2]/button')
+        logging.critical("Ожидание SMS-кода.")
+
         for r in range(30):
-            url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(
-                phone_jd['listenFromTimestamp'])
+            url = f'http://10.9.20.135:3000/phones/messages/{phone_jd["phone"]}?fromTs=0{phone_jd["listenFromTimestamp"]}'
             sms = await standart_request('get', url)
             if sms != '{"messages":[]}':
                 break
             await asyncio.sleep(0.2)
+
         pattern = r'\d+'
         sms = re.findall(pattern, sms)
         sms = ' '.join(sms)
+        logging.critical(f"Получен SMS-код: {sms}")
         await page.fill('#sms', sms, timeout=1000)
         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/button')
         await asyncio.sleep(5)
+        element = await page.query_selector('body')
+        elem = await element.text_content()
+        if "Скопируйте информацию ниже и обратитесь с ней в службу поддержки:" in elem.strip():
+            return {'Ошибка': 'Ошибка при регистрации почты'}
         await page.click('xpath=/html/body/div/div/div/div/footer/div/a')
-        await asyncio.sleep(10)
+        await asyncio.sleep(1)
         await page.click('xpath=/html/body/div[3]/div/div/button')
-
         await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/section[1]/div/h5/button')
         await asyncio.sleep(1)
         await page.fill('input[id="firstname"]', first_name)
@@ -1397,12 +1404,15 @@ async def rambler_mail_ru_registration(context, page, user):
         await asyncio.sleep(1)
         await page.click('#birthday')
         await asyncio.sleep(1)
-        await page.click(f'xpath=/html/body/div[1]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[1]/div/div[2]/div/div/div[1]/div/div/div[{day + 1}]')
+        await page.click(
+            f'xpath=/html/body/div[1]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[1]/div/div[2]/div/div/div[1]/div/div/div[{day + 1}]')
         await asyncio.sleep(1)
-        await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[1]/div/input')
+        await page.click(
+            'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[1]/div/input')
         await asyncio.sleep(1)
 
-        await page.click(f'xpath=/html/body/div[1]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[2]/div/div/div[1]/div/div/div[{month + 1}]')
+        await page.click(
+            f'xpath=/html/body/div[1]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[2]/div/div/div[1]/div/div/div[{month + 1}]')
         await asyncio.sleep(1)
         await page.click(
             'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[3]/div/div/div/input')
@@ -1415,30 +1425,34 @@ async def rambler_mail_ru_registration(context, page, user):
         await asyncio.sleep(1)
         await page.click('xpath=//*[@id="gender"]')
         await asyncio.sleep(1)
-        await page.click(f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div/div/div[2]/div/div/div[1]/div/div/div[{gender + 1}]')
+        await page.click(
+            f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div/div/div[2]/div/div/div[1]/div/div/div[{gender + 1}]')
         await asyncio.sleep(1)
         await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/span[1]/button')
         await asyncio.sleep(1)
         cookies = await context.cookies()
         cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
         cookie_list = [cookie_dict]
+
         while True:
             email = f'{rambler_mail}@rambler.ru'
-            res = await send_acc(RAMBLER_KIND_ID, phone_jd['phone'], password, first_name, last_name,
-                                 f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
+            res = await send_acc(RAMBLER_KIND_ID, phone_jd['phone'], password, first_name, last_name, user['birth_date'], humanoid_id, cookie_list, email)
             add_loggs('Created', 1)
             if res.status == 200:
                 break
-        return AccountCreation(
-            kind_id=RAMBLER_KIND_ID,
-            phone=phone_jd['phone'],
-            password=password,
-            humanoid_id=humanoid_id,
-            last_cookies=cookie_list
-        )
+
+        logging.critical("Регистрация завершена.")
+        return {
+            "kind_id": RAMBLER_KIND_ID,
+            "phone": phone_jd['phone'],
+            "password": password,
+            "humanoid_id": humanoid_id,
+            "last_cookies": cookie_list
+        }
     except Exception as e:
-        add_loggs(f'Ошибка:   {e}', 1)
-        return e
+        logging.critical(f"Ошибка: {e}")
+        add_loggs(f'Ошибка: {e}', 1)
+        return {"error": str(e)}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5000)
