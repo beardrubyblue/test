@@ -1,7 +1,7 @@
 FROM dockerhub.arbat.dev/python:3.11
 WORKDIR /app
 COPY requirements.txt .
-RUN apt-get install xvfb
+RUN apt-get update && apt-get install -y xvfb && rm -rf /var/lib/apt/lists/*
 RUN pip install -r requirements.txt
 RUN playwright install-deps
 RUN playwright install firefox
