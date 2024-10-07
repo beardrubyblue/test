@@ -874,15 +874,18 @@ async def email_account_registration(context, page, user):
             await page.wait_for_selector('.input-0-2-106', timeout=30000)
             elements = await page.query_selector_all('.input-0-2-106')
             try:
+                logging.critical('name')
                 await elements[0].fill(first_name, timeout=1000)
                 await elements[1].fill(last_name, timeout=1000)
-
+                logging.critical('name')
                 await page.click('.daySelect-0-2-122', timeout=1000)
                 await page.click(f'#react-select-7-option-{day - 1}', timeout=1000)
                 await asyncio.sleep(1)
+                logging.critical('name')
                 await page.click('xpath=//*[@id="root"]/div/div[3]/div[3]/div[1]/div/div[3]/div/form/div[4]/div[2]/div/div/div/div[3]/div/div', timeout=1000)
                 await page.click(f'#react-select-8-option-{month - 1}', timeout=1000)
                 await asyncio.sleep(1)
+                logging.critical('name')
                 await page.click('.yearSelect-0-2-123', timeout=1000)
                 await page.click(f'[data-test-id="select-value:{year}"]', timeout=1000)
 
