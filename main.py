@@ -935,7 +935,7 @@ async def email_account_registration(context, page, user):
                     while True:
                         email = f'{email}@mail.ru'
                         password = ''
-                        res = await send_acc(MAIL_KIND_ID, phone, password, first_name, last_name,
+                        res = await send_acc(20, phone, password, first_name, last_name,
                                              f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
                         url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
                         await standart_request('post', url, data={'service': 'mail'})
