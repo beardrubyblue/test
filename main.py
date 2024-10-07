@@ -798,19 +798,19 @@ async def email_account_registration(context, page, user):
         element = await page.query_selector('body')
         elem = await element.text_content()
         if "Сгенерировать надёжный пароль" in elem.strip() or "Generate a strong password" in elem.strip():
-            await page.wait_for_selector('.input-0-2-119', timeout=30000)
-            elements = await page.query_selector_all('.input-0-2-119')
+            await page.wait_for_selector('.input-0-2-106', timeout=30000)
+            elements = await page.query_selector_all('.input-0-2-106')
             try:
                 await elements[0].fill(first_name, timeout=1000)
                 await elements[1].fill(last_name, timeout=1000)
 
-                await page.click('.daySelect-0-2-135', timeout=1000)
-                await page.click(f'#react-select-2-option-{day - 1}', timeout=1000)
+                await page.click('.daySelect-0-2-122', timeout=1000)
+                await page.click(f'#react-select-7-option-{day - 1}', timeout=1000)
                 await asyncio.sleep(1)
-                await page.click('xpath=/html/body/div[1]/div[3]/div/div[4]/div[4]/div/div/div/div/form/div[6]/div[2]/div/div/div/div[3]', timeout=1000)
+                await page.click('xpath=//*[@id="root"]/div/div[3]/div[3]/div[1]/div/div[3]/div/form/div[4]/div[2]/div/div/div/div[3]/div/div', timeout=1000)
                 await page.click(f'#react-select-3-option-{month - 1}', timeout=1000)
                 await asyncio.sleep(1)
-                await page.click('.yearSelect-0-2-136', timeout=1000)
+                await page.click('.yearSelect-0-2-123', timeout=1000)
                 await page.click(f'[data-test-id="select-value:{year}"]', timeout=1000)
 
                 if gender == 'male':
