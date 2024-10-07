@@ -20,16 +20,16 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
 import psycopg
-import configs
+# import configs
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
-DB = psycopg.connect(**configs.db_config())
+DB = psycopg.connect(dbname='postgres', user='postgres',password='svdbjnsj5788393930_sdjdjd',host='10.9.28.54',port=5432)
 DBC = DB.cursor()
 app = FastAPI(title='UniReger')
 SECURITY = HTTPBasic()
 CC = {
     'server': 'rucaptcha.com',
-    'apiKey': configs.TwoCaptchaApiKey,
+    'apiKey': 'configs.TwoCaptchaApiKey',
     'softId': '',
     'callback': '',
     'defaultTimeout': 120,
@@ -139,7 +139,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
 
 async def standart_execute_sql(sql: str):
     """Подключение к БД проекта и выполнение там переданного SQL с возвращением его результатов."""
-    db = await psycopg.AsyncConnection.connect(**configs.db_config())
+    db = await psycopg.AsyncConnection.connect(dbname='postgres', user='postgres',password='svdbjnsj5788393930_sdjdjd',host='10.9.28.54',port=5432)
     dbc = db.cursor()
     await dbc.execute(sql)
     if dbc.description:
@@ -757,7 +757,7 @@ async def mailru_register(count: Optional[int] = None):
 
         async with async_playwright() as playwright:
             chromium = playwright.chromium
-            browser = await chromium.launch()
+            browser = await chromium.launch(headless=False)
             context = await browser.new_context(proxy=proxy)
             page = await context.new_page()
             account = await email_account_registration(context, page, user)
@@ -929,7 +929,7 @@ async def email_account_registration(context, page, user):
                         await page.click('xpath=//*[@id="signupForm"]/div[1]/div[2]/div/label[2]')
                     await asyncio.sleep(1)
                     await page.click('button[type="submit"]')
-                    await asyncio.sleep(10)
+                    await asyncio.sleep(1000000000000000)
 
                     # -----finish-----
                     element = await page.query_selector('body')
@@ -937,7 +937,7 @@ async def email_account_registration(context, page, user):
                 cookies = await context.cookies()
                 cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
                 cookie_list = [cookie_dict]
-                if "Добро пожаловать в Mail.ru!" in elem.strip():
+                if "Письмо первое — с чего начать" in elem.strip():
                     add_loggs('Finish registration', 1)
                     while True:
                         email = f'{email}@mail.ru'
