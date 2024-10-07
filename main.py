@@ -897,6 +897,7 @@ async def email_account_registration(context, page, user):
                 await elements[2].fill(email, timeout=1000)
                 await elements[3].fill(phone_string, timeout=1000)
                 await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/button')
+                logging.critical('sms')
                 element = await page.query_selector('body')
                 elem = await element.text_content()
                 if "Номер уже используется другим пользователем" in elem.strip():
