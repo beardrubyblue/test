@@ -883,7 +883,7 @@ async def email_account_registration(context, page, user):
                 await page.click(f'#react-select-2-option-{day - 1}', timeout=1000)
                 await asyncio.sleep(1)
                 logging.critical('name')
-                await page.click('.focus-0-2-96', timeout=1000)
+                await page.click('xpath=/html/body/div[1]/div[2]/div/div[3]/div[3]/div[1]/div/div[3]/div/form/div[4]/div[2]/div/div/div/div[3]', timeout=1000)
                 await page.click(f'#react-select-3-option-{month - 1}', timeout=1000)
                 await asyncio.sleep(1)
                 logging.critical('name')
