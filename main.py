@@ -950,12 +950,12 @@ async def email_account_registration(context, page, user):
                             break
                         await asyncio.sleep(60)
                     add_loggs('Created', 1)
-                return AccountCreation(
-                    phone=phone,
-                    password=password,
-                    humanoid_id=humanoid_id,
-                    last_cookies=cookie_list
-                )
+                    return AccountCreation(
+                        phone=phone,
+                        password=password,
+                        humanoid_id=humanoid_id,
+                        last_cookies=cookie_list
+                    )
             except Exception as e:
                 return f"Ошибка при заполнении: {e}"
     except Exception as e:
