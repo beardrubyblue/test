@@ -53,6 +53,6 @@ deploy_main:
   only:
     - main
   variables:
-    DOMAIN: -odata.arbat.dev
+    DOMAIN: .ad.dev.arbat.dev
   tags:
     - arbat-deploy
