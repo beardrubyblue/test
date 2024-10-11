@@ -26,11 +26,12 @@ import docker
 from models import AccountCreation
 CONTAINER_ID = os.getenv('CONTAINER_ID')
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
+logging.critical(CONTAINER_ID)
 DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
 app = FastAPI(title='UniReger')
 SECURITY = HTTPBasic()
-CLIENT = docker.DockerClient(base_url='unix://var/run/docker.sock')
+# CLIENT = docker.DockerClient(base_url='unix://var/run/docker.sock')
 CC = {
     'server': 'rucaptcha.com',
     'apiKey': 'configs.TwoCaptchaApiKey',
@@ -459,8 +460,8 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                     logging.critical('MISSION ACCOMPLISHED! New Account: ' + phone_jd['phone'] + ':' + password)
                     html_response += '<BR><BR>MISSION ACCOMPLISHED! New Account:<BR>' + phone_jd['phone'] + ':' + password + '<BR>' + info + '<BR>'
                     if kind == '1':
-                        container = CLIENT.containers.get(CONTAINER_ID)
-                        container.pause()
+                        # container = CLIENT.containers.get(CONTAINER_ID)
+                        # container.pause()
                         return HTMLResponse(content=html_response, status_code=200)
                 elif 'error' in jd:
                     jd = json.loads(rr.text)['error']
