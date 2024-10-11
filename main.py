@@ -22,7 +22,6 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from twocaptcha import TwoCaptcha
 import psycopg
 import configs
-import docker
 from models import AccountCreation
 CONTAINER_ID = os.getenv('CONTAINER_ID')
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
