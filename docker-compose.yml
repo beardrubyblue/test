@@ -3,7 +3,6 @@ x-defaults:
   &defaults
   image: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
   environment:
-    - CONTAINER_ID=${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
     - TZ=Europe/Moscow
     - CI_COMMIT_REF_NAME
     - CI_COMMIT_SHORT_SHA
