@@ -47,7 +47,10 @@ build:
     - vault kv get -field=proxy_user_of_kind3 -format=json opendata/unireger > /ProxyUserOfKind3.json
     - docker stack deploy --with-registry-auth --prune -c docker-compose.yml $CI_PROJECT_NAME
     - export CONTAINER_ID=$(docker-compose ps -q)
-    - echo "ID: $CONTAINER_ID"
+    - export CONTAINER_NAME=$(docker inspect --format='{{.Name}}' $CONTAINER_ID | sed 's/^\/\(.*\)/\1/')
+    - echo "CONTAINER_NAME=$CONTAINER_NAME" >> .env
+    - echo "Имя контейнера: $CONTAINER_NAME"
+    - export CONTAINER_NAME
     - stack_wait $CI_PROJECT_NAME
 
 deploy_main:
