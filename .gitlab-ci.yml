@@ -49,7 +49,6 @@ build:
     - export CONTAINER_ID=$(docker-compose ps -q)
     - export CONTAINER_NAME=$(docker inspect --format='{{.Name}}' $CONTAINER_ID | sed 's/^\/\(.*\)/\1/')
     - echo "CONTAINER_NAME=$CONTAINER_NAME" >> .env
-    - echo "Имя контейнера: $CONTAINER_NAME"
     - export CONTAINER_NAME
     - stack_wait $CI_PROJECT_NAME
 
