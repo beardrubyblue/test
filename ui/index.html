@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="reset.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Captcher</title>
+</head>
+<body>
+    <section class="project">
+       <h1>Проект: UniReger</h1>
+        <p>Версия: 11.10.2024 13:07</p>
+    </section>
+    <section class="help">
+        <div class="container">
+            <div class="help-inner">
+                <h2>Инструкция UniReger</h2>
+                <div class="services">
+                    <p>Методы:</p>
+                    <div class="services-items">
+                        <a href="#vk-revive-access-token">vk-revive-access-token</a>
+                        <a href="#vk-execute-api-method">vk-execute-api-method</a>
+                        <a href="#vk-register">vk-register</a>
+                        <a href="#gmail-register">gmail-register</a>
+                        <a href="#mailru-register">mailru-register</a>
+                        <a href="#vk-mail-ru-register">vk-mail-ru-register</a>
+                        <a href="#ya-mail-ru-register">ya-mail-ru-register</a>
+                        <a href="#gmail-register">gmail-register</a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="vk-revive-access-token" class="normal-captcha">
+        <div class="container">
+            <div class="normal-captcha-inner">
+                <h3>vk-revive-access-token</h3>
+                <div class="example">
+                    <p>Воскрешение доступа к учётной записи ВК.</p>
+                </div>
+                <div class="specific">
+                    <table class="table">
+                        <caption>
+                            Спецификация для метода solve_captcha
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th>Свойство</th>
+                                <th>Тип</th>
+                                <th>Значение</th>
+                                <th>Описание</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>captcha_type</td>
+                                <td>string</td>
+                                <td>normal</td>
+                                <td>Поле для обозначения решаемого вида каптчи</td>
+                            </tr>
+                            <tr>
+                                <td>service</td>
+                                <td>string</td>
+                                <td>RuCaptcha/CaptchaGuru/AntiCaptcha</td>
+                                <td>Сервис для решения каптчи</td>
+                            </tr>
+                            <tr>
+                                <td>image_url</td>
+                                <td>string</td>
+                                <td>url</td>
+                                <td>Ссылка на картину каптчи</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="captcha-request">
+                    <h4>Пример запроса</h4>
+                    <p>Метод: solve_captcha</p>
+                    <div class="code">
+                        <code>
+                            {<br>
+                              "captcha_type": "normal",<br>
+                              "service": "rucaptcha",<br>
+                              "image_url": "https://rucaptcha.com/dist/web/assets/captcha-rn1S3orp.jpg"<br>
+                            }
+                        </code>
+                    </div>
+                </div>
+                <div class="captcha-response">
+                    <h4>Пример ответа</h4>
+                    <p>Метод: solve_captcha</p>
+                    <div class="code">
+                        <code>
+                            {<br>
+                              "solution": "w9h5k"<br>
+                            }
+                        </code>
+                    </div>
+                </div>
+                <div class="specific">
+                    <table class="table">
+                        <caption>
+                            Спецификация для метода solve_text_captcha_file
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th>Свойство</th>
+                                <th>Тип</th>
+                                <th>Значение</th>
+                                <th>Описание</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>service</td>
+                                <td>string</td>
+                                <td>RuCaptcha/CaptchaGuru/AntiCaptcha</td>
+                                <td>Сервис для решения каптчи</td>
+                            </tr>
+                            <tr>
+                                <td>file</td>
+                                <td>file</td>
+                                <td>file</td>
+                                <td>Файл с картинкой каптчи</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="captcha-request">
+                    <h4>Пример запроса</h4>
+                    <p>Метод: solve_text_captcha_file</p>
+                    <div class="code">
+                        <code>
+                            {<br>
+                              "service": "rucaptcha",<br>
+
+                            }
+                        </code>
+                    </div>
+                </div>
+                <div class="captcha-response">
+                    <h4>Пример ответа</h4>
+                    <p>Метод: solve_text_captcha_file</p>
+                    <div class="code">
+                        <code>
+                            {<br>
+                              "solution": "w9h5k"<br>
+                            }
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="recaptcha" class="normal-captcha">
+        <div class="container">
+            <div class="normal-captcha-inner">
+                <h3>ReCaptcha</h3>
+                <div class="example">
+                    <p>Основанный на токенах метод автоматического решения reCAPTCHA V2.</p>
+                    <img src="https://rucaptcha.com/assets/captcha-api-docs/img/recaptcha-v2.svg" alt="">
+                </div>
+                <p>Полученный токен может быть отправлен на целевой веб-сайт внутри поля формы g-recaptcha-response или передан функции обратного вызова.</p>
+                <div class="specific">
+                    <table class="table">
+                        <caption>
+                            Спецификация для метода solve_captcha
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th>Свойство</th>
+                                <th>Тип</th>
+                                <th>Значение</th>
+                                <th>Описание</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>captcha_type</td>
+                                <td>string</td>
+                                <td>recaptcha</td>
+                                <td>Поле для обозначения решаемого вида каптчи</td>
+                            </tr>
+                            <tr>
+                                <td>service</td>
+                                <td>string</td>
+                                <td>RuCaptcha/CaptchaGuru/AntiCaptcha</td>
+                                <td>Сервис для решения каптчи</td>
+                            </tr>
+                            <tr>
+                                <td>page_url</td>
+                                <td>string</td>
+                                <td>url</td>
+                                <td>Полный URL-адрес целевой веб-страницы, на которую загружается капча.</td>
+                            </tr>
+                            <tr>
+                                <td>site_key</td>
+                                <td>string</td>
+                                <td>url</td>
+                                <td>reCAPTCHA sitekey. Свойство data-sitekey для reCAPTCHA, которое можно найти внутри элемента div или внутри параметра k запросов к reCAPTHCHA API.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="captcha-request">
+                    <h4>Пример запроса</h4>
+                    <p>Метод: solve_captcha</p>
+                    <div class="code">
+                        <code>
+                            {<br>
+                              "captcha_type": "normal",<br>
+                              "service": "rucaptcha",<br>
+                              "site_key": "6LfD3PIbAAAAAJs_eEHvoOl75_83eXSqpPSRFJ_u",<br>
+                              "page_url": "https://rucaptcha.com/demo/recaptcha-v2"<br>
+                            }
+                        </code>
+                    </div>
+                </div>
+                <div class="captcha-response">
+                    <h4>Пример ответа</h4>
+                    <p>Метод: solve_captcha</p>
+                    <div class="code">
+                        <code>
+                            {<br>
+                              "solution": "03AFcWeA4uaBB7k7Ywo5Z27UUyjwOaPcTwEcShe47ywmT0WQ_Qx3S-d-oNbskxlSITRqXf6R2rmmDHX6YpW3_bSt1DxxnJj1KeyAp9_l_KuOuB9hpdHRZOC0S-2AYD0Pr1AKQYZ54i04hT0sXitxDF1SqFc2_6yKpse6CVrS_wuEHq0_wy1Agq1QPlFW0BjZA8i70YjKNI3efyt_zgyJTepEv0YEeOx_WNugPVci92LdA-Q2y9zK1It23XZQO36WGmUhX1SfNehd9MBLKUKiJIyC_kaPv8v_iHrg3YR3K4-bi0vU9YnmGd7959znmktAi3C_-G88UqOx91h7DuD6e1CgaVVSgwq7qfCEOgN2r59sczuoVoL1l DOY6IFUNT96Swf8l9n9lxPrZuKpVRJleseoIkqyu9_7IRQRtGj_gboHzrWJfJ5lCf2N6wgiYy7ZQFPFOb2sXC_jDCVuqvd_2jrKLcC_PEKAI_pw"<br>
+                            }
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="recaptcha_v3" class="normal-captcha">
+        <div class="container">
+            <div class="normal-captcha-inner">
+                <h3>ReCaptcha_v3</h3>
+                <div class="example">
+                    <p>Основанный на токенах метод автоматического решения reCAPTCHA V3.</p>
+                    <img src="https://rucaptcha.com/assets/captcha-api-docs/img/recaptcha-v3.svg" alt="">
+                </div>
+                <p>Полученный токен может быть отправлен на целевой веб-сайт внутри поля формы g-recaptcha-response или передан функции обратного вызова.</p>
+                <div class="specific">
+                    <table class="table">
+                        <caption>
+                            Спецификация для метода solve_captcha
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th>Свойство</th>
+                                <th>Тип</th>
+                                <th>Значение</th>
+                                <th>Описание</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>captcha_type</td>
+                                <td>string</td>
+                                <td>recaptcha_v3</td>
+                                <td>Поле для обозначения решаемого вида каптчи</td>
+                            </tr>
+                            <tr>
+                                <td>service</td>
+                                <td>string</td>
+                                <td>RuCaptcha/CaptchaGuru/AntiCaptcha</td>
+                                <td>Сервис для решения каптчи</td>
+                            </tr>
+                            <tr>
+                                <td>minScore</td>
+                                <td>string</td>
+                                <td></td>
+                                <td>Обязательное значение score, примеры значений: 0.3 0.7 0.9</td>
+                            </tr>
+                            <tr>
+                                <td>site_key</td>
+                                <td>string</td>
+                                <td></td>
+                                <td>reCAPTCHA sitekey. Свойство data-sitekey для reCAPTCHA, которое можно найти внутри элемента div или внутри параметра k запросов к reCAPTHCHA API.</td>
+                            </tr>
+                            <tr>
+                                <td>page_url</td>
+                                <td>string</td>
+                                <td>url</td>
+                                <td>Полный URL-адрес целевой веб-страницы, на которую загружается капча.</td>
+                            </tr>
+                            <tr>
+                                <td>action</td>
+                                <td>string</td>
+                                <td></td>
+                                <td>Значение параметра action. Значение устанавливается владельцем веб-сайта внутри свойства data-action элемента reCAPTCHA div или передается внутри объекта options при вызове метода execute, например grecaptcha.execute('websiteKey'{ action: 'MyAction' })</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="captcha-request">
+                    <h4>Пример запроса</h4>
+                    <p>Метод: solve_captcha</p>
+                    <div class="code">
+                        <code>
+                            {<br>
+                              "captcha_type": "recaptcha_v3",<br>
+                              "service": "rucaptcha",<br>
+                              "minScore": "0.9",<br>
+                              "site_key": "6LfB5_IbAAAAAMCtsjEHEHKqcB9iQocwwxTiihJu",<br>
+                              "page_url": "https://rucaptcha.com/demo/recaptcha-v3",<br>
+                              "action": "demo_action"<br>
+                            }
+                        </code>
+                    </div>
+                </div>
+                <div class="captcha-response">
+                    <h4>Пример ответа</h4>
+                    <p>Метод: solve_captcha</p>
+                    <div class="code">
+                        <code>
+                            {<br>
+                              "solution": "03AFcWeA5vvAlG52RUWuHZkKouiouK4x36BM3Syzo9CXlYs9bQthZOzR_fvd5rXulcgIwHdpN6jcBzrMtNux6GQrgaTmTTgnkUjfVFwoYzn8YLaGDsQ3mUsHgGF-YzzJ3a-Oigbg9xviI3tHyTrv5F0QFHjDXEJrEIUqbEz3T_vaK2eC6g_OtT8w5Ig9m9D-W05r-dIDfJ3zQoGZyzkJuv0PEfeFPblyEFNCopIUOwCk2bRhgyhsxiXryeDhCj-pA8AmYBrvTHLvBCz_HdWqrtv035g35AAZKeLjVz9GoXoyw2Mx8OyssJW8y4hyAMwd7TtxwxaSU8qBPRvdbt5qo2Cd2U95Q7VrlRBpcJwoOwxOqjIBZimeD0u84kUZPcqJfihdBwQ70KRqa-fawPJJ-tZTCk1_d1rudhAwEZY028jaJiH0cpO_iURcOjSLX-j-4wkJYToD1U9SFHFEij75_JvwRg9teb67Gq1L7AYvCMpjYsyiLnfHABFMnEuQhlPhwF_hZqBMrOMmoi1_8p3N8up_bwB4k9AOk0ZujsUeGRkqdON-MnAkvmxDtFGGFEkctr3dTMr19idr4JbMEWND0hI4mHr14QqjzvpW3_pZDaKxiGXL8c4xaLFBFhZ9IMuNyfMK4dNOupj71u1R9zafbRSyd1j0ooa_iqZMVUz17i7l1JCobd6g9NwFnY_whHgrmlYw0SeKQMRwSDIZNh242EsTz9zlaSLJdqVg"<br>
+                            }
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="turnstile" class="normal-captcha">
+        <div class="container">
+            <div class="normal-captcha-inner">
+                <h3>Turnstile</h3>
+                <div class="example">
+                    <p>Основанный на токенах метод обхода капчи Cloudflare Turnstile. Поддерживаются два вида капчи Cloudflare Turnstile, как Standalone Captcha, так и Cloudflare Challenge page.</p>
+                    <img src="https://rucaptcha.com/assets/captcha-api-docs/img/cloudflare.svg" alt="">
+                </div>
+                <p>Standalone Captcha - виджет капчи размещен на странице веб-сайта, смотрите нашу демо страницу Turnstile</p>
+                <p><br>Чтобы обойти Standalone Captcha, вам просто нужно найти sitekey, получить токен из нашего API, а затем передать его вашей целевой странице в качестве значения элемента ввода с именем cf-turnstile-response или g-recaptcha-response для режима совместимости с reCAPTCHA. Также токен может быть обработан с помощью функции обратного вызова, переданной в вызов turnstile.render.</p>
+                <div class="specific">
+                    <table class="table">
+                        <caption>
+                            Спецификация для метода solve_captcha
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th>Свойство</th>
+                                <th>Тип</th>
+                                <th>Значение</th>
+                                <th>Описание</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>captcha_type</td>
+                                <td>string</td>
+                                <td>recaptcha_v3</td>
+                                <td>Поле для обозначения решаемого вида каптчи</td>
+                            </tr>
+                            <tr>
+                                <td>service</td>
+                                <td>string</td>
+                                <td>RuCaptcha/CaptchaGuru/AntiCaptcha</td>
+                                <td>Сервис для решения каптчи</td>
+                            </tr>
+                            <tr>
+                                <td>site_key</td>
+                                <td>string</td>
+                                <td></td>
+                                <td>Turnstile sitekey. Значение sitekey можно найти внутри свойства data-sitekey элемента div Turnstile капчи</td>
+                            </tr>
+                            <tr>
+                                <td>page_url</td>
+                                <td>string</td>
+                                <td>url</td>
+                                <td>Полный URL-адрес целевой веб-страницы, на которую загружается капча.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="captcha-request">
+                    <h4>Пример запроса</h4>
+                    <p>Метод: solve_captcha</p>
+                    <div class="code">
+                        <code>
+                            {<br>
+                              "captcha_type": "turnstile",<br>
+                              "service": "rucaptcha",<br>
+                              "site_key": "0x4AAAAAAAVrOwQWPlm3Bnr5",<br>
+                              "page_url": "https://rucaptcha.com/demo/cloudflare-turnstile"<br>
+                            }
+                        </code>
+                    </div>
+                </div>
+                <div class="captcha-response">
+                    <h4>Пример ответа</h4>
+                    <p>Метод: solve_captcha</p>
+                    <div class="code">
+                        <code>
+                            {<br>
+                              "solution": "0.JrzD4ChxEYskiBpQ-anhe0vc3xRSpKOMRoha51REwXq4KjQuTWteqqEFQo2rWhyULHCyfP91coMKs8GU6HMqOtX-iG-b-q3KefUsoCSRhqAyBgXzg-Io3tVmYNpnWC1ivyWUrugsnloh6e8R3cV-6rbx53c_Eh_NStHS1IniqvsEGZO4rD4j5H2LbzIKsQd1tPkYbX97labSW6bFcDQKsRju6arhq8GIsU1pIZEA5ZSzZKa1RkyKGtdP7TfoAs0RIil7E5WEuo8mh1M7TqT8p5fWbTAEKFqes6Ip0oTCeQf36uOPR0lDFHsic5tjJS_SnKRjof2rIyyLLa0pAhoe_-ON5zF3GrbKb20ETybsNmMFwiJwj3k-PrP-9m0WotS2goWLGORuCJxPZKYNPzEdG4vz_35PznypCxa088p48QQgGtaxFG_6xjk19gPDQ2L4._TmlT8yjw8xTb7AGqV4o8Q.27635809af3d4151a247ad046eed3084db66e71248841c0583b17cad6522761d"<br>
+                            }
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!--<section id="hCaptcha" class="normal-captcha">-->
+<!--        <div class="container">-->
+<!--            <div class="normal-captcha-inner">-->
+<!--                <h3>hCaptcha</h3>-->
+<!--                <div class="example">-->
+<!--                    <p>Основанный на токенах метод автоматического решения hCaptcha. Метод очень похож на reCAPTCHA V2.-->
+<!--Полученный токен может быть отправлен на целевой веб-сайт внутри поля формы h-captcha-response или передан функции обратного вызова. Мы рекомендуем использовать значение userAgent которое приходит вместе с токеном.</p>-->
+<!--                    <img src="https://rucaptcha.com/assets/captcha-api-docs/img/hcaptcha.svg" alt="">-->
+<!--                </div>-->
+<!--                <div class="specific">-->
+<!--                    <table class="table">-->
+<!--                        <caption>-->
+<!--                            Спецификация для метода solve_captcha-->
+<!--                        </caption>-->
+<!--                        <thead>-->
+<!--                            <tr>-->
+<!--                                <th>Свойство</th>-->
+<!--                                <th>Тип</th>-->
+<!--                                <th>Значение</th>-->
+<!--                                <th>Описание</th>-->
+<!--                            </tr>-->
+<!--                        </thead>-->
+<!--                        <tbody>-->
+<!--                            <tr>-->
+<!--                                <td>captcha_type</td>-->
+<!--                                <td>string</td>-->
+<!--                                <td>recaptcha_v3</td>-->
+<!--                                <td>Поле для обозначения решаемого вида каптчи</td>-->
+<!--                            </tr>-->
+<!--                            <tr>-->
+<!--                                <td>service</td>-->
+<!--                                <td>string</td>-->
+<!--                                <td>RuCaptcha/CaptchaGuru/AntiCaptcha</td>-->
+<!--                                <td>Сервис для решения каптчи</td>-->
+<!--                            </tr>-->
+<!--                            <tr>-->
+<!--                                <td>site_key</td>-->
+<!--                                <td>string</td>-->
+<!--                                <td></td>-->
+<!--                                <td>hCaptcha sitekey. Свойство data-sitekey для hCaptcha, которое можно найти внутри элемента div hCaptcha или внутри параметра k запросов к hCaptcha API.</td>-->
+<!--                            </tr>-->
+<!--                            <tr>-->
+<!--                                <td>page_url</td>-->
+<!--                                <td>string</td>-->
+<!--                                <td>url</td>-->
+<!--                                <td>Полный URL-адрес целевой веб-страницы, на которую загружается капча.</td>-->
+<!--                            </tr>-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </div>-->
+<!--                <div class="captcha-request">-->
+<!--                    <h4>Пример запроса</h4>-->
+<!--                    <p>Метод: solve_captcha</p>-->
+<!--                    <div class="code">-->
+<!--                        <code>-->
+<!--                            {<br>-->
+<!--                              "captcha_type": "hcaptcha",<br>-->
+<!--                              "service": "rucaptcha",<br>-->
+<!--                              "site_key": "f7de0da3-3303-44e8-ab48-fa32ff8ccc7b",<br>-->
+<!--                              "page_url": "https://2captcha.com/demo/hcaptcha"<br>-->
+<!--                            }-->
+<!--                        </code>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="captcha-response">-->
+<!--                    <h4>Пример ответа</h4>-->
+<!--                    <p>Метод: solve_captcha</p>-->
+<!--                    <div class="code">-->
+<!--                        <code>-->
+<!--                            {<br>-->
+<!--                              "solution": "P1_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.hadwYXNza2V5xQape_ZTiiC3cNu3_9aCCb-LKH3YP1dLTvVDBP7hYKmyhk82X-_IDQn4L4V9fqvWtwAOIEXduLQ8w0bJ_ECQG1b0MsSxLcaL-fg139QLNqXYx3W3GBDR2dhoJmRKShQAsQvL-6psgFx2Z9WBBK3PQwnNswyz6NehIqHGVt6Qgwu8mcLx2Mggw-WB8jaUW03K-RirDAim_7_iaBY8HAf3af8-NIZ30iC2pr9_l_qFuKtBAg3ZxQ7oolbUXP8fp4k7ITkx-uQ1vVePi7rm5Z_bzjhKl9rNEWNZftIyeW9B2LXvMacenSOwPfqHxQKX_EceXXERFeOuisVIdV96Mh3XEfvZVNjNizSuP5WglXCTSSaoI_MCkUJ6eK3hrfAfWmtmgehX3SgM4lgG2Fa1agAws6VQqeVG9Z2o_RIwn-u9LP8AAc2RFHi2-B9Wd1fBPE20949xD5E89gEraHj6ox_3pF68Jimb59NbakdsofCw2s2oesB0i3Rbmc0cVg2EusBNhBoHrkNKGA2uTENb8hkK6CI3B34mhNwueg4p-8L8SBIdYmQB8eECnOEvh-V24z-UJHndljIpjFBPyQywszItNz1aGIaAKLLTfXpDcaspCRDEhWo8yTEsl707InlXz2rAxBi2zb7V-_QIm0ve5mpbi_OnBo3HKN8nGQ_kp9xJifcX77kkRw8q3cTi8hClcC7j__xYsLPpCtQ9wipHBzTdSEe0ZXYfVNokcWWl_chJ_PGAjyLzOKk-PnHKc_DG_nfszwl_BbtvG3Ah_e7tw-1KWyrgcIG-KUVA5gyu7Zjfbp8zKbsr2hMbsKcAoZqXhNVyjeovZvRyry5hIOjuV5-RrLTreHl5PKe8lTbqu_JtxzDHZm8JSqtKXHab-TfJDGlrgyGnPHs3iogOv3EEB-bvuRpyxUKYWdCEQwFOwC755ZBqWhvpv2UKVjEkXwM9VLYrdLvTdIfpNMdb1I9rhChFcr_EQLw4uWtlFUXk7N6pn-2KmZ4nog4zqplZiahVfDXP2tFmWiHTEWq6dY54wAmLXysdOzEzg3WUWf2bJDFJkGMxQ4G7PS966KIHONwBJQgZAT9WyrxD_bZ82Wg60X8EQ_yxNsEAlPRQLbW9ELbcyj0nP6sgvUf91liQn2v_bAIgmqFL33UZSxdNbNhfyd_yNjEcS-va2nbnH87r4o0GrD_ATUlEl8Q5ojpdoGFuWxPGJa9TKhD_JLFe8X13uye7lXmDgvqpq1MtZueEp1trGMg7Aq2kZmafR-bwoHDsVXccycUYh0OLyXrGAZViuZCW3ttBghAPhexOJqEmS6K3iUYjvX1_rW9pQYYwdMA_bOKXKWKd1m_rQ6BaSR8aeZixa2Wf9UiHRVOkZ2YT26jjrt6CjlUzsRpie6sDSI8nowauaC5-3h3wZ9U5aglwEA6vku5Py5pcrdePJNYYd_f5eOgLzgMlZIlTlNYTmMvEjJ18qRLwNXvD45PJZcPeXnQoJyrc8qhcYdX5L4C0RQCf6IX1N90HffEfRB4x-wMuvjnzAb5N2UNyclM1HlvEt7mt8VNt4HX75M896Ogb4jTAneMF0xWSvWD-Ql077vbTv-SREYtQTm6ZHMlXFkYofHNA2Mry9iAEs7eAt6SR1eMoBa4bnLab3GeBBIkgnXs0Aber4wY-jV7-wmx-CZomELtP-puuP8MAEnjJ0INLUFr0B-h7gZ78GHylXnW0-D92zLj5L0DLgSuUTUpS-ZU9_mrxow92Nj1IyzbcEdyNqGtQ7fy8UXQeI3OK8CWH_Xu19lKVWL5i-R_1zyqUD9rqmCH46C0IWjZUOdNy0YilNZr_-j90UX1Y1KsezFBlr8xfPZTH7XnfjI5J4GCWYV6du0UXSgWTH97S-4-DR-m4CWuPucqZg76KbOIT4nNrlLAzjf-JedjOjVcUA29UDqRovQycQmo9s5QVxRZwmR2Y5DJTzlW09OwUaGkFlIiBLG6c5T0f8enek2AZO2xrpStSZu9CeRDlGH2MqWuoMKtiPSU7orEFBW7c0ZZ8UbW60_Ux_mnKOQmNJOjq4Z476MGOgaAsqOPy0a7yLgtyDURroB39kt3Bxw3UkVk-irR_kXXJ5TCiMvorWnABhdfD68xTiSpBcBQGimDZy6_ZZtBIeGtwy3dloV2Ya_yr2HPaEhOD8-LH3YembtBZiPyfRm87KLdHA2pZu-HW9Xnpx_ob4VGtuOiPTOQXXSVh7wRrUZFc5GRjKyTG8c0Ol0m4HoL3DalZUfRO0r-6zXNdW7o-raNleHDOZpPxy6hzaGFyZF9pZM4DMYNvomtyqDE5Y2Y4ZjM2onBkAA.w2akvmjOLbTiate8g8LxioZnJxzY89heIqI9s4iwllU"<br>-->
+<!--                            }-->
+<!--                        </code>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </section>-->
+</body>
+</html>

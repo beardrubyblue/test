@@ -1,4 +1,5 @@
 FROM dockerhub.arbat.dev/python:3.11
+ARG RANDOM_SYMBOLS
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
