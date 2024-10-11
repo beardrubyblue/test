@@ -348,13 +348,14 @@ def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.v
 
 
 @app.get("/vk-register")
-def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
+# def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
+def vk_register(kind='1'):
     """регистрация одного или пачки учётных записей ВК"""
     global REGISTRATION_STARTED
-    if credentials.username != 'AlanD' or credentials.password != 'Bober666':
-        return HTMLResponse(content='В доступе отказано!', status_code=200)
-    if REGISTRATION_STARTED:
-        return HTMLResponse(content='ERROR! Only One Registration Process Allowed!', status_code=404)
+    # if credentials.username != 'AlanD' or credentials.password != 'Bober666':
+    #     return HTMLResponse(content='В доступе отказано!', status_code=200)
+    # if REGISTRATION_STARTED:
+    #     return HTMLResponse(content='ERROR! Only One Registration Process Allowed!', status_code=404)
     REGISTRATION_STARTED = True
     html_response = ''
     html_errors = ''
