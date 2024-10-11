@@ -23,8 +23,8 @@ from twocaptcha import TwoCaptcha
 import psycopg
 import configs
 import docker
-CONTAINER_ID = os.getenv('CONTAINER_ID')
 from models import AccountCreation
+CONTAINER_ID = os.getenv('CONTAINER_ID')
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
