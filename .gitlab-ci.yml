@@ -49,6 +49,7 @@ build:
     - stack_wait $CI_PROJECT_NAME
     - export CONTAINER_ID=$(docker ps -q --filter "name=${CI_PROJECT_NAME}")
     - echo "CONTAINER_ID=${CONTAINER_ID}" >> .env
+    - echo ${CONTAINER_ID}
 
 deploy_main:
   extends: .deploy
