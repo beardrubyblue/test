@@ -327,9 +327,6 @@ def get_access_token(phone_string: str, password: str):
             logging.critical(e)
 
 
-app.mount("/", StaticFiles(directory="ui", html=True), name="ui")
-
-
 @app.get("/vk-revive-access-token")
 def vk_revive_access_token(phone_string: str, password: str, credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Воскрешение доступа к учётной записи ВК."""
@@ -1469,6 +1466,8 @@ async def ya_mail_ru_registration(context, page, user):
 #         logging.critical(f"Ошибка: {e}")
 #         add_loggs(f'Ошибка: {e}', 1)
 #         return {"error": str(e)}
+
+app.mount("/", StaticFiles(directory="ui", html=True), name="ui")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5000)
