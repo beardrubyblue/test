@@ -2,8 +2,6 @@ version: '3.5'
 x-defaults:
   &defaults
   image: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
-  volumes:
-    - /var/lib/docker/docker.sock:/var/lib/docker/docker.sock
   environment:
     - TZ=Europe/Moscow
     - CI_COMMIT_REF_NAME
