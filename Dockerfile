@@ -1,5 +1,6 @@
 FROM dockerhub.arbat.dev/python:3.11
-WORKDIR /app
+ARG RANDOM_STRING
+WORKDIR /UniReger-${RANDOM_STRING}
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 RUN playwright install-deps
