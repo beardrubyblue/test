@@ -46,6 +46,8 @@ build:
     - vault kv get -field=db_config -format=json opendata/unireger > /DBConfig.json
     - vault kv get -field=proxy_user_of_kind3 -format=json opendata/unireger > /ProxyUserOfKind3.json
     - docker stack deploy --with-registry-auth --prune -c docker-compose.yml $CI_PROJECT_NAME
+    - export CONTAINER_ID=$(docker-compose ps -q)
+    - echo "ID: $CONTAINER_ID"
     - stack_wait $CI_PROJECT_NAME
 
 deploy_main:
