@@ -1,4 +1,5 @@
 import logging
+import os
 import shutil
 import re
 import string
@@ -22,6 +23,7 @@ from twocaptcha import TwoCaptcha
 import psycopg
 import configs
 import docker
+CONTAINER_ID = os.getenv('CONTAINER_ID')
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
@@ -457,7 +459,8 @@ def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY))
                     logging.critical('MISSION ACCOMPLISHED! New Account: ' + phone_jd['phone'] + ':' + password)
                     html_response += '<BR><BR>MISSION ACCOMPLISHED! New Account:<BR>' + phone_jd['phone'] + ':' + password + '<BR>' + info + '<BR>'
                     if kind == '1':
-                        # CLIENT.containers.
+                        container = CLIENT.containers.get(CONTAINER_ID)
+                        container.pause()
                         return HTMLResponse(content=html_response, status_code=200)
                 elif 'error' in jd:
                     jd = json.loads(rr.text)['error']

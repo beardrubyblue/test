@@ -14,3 +14,4 @@ playwright==1.42.0
 fake_useragent
 transliterate
 bs4
+docker
