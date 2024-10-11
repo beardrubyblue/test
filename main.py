@@ -19,6 +19,7 @@ import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.staticfiles import StaticFiles
 from twocaptcha import TwoCaptcha
 import psycopg
 import configs
@@ -327,7 +328,10 @@ def get_access_token(phone_string: str, password: str):
         except Exception as e:
             logging.critical(e)
 
+
 app.mount("/", StaticFiles(directory="ui", html=True), name="ui")
+
+
 @app.get("/vk-revive-access-token")
 def vk_revive_access_token(phone_string: str, password: str, credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Воскрешение доступа к учётной записи ВК."""
