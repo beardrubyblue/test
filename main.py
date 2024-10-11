@@ -1,6 +1,5 @@
 import logging
 import os
-import shutil
 import re
 import string
 import datetime
@@ -17,7 +16,7 @@ import time
 from bs4 import BeautifulSoup
 import uvicorn
 from fastapi import Depends, FastAPI
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from twocaptcha import TwoCaptcha
