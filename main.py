@@ -21,6 +21,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from twocaptcha import TwoCaptcha
 import psycopg
+
 import configs
 from models import AccountCreation
 CONTAINER_ID = os.getenv('CONTAINER_ID')
@@ -32,7 +33,7 @@ app = FastAPI(title='UniReger')
 SECURITY = HTTPBasic()
 CC = {
     'server': 'rucaptcha.com',
-    'apiKey': 'configs.TwoCaptchaApiKey',
+    'apiKey': configs.TwoCaptchaApiKey,
     'softId': '',
     'callback': '',
     'defaultTimeout': 120,
@@ -761,7 +762,7 @@ async def mailru_register(count: Optional[int] = None):
 
         async with async_playwright() as playwright:
             chromium = playwright.chromium
-            browser = await chromium.launch(headless=False)
+            browser = await chromium.launch()
             context = await browser.new_context(proxy=proxy)
             page = await context.new_page()
             account = await email_account_registration(context, page, user)
@@ -791,7 +792,8 @@ async def email_account_registration(context, page, user):
         gender = 'male'
     email = generate_mail(first_name, last_name, year)
     password = generate_pass(random.randint(15, 20))
-    phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
+    phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=vk&bank=virtual'))
+
     phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + \
                    phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
     try:
@@ -900,6 +902,7 @@ async def email_account_registration(context, page, user):
                     await page.click('input[value="female"]', force=True)
                 await elements[2].fill(email, timeout=1000)
                 await elements[3].fill(phone_string, timeout=1000)
+                await asyncio.sleep(2000000000000000000000000)
                 logging.critical('click')
                 await page.click('xpath=//*[@id="root"]/div/div[3]/div[3]/div[1]/div/div[3]/div/form/div[21]/button')
                 logging.critical('sms')
@@ -912,6 +915,7 @@ async def email_account_registration(context, page, user):
                     url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(
                         phone_jd['listenFromTimestamp'])
                     sms = await standart_request('get', url)
+                    logging.critical(sms)
                     if sms != '{"messages":[]}':
                         break
                     await asyncio.sleep(0.2)
@@ -919,9 +923,15 @@ async def email_account_registration(context, page, user):
                 sms = re.findall(pattern, sms)
                 sms = ' '.join(sms)
                 await page.fill('input', sms, timeout=1000)
-                # await page.click('button[type="submit"]')
-                await asyncio.sleep(10)
+                await page.click('button[type="submit"]')
+                element = await page.query_selector('body')
+                elem = await element.text_content()
                 phone = phone_jd['phone']
+                if "Завершение регистрации" in elem.strip():
+                    vk_user = await standart_execute_sql(f"SELECT password FROM accounts WHERE phone = '{phone}'")
+                    await page.fill('input', vk_user[0][0], timeout=1000)
+                    await asyncio.sleep(1)
+                await asyncio.sleep(2)
                 element = await page.query_selector('body')
                 elem = await element.text_content()
                 if "This VK ID is linked to your phone number." in elem.strip() or "Забыли пароль?" in elem.strip():
@@ -933,11 +943,11 @@ async def email_account_registration(context, page, user):
                         await page.click('xpath=//*[@id="signupForm"]/div[1]/div[2]/div/label[2]')
                     await asyncio.sleep(1)
                     await page.click('button[type="submit"]')
-                    await asyncio.sleep(1000000000000000)
+                    await asyncio.sleep(10)
 
                     # -----finish-----
-                    element = await page.query_selector('body')
-                    elem = await element.text_content()
+                element = await page.query_selector('body')
+                elem = await element.text_content()
                 cookies = await context.cookies()
                 cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
                 cookie_list = [cookie_dict]
@@ -1467,6 +1477,169 @@ async def ya_mail_ru_registration(context, page, user):
 #         logging.critical(f"Ошибка: {e}")
 #         add_loggs(f'Ошибка: {e}', 1)
 #         return {"error": str(e)}
+# @app.get("/@ok_restration")
+# async def ok_restration(count: Optional[int] = None):
+#     accounts = []
+#     count_acc = 0
+#     users = await standart_execute_sql("select * from accounts where kind_id = 20 and block = false and phone LIKE '79%' and phone not in (select phone from accounts where kind_id = 1)")
+#     logging.critical(len(users))
+#     while count is None or len(accounts) < count:
+#         if len(accounts) == count:
+#             standart_finish('MISSION ACCOMPLISHED!')
+#         proxy_list = await standart_get_proxies(kind=2, ptype=3)
+#         proxy_index = 0
+#         logging.critical(len(proxy_list))
+#         if proxy_index >= len(proxy_list):
+#             proxy_list = await standart_get_proxies(kind=2, ptype=3)
+#             proxy_index = 0
+#         pr = proxy_list[proxy_index].split('://')[1].split('@')
+#         username_proxy, password_proxy = pr[0].split(':')
+#         host, port = pr[1].split(':')
+#         if " " in host:
+#             host = host.replace(" ", "")
+#         proxy = {
+#             'server': f'http://{host}:{port}',
+#             'username': username_proxy,
+#             'password': password_proxy
+#         }
+#         async with async_playwright() as playwright:
+#             chromium = playwright.chromium
+#             browser = await chromium.launch(headless=False)
+#             context = await browser.new_context(proxy=proxy)
+#             page = await context.new_page()
+#             account = await ok_restrations(context, page, users[count_acc + 10])
+#             await browser.close()
+#             accounts.append(account)
+#             add_loggs(0, '------------------------------------')
+#
+#         proxy_index += 1
+#         count_acc += 1
+#         logging.critical(count_acc)
+#     standart_finish('MISSION ACCOMPLISHED!')
+#     return {'accounts': accounts}
+#
+#
+# async def ok_restrations(context, page, user):
+#     humanoid_id = user[7]
+#     phone = user[2]
+#     # password = user[3]
+#     humanoid_first_name = user[4]['first_name']
+#     humanoid_last_name = user[4]['last_name']
+#     humanoid_birth_date = user[4]['birth_date']
+#     id = user[0]
+#     humanoid_email = user[4]['email']
+#     try:
+#         await page.goto("https://ok.ru/")
+#         logging.critical('run')
+#         await asyncio.sleep(1)
+#         await page.click('a[class="button-pro __sec mb-3x __wide"]')
+#         await page.screenshot(path="screen.png", full_page=True)
+#         await page.fill('input[id="field_phone"]', phone)
+#         await asyncio.sleep(5)
+#         await page.click('input[class="button-pro __wide js-proceed-registration"]')
+#         await asyncio.sleep(10)
+#         await page.screenshot(path="screen.png", full_page=True)
+#         element = await page.query_selector('body')
+#         elem = await element.text_content()
+#         if "Введите код подтверждения" in elem.strip():
+#             response = await standart_request('get', f'http://10.9.20.135:3000/phones/messages/{phone}?fromTs=0')
+#             await asyncio.sleep(15)
+#             pattern = r"OK: код (\d+)"
+#             kod = re.findall(pattern, response)
+#             kod = ' '.join(kod)
+#             kod = kod[:6]
+#             logging.critical(str(kod))
+#             await page.fill('input[id="smsCode"]', kod)
+#             await page.screenshot(path="screen.png", full_page=True)
+#             await page.click('input[value="Далее"]')
+#         elif 'Введите код из' in elem.strip() or 'Enter SMS' in elem.strip():
+#             logging.critical('2')
+#             logging.critical(str(phone))
+#             response = await standart_request('get', f'http://10.9.20.135:3000/phones/messages/{phone}?fromTs=0')
+#             await asyncio.sleep(15)
+#             pattern = r"OK: код (\d+)"
+#             kod = re.findall(pattern, response)
+#             kod = ' '.join(kod)
+#             if kod == '':
+#                 pattern = r"VK: (\d+)"
+#                 kod = re.findall(pattern, response)
+#                 kod = ' '.join(kod)
+#                 kod = kod[:6]
+#             logging.critical(str(kod))
+#             try:
+#                 await page.wait_for_selector('input[name="otp-cell"]')
+#                 element_exists = True
+#             except Exception:
+#                 element_exists = False
+#             if element_exists:
+#                 await page.fill('input[name="otp-cell"]', kod)
+#             else:
+#                 await page.fill('input[id="otp"]', kod)
+#                 await page.press('input[id="otp"]', 'Enter')
+#         await asyncio.sleep(5)
+#         await page.screenshot(path="screen.png", full_page=True)
+#         element = await page.query_selector('body')
+#         elem = await element.text_content()
+#         if "Придумайте пароль" in elem.strip():
+#             characters = string.ascii_letters + string.digits
+#             passw = ''.join(random.choice(characters) for _ in range(15))
+#             await page.fill('input[id="field_password"]', passw)
+#             await page.click('input[value="Далее"]')
+#         await asyncio.sleep(5)
+#         await page.screenshot(path="screen.png", full_page=True)
+#         element = await page.query_selector('body')
+#         elem = await element.text_content()
+#         if "Расскажите о себе" in elem.strip():
+#             await page.fill('input[id="field_fieldName"]', humanoid_first_name)
+#             await page.fill('input[id="field_surname"]', humanoid_last_name)
+#             await page.fill('input[id="field_birthday"]', humanoid_birth_date)
+#             sex = await standart_execute_sql(f'select sex from humanoids where id = {humanoid_id}')
+#             if 'female' in sex[0]:
+#                 await page.locator('text=женщина').click()
+#             else:
+#                 await page.locator('text=мужчина').click()
+#             await page.screenshot(path="screen.png", full_page=True)
+#             await page.click('input[class="button-pro __wide"]')
+#         await page.screenshot(path="screen.png", full_page=True)
+#         await asyncio.sleep(5)
+#         await page.screenshot(path="screen.png", full_page=True)
+#         await asyncio.sleep(50000000000000000)
+#         element = await page.query_selector('body')
+#         elem = await element.text_content()
+#         if 'Безопасность' in elem.strip():
+#             await page.goto("https://ok.ru/devaccess")
+#             await page.click('input[id="inp-accept"]')
+#             await page.screenshot(path="screen.png", full_page=True)
+#             await page.click('input[id="hook_FormButton_button_submit_request"]')
+#             await asyncio.sleep(15)
+#         element = await page.query_selector('body')
+#         elem = await element.text_content()
+#         if 'Права разработчика выданы' in elem.strip():
+#
+#             if access_token != '' and sig != '' and application_key != '':
+#                 while True:
+#                     cookies = await context.cookies()
+#                     cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+#                     cookie_list = [cookie_dict]
+#                     res = await send_acc(1, user[2], passw, humanoid_first_name,
+#                                          humanoid_last_name, humanoid_birth_date, humanoid_id,
+#                                          cookie_list, humanoid_email, access_token, sig, application_key)
+#                     if res.status == 200:
+#                         break
+#                     return AccountCreation(
+#                         kind_id=1,
+#                         phone=user[2],
+#                         password=passw,
+#                         info=user[4],
+#                         humanoid_id=humanoid_id,
+#                         last_cookies=cookie_list
+#                     )
+#             else:
+#                 add_loggs('Ошибка: No ok', 1)
+#                 return {'Error': 'No ok'}
+#     except Exception as e:
+#         add_loggs(0, f'Ошибка: {e}')
+#         return e
 
 app.mount("/", StaticFiles(directory="ui", html=True), name="ui")
 
