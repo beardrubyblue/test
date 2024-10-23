@@ -975,7 +975,7 @@ async def email_account_registration(context, page, user):
 
 @app.get("/@vk-mail-ru-register")
 async def vk_mail_ru(count: Optional[int] = None):
-    """регистрация одного или пачки учётных записей VKMail"""
+    """регистрация одного или пачки учётных записей VKMail """
     accounts = []
     count_acc = 0
     proxy_list = await standart_get_proxies(kind=2)
