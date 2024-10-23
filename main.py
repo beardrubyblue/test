@@ -54,12 +54,12 @@ REGISTRATION_STARTED = False
 random.seed()
 
 
-def standart_finish(reason: str, timeout: int = 100000000):
+def standart_finish(reason: str, timeout: int = 10):
     """Стандартная финализация работы контейнера."""
     logging.critical(reason)
     logging.critical('Finished At: ' + str(datetime.datetime.now()) + ' Waiting For: ' + str(timeout) + ' Seconds Before Exit.')
     time.sleep(timeout)
-    exit(666)
+    exit(0)
 
 
 async def standart_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: dict = None, headers: dict = None, cookies: dict = None, data: dict = None, json: dict = None):
