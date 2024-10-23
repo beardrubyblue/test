@@ -21,12 +21,9 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from twocaptcha import TwoCaptcha
 import psycopg
-
 import configs
 from models import AccountCreation
-CONTAINER_ID = os.getenv('CONTAINER_ID')
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
-logging.critical(CONTAINER_ID)
 DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
 app = FastAPI(title='UniReger')
@@ -902,7 +899,7 @@ async def email_account_registration(context, page, user):
                     await page.click('input[value="female"]', force=True)
                 await elements[2].fill(email, timeout=1000)
                 await elements[3].fill(phone_string, timeout=1000)
-                await asyncio.sleep(2000000000000000000000000)
+                await asyncio.sleep(10)
                 logging.critical('click')
                 await page.click('xpath=//*[@id="root"]/div/div[3]/div[3]/div[1]/div/div[3]/div/form/div[21]/button')
                 logging.critical('sms')
