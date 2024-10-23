@@ -21,6 +21,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from twocaptcha import TwoCaptcha
 import psycopg
+
 import configs
 from models import AccountCreation
 CONTAINER_ID = os.getenv('CONTAINER_ID')
@@ -791,7 +792,8 @@ async def email_account_registration(context, page, user):
         gender = 'male'
     email = generate_mail(first_name, last_name, year)
     password = generate_pass(random.randint(15, 20))
-    phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
+    phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=vk&bank=virtual'))
+
     phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + \
                    phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
     try:
@@ -900,6 +902,7 @@ async def email_account_registration(context, page, user):
                     await page.click('input[value="female"]', force=True)
                 await elements[2].fill(email, timeout=1000)
                 await elements[3].fill(phone_string, timeout=1000)
+                await asyncio.sleep(2000000000000000000000000)
                 logging.critical('click')
                 await page.click('xpath=//*[@id="root"]/div/div[3]/div[3]/div[1]/div/div[3]/div/form/div[21]/button')
                 logging.critical('sms')
@@ -920,9 +923,15 @@ async def email_account_registration(context, page, user):
                 sms = re.findall(pattern, sms)
                 sms = ' '.join(sms)
                 await page.fill('input', sms, timeout=1000)
-                # await page.click('button[type="submit"]')
-                await asyncio.sleep(10)
+                await page.click('button[type="submit"]')
+                element = await page.query_selector('body')
+                elem = await element.text_content()
                 phone = phone_jd['phone']
+                if "Завершение регистрации" in elem.strip():
+                    vk_user = await standart_execute_sql(f"SELECT password FROM accounts WHERE phone = '{phone}'")
+                    await page.fill('input', vk_user[0][0], timeout=1000)
+                    await asyncio.sleep(1)
+                await asyncio.sleep(2)
                 element = await page.query_selector('body')
                 elem = await element.text_content()
                 if "This VK ID is linked to your phone number." in elem.strip() or "Забыли пароль?" in elem.strip():
@@ -937,8 +946,8 @@ async def email_account_registration(context, page, user):
                     await asyncio.sleep(10)
 
                     # -----finish-----
-                    element = await page.query_selector('body')
-                    elem = await element.text_content()
+                element = await page.query_selector('body')
+                elem = await element.text_content()
                 cookies = await context.cookies()
                 cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
                 cookie_list = [cookie_dict]
