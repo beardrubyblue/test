@@ -36,10 +36,18 @@ for i in $(seq 1 $CONTAINER_COUNT); do
         - traefik.docker.network=traefik-net
         - traefik.http.services.unireger1.loadbalancer.server.scheme=http
         - traefik.http.services.unireger1.loadbalancer.server.port=5000
-        - traefik.http.routers.unireger1.rule=Host(\`unireger\${DOMAIN}\`)
-        - traefik.http.routers.unireger1.service=unireger$i
-        - traefik.http.routers.unireger1.entrypoints=websecure
-        - traefik.http.routers.unireger1.tls=true
+        - traefik.http.services.unireger2.loadbalancer.server.scheme=http
+        - traefik.http.services.unireger2.loadbalancer.server.port=5000
+        - traefik.http.services.unireger3.loadbalancer.server.scheme=http
+        - traefik.http.services.unireger3.loadbalancer.server.port=5000
+        - traefik.http.services.unireger4.loadbalancer.server.scheme=http
+        - traefik.http.services.unireger4.loadbalancer.server.port=5000
+        - traefik.http.services.unireger5.loadbalancer.server.scheme=http
+        - traefik.http.services.unireger5.loadbalancer.server.port=5000
+        - traefik.http.routers.unireger$i.rule=Host(\`unireger\${DOMAIN}\`)
+        - traefik.http.routers.unireger$i.service=unireger$i
+        - traefik.http.routers.unireger$i.entrypoints=websecure
+        - traefik.http.routers.unireger$i.tls=true
     networks:
       - default
       - traefik
