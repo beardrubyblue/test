@@ -58,7 +58,7 @@ secrets:
 
 networks:
   default:
-    name: tester
+    name: unireger
     attachable: true
   traefik:
     name: traefik-net
