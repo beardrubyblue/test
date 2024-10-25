@@ -36,7 +36,7 @@ for i in $(seq 1 $CONTAINER_COUNT); do
         - traefik.docker.network=traefik-net
         - traefik.http.services.unireger$i.loadbalancer.server.scheme=http
         - traefik.http.services.unireger$i.loadbalancer.server.port=5000
-        - traefik.http.routers.unireger$i.rule=Host(\`unireger$i\${DOMAIN}\`)
+        - traefik.http.routers.unireger$i.rule=Host(\`unireger\${DOMAIN}\`)
         - traefik.http.routers.unireger$i.service=unireger$i
         - traefik.http.routers.unireger$i.entrypoints=websecure
         - traefik.http.routers.unireger$i.tls=true
