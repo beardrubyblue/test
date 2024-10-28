@@ -13,7 +13,7 @@ x-defaults:
     - TZ=Europe/Moscow
     - CI_COMMIT_REF_NAME
     - CI_COMMIT_SHORT_SHA
-
+    - CONTAINER_NAME=${HOSTNAME}
 services:
 EOL
 
