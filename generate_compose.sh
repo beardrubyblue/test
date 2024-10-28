@@ -22,7 +22,8 @@ for i in $(seq 1 $CONTAINER_COUNT); do
   unireger$i:
     <<: *defaults
     working_dir: /app/unireger$i
-    command: ["python", "app/main.py"]
+    command: >
+      /bin/sh -c "mv /app/* /app/unireger/"
     secrets:
       - secret1
       - secret2
