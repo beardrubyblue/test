@@ -18,10 +18,11 @@ services:
 EOL
 
 for i in $(seq 1 $CONTAINER_COUNT); do
-  mkdir -p ./app/unireger$i
   cat <<EOL >> $COMPOSE_FILE
   unireger$i:
     <<: *defaults
+    working_dir: /app/unireger$i
+    command: ["python", "app/main.py"]
     secrets:
       - secret1
       - secret2
