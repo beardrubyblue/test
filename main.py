@@ -736,6 +736,8 @@ async def gmail_account_registration(context, page, users):
 async def mailru_register(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей EMail"""
     accounts = []
+    logging.critical(PROJECT_NAME)
+    logging.critical('fvdfvdvvdd')
     count_acc = 0
     proxy_list = await standart_get_proxies(kind=2)
     proxy_index = 0
