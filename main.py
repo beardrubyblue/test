@@ -54,6 +54,9 @@ REGISTRATION_STARTED = False
 random.seed()
 PROJECT_NAME = os.getenv('HOSTNAME')
 logging.critical(f"Project Name: {PROJECT_NAME}")
+env_vars = os.environ
+for key, value in env_vars.items():
+    logging.critical(f"{key}: {value}")
 
 
 def standart_finish(reason: str, timeout: int = 10):
