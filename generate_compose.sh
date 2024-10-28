@@ -18,11 +18,11 @@ services:
 EOL
 
 for i in $(seq 1 $CONTAINER_COUNT); do
-  cp -r ./app/* ./app/unireger$i/
+  CONTAINER_NAME="unireger$i"
+  export CONTAINER_NAME
   cat <<EOL >> $COMPOSE_FILE
   unireger$i:
     <<: *defaults
-    working_dir: /app/unireger$i
     secrets:
       - secret1
       - secret2
