@@ -20,10 +20,11 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from twocaptcha import TwoCaptcha
 import psycopg
-# import configs
+import os
+import configs
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
-DB = psycopg.connect(dbname='postgres', user='postgres',password='svdbjnsj5788393930_sdjdjd',host='10.9.28.54',port=5432)
+DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
 app = FastAPI(title='UniReger')
 SECURITY = HTTPBasic()
@@ -51,6 +52,8 @@ YANDEX_KIND_ID = 50
 RAMBLER_KIND_ID = 31
 REGISTRATION_STARTED = False
 random.seed()
+PROJECT_NAME = os.getcwd()[1:]
+logging.critical(PROJECT_NAME)
 
 
 def standart_finish(reason: str, timeout: int = 10):
@@ -139,7 +142,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
 
 async def standart_execute_sql(sql: str):
     """Подключение к БД проекта и выполнение там переданного SQL с возвращением его результатов."""
-    db = await psycopg.AsyncConnection.connect(dbname='postgres', user='postgres',password='svdbjnsj5788393930_sdjdjd',host='10.9.28.54',port=5432)
+    db = await psycopg.AsyncConnection.connect(**configs.db_config())
     dbc = db.cursor()
     await dbc.execute(sql)
     if dbc.description:
@@ -758,7 +761,7 @@ async def mailru_register(count: Optional[int] = None):
 
         async with async_playwright() as playwright:
             chromium = playwright.chromium
-            browser = await chromium.launch(headless=False)
+            browser = await chromium.launch()
             context = await browser.new_context(proxy=proxy)
             page = await context.new_page()
             account = await email_account_registration(context, page, user)
