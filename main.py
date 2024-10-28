@@ -20,16 +20,16 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from twocaptcha import TwoCaptcha
 import psycopg
-import configs
+# import configs
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
-DB = psycopg.connect(**configs.db_config())
+DB = psycopg.connect(dbname='postgres', user='postgres',password='svdbjnsj5788393930_sdjdjd',host='10.9.28.54',port=5432)
 DBC = DB.cursor()
 app = FastAPI(title='UniReger')
 SECURITY = HTTPBasic()
 CC = {
     'server': 'rucaptcha.com',
-    'apiKey': configs.TwoCaptchaApiKey,
+    'apiKey': 'configs.TwoCaptchaApiKey',
     'softId': '',
     'callback': '',
     'defaultTimeout': 120,
@@ -139,7 +139,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
 
 async def standart_execute_sql(sql: str):
     """Подключение к БД проекта и выполнение там переданного SQL с возвращением его результатов."""
-    db = await psycopg.AsyncConnection.connect(**configs.db_config())
+    db = await psycopg.AsyncConnection.connect(dbname='postgres', user='postgres',password='svdbjnsj5788393930_sdjdjd',host='10.9.28.54',port=5432)
     dbc = db.cursor()
     await dbc.execute(sql)
     if dbc.description:
@@ -758,7 +758,7 @@ async def mailru_register(count: Optional[int] = None):
 
         async with async_playwright() as playwright:
             chromium = playwright.chromium
-            browser = await chromium.launch()
+            browser = await chromium.launch(headless=False)
             context = await browser.new_context(proxy=proxy)
             page = await context.new_page()
             account = await email_account_registration(context, page, user)
@@ -774,8 +774,6 @@ async def mailru_register(count: Optional[int] = None):
 
 
 async def email_account_registration(context, page, user):
-
-    # -----params-----
     humanoid_id = user['id']
     first_name = user['first_name']
     last_name = user['last_name']
@@ -787,7 +785,6 @@ async def email_account_registration(context, page, user):
     else:
         gender = 'male'
     email = generate_mail(first_name, last_name, year)
-    password = generate_pass(random.randint(15, 20))
     phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=vk&bank=virtual'))
 
     phone_string = '+' + phone_jd['phone'][0] + ' ' + phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + \
@@ -797,177 +794,120 @@ async def email_account_registration(context, page, user):
         await asyncio.sleep(2)
         add_loggs('Start Registration', 1)
 
-        element = await page.query_selector('body')
-        elem = await element.text_content()
-        if "Сгенерировать надёжный пароль" in elem.strip() or "Generate a strong password" in elem.strip():
-            await page.wait_for_selector('.input-0-2-106', timeout=30000)
-            elements = await page.query_selector_all('.input-0-2-106')
-            try:
-                logging.critical('name')
-                await elements[0].fill(first_name, timeout=1000)
-                await elements[1].fill(last_name, timeout=1000)
-                logging.critical('day')
-                await page.click('.daySelect-0-2-122', timeout=1000)
-                await page.click(f'#react-select-7-option-{day - 1}', timeout=1000)
-                await asyncio.sleep(1)
-                logging.critical('month')
-                await page.click('xpath=//*[@id="root"]/div/div[3]/div[3]/div[1]/div/div[3]/div/form/div[4]/div[2]/div/div/div/div[3]/div/div', timeout=1000)
-                await page.click(f'#react-select-8-option-{month - 1}', timeout=1000)
-                await asyncio.sleep(1)
-                logging.critical('year')
-                await page.click('.yearSelect-0-2-123', timeout=1000)
-                await page.click(f'[data-test-id="select-value:{year}"]', timeout=1000)
+        await page.wait_for_selector('.input-0-2-106', timeout=30000)
+        elements = await page.query_selector_all('.input-0-2-106')
+        try:
+            await elements[0].fill(first_name, timeout=1000)
+            await elements[1].fill(last_name, timeout=1000)
+            await page.click('.daySelect-0-2-122', timeout=1000)
+            await page.click(f'#react-select-2-option-{day - 1}', timeout=1000)
+            await asyncio.sleep(1)
+            await page.click('xpath=/html/body/div[1]/div[2]/div/div[3]/div[3]/div[1]/div/div[3]/div/form/div[4]/div[2]/div/div/div/div[3]', timeout=1000)
+            await page.click(f'#react-select-3-option-{month - 1}', timeout=1000)
+            await asyncio.sleep(1)
+            await page.click('.yearSelect-0-2-123', timeout=1000)
+            await page.click(f'[data-test-id="select-value:{year}"]', timeout=1000)
+            if gender == 'male':
+                await page.click('input[value="male"]', force=True)
+            else:
+                await page.click('input[value="female"]', force=True)
+            await elements[2].fill(email, timeout=1000)
+            await elements[3].fill(phone_string, timeout=1000)
+            await asyncio.sleep(5)
+            await page.click('xpath=//*[@id="root"]/div/div[3]/div[3]/div[1]/div/div[3]/div/form/div[21]/button')
+            logging.critical('sms')
+            element = await page.query_selector('body')
+            elem = await element.text_content()
+            if "Номер уже используется другим пользователем" in elem.strip():
+                return {'Error': 'this phone is already in use'}
+            await asyncio.sleep(10)
+            for r in range(10):
+                url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(
+                    phone_jd['listenFromTimestamp'])
+                sms = await standart_request('get', url)
+                logging.critical(sms)
+                if sms != '{"messages":[]}':
+                    break
+                await asyncio.sleep(0.2)
+            pattern = r'\d+'
+            sms = re.findall(pattern, sms)
+            sms = ' '.join(sms)
+            await page.fill('input', sms, timeout=1000)
+            # await page.click('button[type="submit"]', timeout=1000)
+            await asyncio.sleep(5)
+            phone = phone_jd['phone']
+            # logging.critical(phone)
+            # await asyncio.sleep(10)
+            element = await page.query_selector('body')
+            elem = await element.text_content()
+            if "Информация о себе" in elem.strip():
+                await asyncio.sleep(2)
+                logging.critical('Информация о себе')
+                await page.click('button[form="signupForm"]', timeout=1000)
+                await asyncio.sleep(5)
+            elif "Завершение регистрации" in elem.strip():
+                logging.critical('Завершение регистрации')
+                vk_user = await standart_execute_sql(f"SELECT password FROM accounts WHERE phone = '{phone}'")
+                logging.critical(vk_user)
+                await page.fill('input', vk_user[0][0], timeout=1000)
+                await asyncio.sleep(5)
+                await page.click('xpath=/html/body/div[1]/div/div/div/div/div[1]/div[1]/div/div/div/div/form/div[4]/button[1]')
+            # elif "Письмо первое — с чего начать" in elem.strip():
+            #     logging.critical('Письмо первое — с чего начать')
+            #     cookies = await context.cookies()
+            #     cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+            #     cookie_list = [cookie_dict]
+            #     add_loggs('Finish registration', 1)
+            #     while True:
+            #         email = f'{email}@mail.ru'
+            #         password = ''
+            #         res = await send_acc(20, phone, password, first_name, last_name,
+            #                              f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
+            #         url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
+            #         await standart_request('post', url, data={'service': 'mail'})
+            #         if res.status == 200:
+            #             break
+            #         await asyncio.sleep(60)
+            #     add_loggs('Created', 1)
+            #     return AccountCreation(
+            #         phone=phone,
+            #         password=password,
+            #         humanoid_id=humanoid_id,
+            #         last_cookies=cookie_list
+            #     )
+            # else:
+            #     logging.critical('Иначееееееее')
+            #     await asyncio.sleep(10)
 
-                if gender == 'male':
-                    await page.click('input[value="male"]', force=True)
-                else:
-                    await page.click('input[value="female"]', force=True)
-                await elements[2].fill(email, timeout=1000)
-                await elements[3].fill(password, timeout=1000)
-                await page.click('.passwordEye-0-2-126')
-                await page.click('xpath=//*[@id="root"]/div/div[4]/div[4]/div/div/div/div/form/button')
-                # -----captcha-----
-                await page.locator('img.sHzh3T69FUE-dkHh1-lzl').screenshot(path='LastCaptcha.jpg')
-                await asyncio.sleep(3)
-                captcha = json.loads(requests.post("https://captcher.ad.dev.arbat.dev/solve_text_captcha_file",
-                                                   params={'service': 'rucaptcha'},
-                                                   files={'file': open('LastCaptcha.jpg', 'rb')}).text)
-                element = await page.query_selector('body')
-                elem = await element.text_content()
-                if "Please enter code" in elem.strip():
-                    await page.fill('input[placeholder="Code"]', captcha['solution'])
-                else:
-                    await page.fill('input[placeholder="Код"]', captcha['solution'])
-
-                await page.click('button[type="submit"]')
-                await asyncio.sleep(10)
-                element = await page.query_selector('body')
-                elem = await element.text_content()
+            await asyncio.sleep(20)
+            element = await page.query_selector('body')
+            elem = await element.text_content()
+            if "Письмо первое — с чего начать" in elem.strip():
+                logging.critical('finishhhhhhhhhhhhhhhhhhhhhhhhh')
                 cookies = await context.cookies()
                 cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
                 cookie_list = [cookie_dict]
-                if "Добро пожаловать в Mail.ru!" in elem.strip():
-                    add_loggs('Finish registration', 1)
-                    while True:
-                        email = f'{email}@mail.ru'
-                        ids = str(standart_execute_sql("SELECT max(id) + 1 FROM accounts"))
-                        pattern = r'\d+'
-                        ids = re.findall(pattern, ids)
-                        phone_jd = ' '.join(ids)
-                        res = await send_acc(MAIL_KIND_ID, phone_jd, password, first_name, last_name,
-                                             f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
-                        add_loggs('Created', 1)
-                        if res.status == 200:
-                            break
-                elif "Укажите телефон" in elem.strip():
-                    return {'Error': 'Registration with phone!!!!!!!!!!'}
-                else:
-                    return 'Error'
+                add_loggs('Finish registration', 1)
+                while True:
+                    email = f'{email}@mail.ru'
+                    password = ''
+                    res = await send_acc(20, phone, password, first_name, last_name,
+                                         f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
+                    url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
+                    await standart_request('post', url, data={'service': 'mail'})
+                    if res.status == 200:
+                        break
+                    await asyncio.sleep(60)
+                add_loggs('Created', 1)
                 return AccountCreation(
-                    phone=phone_jd,
+                    phone=phone,
                     password=password,
                     humanoid_id=humanoid_id,
                     last_cookies=cookie_list
                 )
-            except Exception as e:
-                return f"Ошибка при заполнении: {e}"
-        else:
-            add_loggs('Registration with phone', 1)
-            await page.wait_for_selector('.input-0-2-106', timeout=30000)
-            elements = await page.query_selector_all('.input-0-2-106')
-            try:
-                logging.critical('name')
-                await elements[0].fill(first_name, timeout=1000)
-                await elements[1].fill(last_name, timeout=1000)
-                logging.critical('name')
-                await page.click('.daySelect-0-2-122', timeout=1000)
-                logging.critical('name')
-                await page.click(f'#react-select-2-option-{day - 1}', timeout=1000)
-                await asyncio.sleep(1)
-                logging.critical('name')
-                await page.click('xpath=/html/body/div[1]/div[2]/div/div[3]/div[3]/div[1]/div/div[3]/div/form/div[4]/div[2]/div/div/div/div[3]', timeout=1000)
-                await page.click(f'#react-select-3-option-{month - 1}', timeout=1000)
-                await asyncio.sleep(1)
-                logging.critical('name')
-                await page.click('.yearSelect-0-2-123', timeout=1000)
-                await page.click(f'[data-test-id="select-value:{year}"]', timeout=1000)
-
-                if gender == 'male':
-                    await page.click('input[value="male"]', force=True)
-                else:
-                    await page.click('input[value="female"]', force=True)
-                await elements[2].fill(email, timeout=1000)
-                await elements[3].fill(phone_string, timeout=1000)
-                await asyncio.sleep(10)
-                logging.critical('click')
-                await page.click('xpath=//*[@id="root"]/div/div[3]/div[3]/div[1]/div/div[3]/div/form/div[21]/button')
-                logging.critical('sms')
-                element = await page.query_selector('body')
-                elem = await element.text_content()
-                if "Номер уже используется другим пользователем" in elem.strip():
-                    return {'Error': 'this phone is already in use'}
-                await asyncio.sleep(10)
-                for r in range(30):
-                    url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(
-                        phone_jd['listenFromTimestamp'])
-                    sms = await standart_request('get', url)
-                    logging.critical(sms)
-                    if sms != '{"messages":[]}':
-                        break
-                    await asyncio.sleep(0.2)
-                pattern = r'\d+'
-                sms = re.findall(pattern, sms)
-                sms = ' '.join(sms)
-                await page.fill('input', sms, timeout=1000)
-                await page.click('button[type="submit"]')
-                element = await page.query_selector('body')
-                elem = await element.text_content()
-                phone = phone_jd['phone']
-                if "Завершение регистрации" in elem.strip():
-                    vk_user = await standart_execute_sql(f"SELECT password FROM accounts WHERE phone = '{phone}'")
-                    await page.fill('input', vk_user[0][0], timeout=1000)
-                    await asyncio.sleep(1)
-                await asyncio.sleep(2)
-                element = await page.query_selector('body')
-                elem = await element.text_content()
-                if "This VK ID is linked to your phone number." in elem.strip() or "Забыли пароль?" in elem.strip():
-                    vk_user = await standart_execute_sql(f"SELECT password FROM accounts WHERE phone = '{phone}'")
-                    await page.fill('input', vk_user[0][0], timeout=1000)
-                    await asyncio.sleep(1)
-                else:
-                    if user['sex'] == 'female':
-                        await page.click('xpath=//*[@id="signupForm"]/div[1]/div[2]/div/label[2]')
-                    await asyncio.sleep(1)
-                    await page.click('button[type="submit"]')
-                    await asyncio.sleep(10)
-
-                    # -----finish-----
-                element = await page.query_selector('body')
-                elem = await element.text_content()
-                cookies = await context.cookies()
-                cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
-                cookie_list = [cookie_dict]
-                if "Письмо первое — с чего начать" in elem.strip():
-                    add_loggs('Finish registration', 1)
-                    while True:
-                        email = f'{email}@mail.ru'
-                        password = ''
-                        res = await send_acc(20, phone, password, first_name, last_name,
-                                             f'{day}.{month}.{year}', humanoid_id, cookie_list, email)
-                        url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
-                        await standart_request('post', url, data={'service': 'mail'})
-                        if res.status == 200:
-                            break
-                        await asyncio.sleep(60)
-                    add_loggs('Created', 1)
-                    return AccountCreation(
-                        phone=phone,
-                        password=password,
-                        humanoid_id=humanoid_id,
-                        last_cookies=cookie_list
-                    )
-            except Exception as e:
-                return f"Ошибка при заполнении: {e}"
+        except Exception as e:
+            logging.critical(e)
+            return f"Ошибка при заполнении: {e}"
     except Exception as e:
         return e
 

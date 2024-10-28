@@ -21,6 +21,10 @@ for i in $(seq 1 $CONTAINER_COUNT); do
   cat <<EOL >> $COMPOSE_FILE
   unireger$i:
     <<: *defaults
+    build:
+      context: .
+      args:
+        WORKDIR_NAME: "unireger$i"
     secrets:
       - secret1
       - secret2
