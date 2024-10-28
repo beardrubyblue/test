@@ -18,13 +18,13 @@ services:
 EOL
 
 for i in $(seq 1 $CONTAINER_COUNT); do
+  WORKDIR_NAME="unireger$i"
   cat <<EOL >> $COMPOSE_FILE
   unireger$i:
     <<: *defaults
     build:
-      context: .
       args:
-        WORKDIR_NAME: "unireger$i"
+        WORKDIR: /$WORKDIR_NAME
     secrets:
       - secret1
       - secret2
@@ -55,7 +55,7 @@ for i in $(seq 1 $CONTAINER_COUNT); do
     networks:
       - default
       - traefik
-    working_dir: /app/unireger$i
+    working_dir: /$WORKDIR_NAME
 EOL
 done
 
