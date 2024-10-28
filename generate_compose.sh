@@ -21,11 +21,15 @@ for i in $(seq 1 $CONTAINER_COUNT); do
   cat <<EOL >> $COMPOSE_FILE
   unireger$i:
     <<: *defaults
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app/unireger$i
+    command: ["python", "main.py"]
     secrets:
       - secret1
       - secret2
       - secret3
-    working_dir: /app/unireger$i
     deploy:
       resources:
         limits:
