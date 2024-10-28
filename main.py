@@ -52,8 +52,8 @@ YANDEX_KIND_ID = 50
 RAMBLER_KIND_ID = 31
 REGISTRATION_STARTED = False
 random.seed()
-container_name = os.getenv('CONTAINER_NAME')
-logging.critical(f"Project Name: {container_name}")
+PROJECT_NAME = os.getenv('CONTAINER_NAME')
+logging.critical(f"Project Name: {PROJECT_NAME}")
 
 
 def standart_finish(reason: str, timeout: int = 10):
