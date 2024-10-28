@@ -25,7 +25,7 @@ for i in $(seq 1 $CONTAINER_COUNT); do
       - secret1
       - secret2
       - secret3
-    working_dir: unireger$i
+    working_dir: /app/unireger$i
     deploy:
       resources:
         limits:
