@@ -23,8 +23,6 @@ build:
   only:
     - main
   script:
-    - chmod +x ./generate_compose.sh
-    - sh ./generate_compose.sh
     - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME || true
     - docker build 
       --progress=plain

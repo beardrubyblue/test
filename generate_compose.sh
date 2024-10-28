@@ -29,6 +29,8 @@ for i in $(seq 1 $CONTAINER_COUNT); do
       - secret1
       - secret2
       - secret3
+    volumes:
+      - ./unireger$i:/app
     deploy:
       resources:
         limits:
