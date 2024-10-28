@@ -29,8 +29,6 @@ for i in $(seq 1 $CONTAINER_COUNT); do
       - secret1
       - secret2
       - secret3
-    volumes:
-      - ./unireger$i:/app
     deploy:
       resources:
         limits:
@@ -57,7 +55,7 @@ for i in $(seq 1 $CONTAINER_COUNT); do
     networks:
       - default
       - traefik
-
+    working_dir: /app/unireger$i
 EOL
 done
 
