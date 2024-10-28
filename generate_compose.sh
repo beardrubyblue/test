@@ -20,6 +20,7 @@ EOL
 for i in $(seq 1 $CONTAINER_COUNT); do
   CONTAINER_NAME="unireger$i"
   export CONTAINER_NAME
+  echo "Container Name: $CONTAINER_NAME"
   cat <<EOL >> $COMPOSE_FILE
   unireger$i:
     <<: *defaults
