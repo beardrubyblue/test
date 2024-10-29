@@ -764,7 +764,7 @@ async def mailru_register(count: Optional[int] = None):
         async with async_playwright() as playwright:
             chromium = playwright.chromium
             browser = await chromium.launch()
-            context = await browser.new_context(proxy=proxy)
+            context = await browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0', proxy=proxy)
             page = await context.new_page()
             account = await email_account_registration(context, page, user)
             await browser.close()
