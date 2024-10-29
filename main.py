@@ -830,13 +830,13 @@ async def email_account_registration(context, page, user):
                 url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(
                     phone_jd['listenFromTimestamp'])
                 sms = await standart_request('get', url)
-                logging.critical(sms)
                 if sms != '{"messages":[]}':
                     break
                 await asyncio.sleep(0.2)
             pattern = r'\d+'
             sms = re.findall(pattern, sms)
             sms = ' '.join(sms)
+            logging.critical(sms)
             await page.fill('input', sms, timeout=1000)
             # await page.click('button[type="submit"]', timeout=1000)
             await asyncio.sleep(5)
@@ -846,10 +846,12 @@ async def email_account_registration(context, page, user):
             element = await page.query_selector('body')
             elem = await element.text_content()
             if "Информация о себе" in elem.strip():
+                logging.critical('Информация о себе')
                 await asyncio.sleep(2)
                 await page.click('button[form="signupForm"]', timeout=1000)
                 await asyncio.sleep(5)
             elif "Завершение регистрации" in elem.strip():
+                logging.critical('Завершение регистрации')
                 vk_user = await standart_execute_sql(f"SELECT password FROM accounts WHERE phone = '{phone}'")
                 logging.critical(vk_user)
                 await page.fill('input', vk_user[0][0], timeout=1000)
