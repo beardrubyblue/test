@@ -20,7 +20,6 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from twocaptcha import TwoCaptcha
 import psycopg
-import os
 import configs
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
