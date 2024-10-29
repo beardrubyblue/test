@@ -52,11 +52,11 @@ YANDEX_KIND_ID = 50
 RAMBLER_KIND_ID = 31
 REGISTRATION_STARTED = False
 random.seed()
-PROJECT_NAME = os.getenv('HOSTNAME')
-logging.critical(f"Project Name: {PROJECT_NAME}")
-env_vars = os.environ
-for key, value in env_vars.items():
-    logging.critical(f"{key}: {value}")
+# PROJECT_NAME = os.getenv('HOSTNAME')
+# logging.critical(f"Project Name: {PROJECT_NAME}")
+# env_vars = os.environ
+# for key, value in env_vars.items():
+#     logging.critical(f"{key}: {value}")
 
 
 def standart_finish(reason: str, timeout: int = 10):
@@ -739,8 +739,6 @@ async def gmail_account_registration(context, page, users):
 async def mailru_register(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей EMail"""
     accounts = []
-    logging.critical(PROJECT_NAME)
-    logging.critical('fvdfvdvvdd')
     count_acc = 0
     proxy_list = await standart_get_proxies(kind=2)
     proxy_index = 0
@@ -850,11 +848,9 @@ async def email_account_registration(context, page, user):
             elem = await element.text_content()
             if "Информация о себе" in elem.strip():
                 await asyncio.sleep(2)
-                logging.critical('Информация о себе')
                 await page.click('button[form="signupForm"]', timeout=1000)
                 await asyncio.sleep(5)
             elif "Завершение регистрации" in elem.strip():
-                logging.critical('Завершение регистрации')
                 vk_user = await standart_execute_sql(f"SELECT password FROM accounts WHERE phone = '{phone}'")
                 logging.critical(vk_user)
                 await page.fill('input', vk_user[0][0], timeout=1000)
@@ -891,7 +887,6 @@ async def email_account_registration(context, page, user):
             element = await page.query_selector('body')
             elem = await element.text_content()
             if "Письмо первое — с чего начать" in elem.strip():
-                logging.critical('finishhhhhhhhhhhhhhhhhhhhhhhhh')
                 cookies = await context.cookies()
                 cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
                 cookie_list = [cookie_dict]
