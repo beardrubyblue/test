@@ -1,5 +1,3 @@
-#!/bin/bash
-
 CONTAINER_COUNT=5
 COMPOSE_FILE="docker-compose.yml"
 
@@ -18,12 +16,12 @@ services:
 EOL
 
 for i in $(seq 1 $CONTAINER_COUNT); do
-  CONTAINER_NAME="unireger$i"
-  export CONTAINER_NAME
-  echo "Container Name: $CONTAINER_NAME"
+
   cat <<EOL >> $COMPOSE_FILE
   unireger$i:
     <<: *defaults
+    environment:
+      - CONTAINER_NAME="unireger$i"
     secrets:
       - secret1
       - secret2

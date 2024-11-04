@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import string
 import datetime
@@ -51,11 +52,8 @@ YANDEX_KIND_ID = 50
 RAMBLER_KIND_ID = 31
 REGISTRATION_STARTED = False
 random.seed()
-# PROJECT_NAME = os.getenv('HOSTNAME')
-# logging.critical(f"Project Name: {PROJECT_NAME}")
-# env_vars = os.environ
-# for key, value in env_vars.items():
-#     logging.critical(f"{key}: {value}")
+PROJECT_NAME = os.getenv('CONTAINER_NAME')
+logging.critical(f"Project Name: {PROJECT_NAME}")
 
 
 def standart_finish(reason: str, timeout: int = 10):
