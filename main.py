@@ -38,10 +38,10 @@ CC = {
     'pollingInterval': 10}
 SOLVER = TwoCaptcha(**CC)
 HEADERS = {}
-with open('Names.txt', 'r') as F:
+with open('Names.txt') as F:
     Names = F.readlines()
     F.close()
-with open('UserAgents.txt', 'r') as F:
+with open('UserAgents.txt') as F:
     UserAgents = F.readlines()
     F.close()
 STATISTICS = []
@@ -66,10 +66,10 @@ def standart_finish(reason: str, timeout: int = 10):
     exit(0)
 
 
-async def standart_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: dict = None, headers: dict = None, cookies: dict = None, data: dict = None, json: dict = None):
+async def standart_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: dict = None, headers: dict = None, cookies: dict = None, data: dict = None, jsn: dict = None):
     """Стандартный запрос с возвратом текста его ответа."""
     pc = None
-    if proxy_url:
+    if url and timeout and proxy_url:
         pc = ProxyConnector.from_url(proxy_url)
     request = 'url,timeout=timeout'
     if params:
@@ -80,10 +80,10 @@ async def standart_request(method: str, url: str, proxy_url: str = None, timeout
         request += ',cookies=cookies'
     if data:
         request += ',data=data,'
-    if json:
-        request += ',json=json'
+    if jsn:
+        request += ',json=jsn'
     async with aiohttp.ClientSession(connector=pc) as session:
-        async with eval(f"session.{method}(url,timeout=timeout,params=params,headers=headers,cookies=cookies,data=data,json=json)") as resp:
+        async with eval(f"session.{method}(url,timeout=timeout,params=params,headers=headers,cookies=cookies,data=data,json=jsn)") as resp:
             response = await resp.text(errors='replace')
             await session.close()
     return response
@@ -187,7 +187,7 @@ def js_userandom_string(length):
     return s
 
 
-def vkr_auth(proxy_session, uuid, cookies, captcha_key='', captcha_sid='', captcha_ts='', captcha_attempt=''):
+def vkr_auth(proxy_session, uuid, cookies):
     """запрос к https://id.vk.com/auth возвращает html страницу регистрации нового пользователя или входа старого"""
     global HEADERS
     HEADERS = {
@@ -333,23 +333,23 @@ def get_access_token(phone_string: str, password: str):
 def vk_revive_access_token(phone_string: str, password: str, credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Воскрешение доступа к учётной записи ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
-        return HTMLResponse(content='В доступе отказано!', status_code=200)
+        return HTMLResponse(content='В доступе отказано!')
     html = get_access_token(phone_string, password).content
-    return HTMLResponse(content=html, status_code=200)
+    return HTMLResponse(content=html)
 
 
 @APP.get("/vk-execute-api-method")
 def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.vk.com/method/groups.getById', v: str = '5.154', ids: str = '1,2,3,4,5,6,7,8,9,10', offset: int = 0, credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Выполнение API методов ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
-        return HTMLResponse(content='В доступе отказано!', status_code=200)
+        return HTMLResponse(content='В доступе отказано!')
     at = asyncio.run(standart_execute_sql(f"select info->>'access_token' from accounts where id={account_id}"))
     html = 'Try Another Method please. A ha Ha ha ha HAAAA !!! :)'
     if api_method == 'https://api.vk.com/method/groups.getById':
         html = asyncio.run(standart_request('post', api_method, data={'group_ids': ids, 'access_token': at[0], 'v': v}))
     if api_method == 'https://api.vk.com/method/users.getSubscriptions':
         html = asyncio.run(standart_request('post', api_method, data={'user_id': int(ids), 'offset': offset, 'extended': True, 'count': 1, 'access_token': at[0], 'v': v}))
-    return HTMLResponse(content=html, status_code=200)
+    return HTMLResponse(content=html)
 
 
 @APP.get("/vk-register")
@@ -461,7 +461,7 @@ def vk_register(kind='1'):
                     logging.critical('MISSION ACCOMPLISHED! New Account: ' + phone_jd['phone'] + ':' + password)
                     html_response += '<BR><BR>MISSION ACCOMPLISHED! New Account:<BR>' + phone_jd['phone'] + ':' + password + '<BR>' + info + '<BR>'
                     if kind == '1':
-                        return HTMLResponse(content=html_response, status_code=200)
+                        return HTMLResponse(content=html_response)
                 elif 'error' in jd:
                     jd = json.loads(rr.text)['error']
                     if jd['error_msg'] == "Flood control: can't accept this phone (security reason)":
@@ -478,16 +478,16 @@ def vk_register(kind='1'):
     html_response += '<BR>Registration Finished At: ' + str(datetime.datetime.now()) + '<BR><BR><BR>'
     html_response += '<BR>Errors List:<BR>' + html_errors
     REGISTRATION_STARTED = False
-    return HTMLResponse(content=html_response, status_code=200)
+    return HTMLResponse(content=html_response)
 
 
 @APP.get("/rucaptcha-balance")
 def rucaptcha_balance(credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Проверка баланса рукапчи."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
-        return HTMLResponse(content='В доступе отказано!', status_code=200)
+        return HTMLResponse(content='В доступе отказано!')
     html = str(SOLVER.balance())
-    return HTMLResponse(content=html, status_code=200)
+    return HTMLResponse(content=html)
 
 
 # @app.get("/")
@@ -541,14 +541,14 @@ async def gmail_register(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей GMail"""
     accounts = []
     count_acc = 0
-    proxy_list = await standart_get_proxies(kind=2, ptype=3)
+    proxy_list = await standart_get_proxies(kind=2)
     proxy_index = 0
     if len(proxy_list) == 0:
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
     while count is None or len(accounts) < count:
         if proxy_index >= len(proxy_list):
-            proxy_list = await standart_get_proxies(kind=2, ptype=3)
+            proxy_list = await standart_get_proxies(kind=2)
             proxy_index = 0
         pr = proxy_list[proxy_index].split('://')[1].split('@')
         username, password = pr[0].split(':')
@@ -746,7 +746,7 @@ async def mailru_register(count: Optional[int] = None):
     logging.critical(len(proxy_list))
     while count is None or len(accounts) < count:
         if proxy_index >= len(proxy_list):
-            proxy_list = await standart_get_proxies(kind=2, ptype=3)
+            proxy_list = await standart_get_proxies(kind=2)
             proxy_index = 0
         pr = proxy_list[proxy_index].split('://')[1].split('@')
         username, password = pr[0].split(':')
@@ -932,7 +932,7 @@ async def vk_mail_ru(count: Optional[int] = None):
         if len(accounts) == count:
             standart_finish('MISSION ACCOMPLISHED!')
         if proxy_index >= len(proxy_list):
-            proxy_list = await standart_get_proxies(kind=2, ptype=3)
+            proxy_list = await standart_get_proxies(kind=2)
             proxy_index = 0
         pr = proxy_list[proxy_index].split('://')[1].split('@')
         username, password = pr[0].split(':')
@@ -1124,7 +1124,7 @@ async def ya_mail_ru(count: Optional[int] = None):
     logging.critical(len(proxy_list))
     while count is None or len(accounts) < count:
         if proxy_index >= len(proxy_list):
-            proxy_list = await standart_get_proxies(kind=2, ptype=3)
+            proxy_list = await standart_get_proxies(kind=2)
             proxy_index = 0
         pr = proxy_list[proxy_index].split('://')[1].split('@')
         username, password = pr[0].split(':')
