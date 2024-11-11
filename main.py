@@ -329,7 +329,7 @@ def get_access_token(phone_string: str, password: str):
             logging.critical(e)
 
 
-@app.get("/vk-revive-access-token")
+@APP.get("/vk-revive-access-token")
 def vk_revive_access_token(phone_string: str, password: str, credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Воскрешение доступа к учётной записи ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
@@ -338,7 +338,7 @@ def vk_revive_access_token(phone_string: str, password: str, credentials: HTTPBa
     return HTMLResponse(content=html, status_code=200)
 
 
-@app.get("/vk-execute-api-method")
+@APP.get("/vk-execute-api-method")
 def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.vk.com/method/groups.getById', v: str = '5.154', ids: str = '1,2,3,4,5,6,7,8,9,10', offset: int = 0, credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Выполнение API методов ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
@@ -352,7 +352,7 @@ def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.v
     return HTMLResponse(content=html, status_code=200)
 
 
-@app.get("/vk-register")
+@APP.get("/vk-register")
 # def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
 def vk_register(kind='1'):
     """регистрация одного или пачки учётных записей ВК"""
@@ -481,7 +481,7 @@ def vk_register(kind='1'):
     return HTMLResponse(content=html_response, status_code=200)
 
 
-@app.get("/rucaptcha-balance")
+@APP.get("/rucaptcha-balance")
 def rucaptcha_balance(credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Проверка баланса рукапчи."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
@@ -536,7 +536,7 @@ async def send_acc(kind_id, phone_jd: str, password, first_name, last_name, birt
             return response
 
 
-@app.get("/gmail-register")
+@APP.get("/gmail-register")
 async def gmail_register(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей GMail"""
     accounts = []
@@ -734,7 +734,7 @@ async def gmail_account_registration(context, page, users):
         return e
 
 
-@app.get("/mailru-register")
+@APP.get("/mailru-register")
 async def mailru_register(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей EMail"""
     accounts = []
@@ -916,7 +916,7 @@ async def email_account_registration(context, page, user):
         return e
 
 
-@app.get("/@vk-mail-ru-register")
+@APP.get("/@vk-mail-ru-register")
 async def vk_mail_ru(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей VKMail """
     accounts = []
@@ -1112,7 +1112,7 @@ async def vk_mail_ru_registration(context, page, user):
         return e
 
 
-@app.get("/@ya-mail-ru-register")
+@APP.get("/@ya-mail-ru-register")
 async def ya_mail_ru(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей YAmail"""
     accounts = []
@@ -1581,7 +1581,7 @@ async def ya_mail_ru_registration(context, page, user):
 #         add_loggs(0, f'Ошибка: {e}')
 #         return e
 
-app.mount("/", StaticFiles(directory="ui", html=True), name="ui")
+APP.mount("/", StaticFiles(directory="ui", html=True), name="ui")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5000)
