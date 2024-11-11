@@ -27,7 +27,6 @@ from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
-app = FastAPI(title='UniReger')
 SECURITY = HTTPBasic()
 CC = {
     'server': 'rucaptcha.com',
@@ -55,6 +54,7 @@ REGISTRATION_STARTED = False
 random.seed()
 PROJECT_NAME = os.getenv('CONTAINER_NAME')
 logging.critical(f"Project Name: {PROJECT_NAME}")
+APP = FastAPI(title='UniReger')
 APP.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 
