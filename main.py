@@ -162,7 +162,7 @@ def get_proxies(kind: int, amount: int = 1000):
         soup = BeautifulSoup(requests.get('https://www.sslproxies.org').content, 'html.parser')
         for row in soup.find('table', attrs={'class': 'table table-striped table-bordered'}).find_all('tr')[1:]:
             tds = row.find_all('td')
-            if tds[2].text.strip() != 'RU' and tds[6].text.strip() == 'yes':
+            if tds[2].text.strip() != 'RU':  # and tds[6].text.strip() == 'yes':
                 proxies.append(f'{tds[0].text.strip()}:{tds[1].text.strip()}|{tds[2].text.strip()} 0')
     if kind == 2:
         params = {'limit': amount, 'offset': '0', 'sla': '0.7', "proxy_type": 2}
