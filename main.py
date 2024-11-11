@@ -18,6 +18,7 @@ import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from twocaptcha import TwoCaptcha
 import psycopg
@@ -54,6 +55,7 @@ REGISTRATION_STARTED = False
 random.seed()
 PROJECT_NAME = os.getenv('CONTAINER_NAME')
 logging.critical(f"Project Name: {PROJECT_NAME}")
+APP.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 
 def standart_finish(reason: str, timeout: int = 10):
