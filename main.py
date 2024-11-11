@@ -165,9 +165,9 @@ def get_proxies(kind: int, amount: int = 1000):
             if tds[2].text.strip() != 'RU':  # and tds[6].text.strip() == 'yes':
                 proxies.append(f'{tds[0].text.strip()}:{tds[1].text.strip()}|{tds[2].text.strip()} 0')
     if kind == 2:
-        params = {'limit': amount, 'offset': '0', 'sla': '0.7', "proxy_type": 2}
-        jd = json.loads(requests.get('https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params).text)
-        # jd = json.loads(asyncio.run(make_request('get', 'https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params)))
+        params = {'limit': amount, 'offset': '0', "proxy_type": 2, 'pools_ids': '9f687b07-b5f5-4227-9d04-4888ac5be496'}
+        jd = json.loads(requests.get('https://proxy-manager.arbat.dev/proxies', params=params).text)
+        # jd = json.loads(asyncio.run(standart_request('get', 'https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params)))
         for proxy in jd:
             proxies.append(proxy['proxy'])
     if kind == 3:
