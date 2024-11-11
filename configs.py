@@ -1,11 +1,11 @@
 import ast
-with open('/run/secrets/secret1', 'r') as f:
+with open('/run/secrets/secret1') as f:
     VRS1 = f.readlines()
     f.close()
-with open('/run/secrets/secret2', 'r') as f:
+with open('/run/secrets/secret2') as f:
     VRS2 = f.readlines()
     f.close()
-with open('/run/secrets/secret3', 'r') as f:
+with open('/run/secrets/secret3') as f:
     VS3 = f.readlines()
     f.close()
 ProxyUserOfKind3 = VS3[0].replace('"', '').replace("'", '')
