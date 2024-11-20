@@ -1539,7 +1539,7 @@ async def ya_mail_ru_registration(context, page, user):
 #             await page.fill('input[id="field_surname"]', humanoid_last_name)
 #             await page.fill('input[id="field_birthday"]', humanoid_birth_date)
 #             sex = await standart_execute_sql(f'select sex from humanoids where id = {humanoid_id}')
-#             if 'female' in sex[0]:
+#             if 'female' in sex[0s]:
 #                 await page.locator('text=женщина').click()
 #             else:
 #                 await page.locator('text=мужчина').click()
