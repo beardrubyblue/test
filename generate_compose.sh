@@ -11,7 +11,6 @@ x-defaults:
     - TZ=Europe/Moscow
     - CI_COMMIT_REF_NAME
     - CI_COMMIT_SHORT_SHA
-    - CONTAINER_NAME=${HOSTNAME}
 services:
 EOL
 
@@ -21,7 +20,7 @@ for i in $(seq 1 $CONTAINER_COUNT); do
   unireger$i:
     <<: *defaults
     environment:
-      - CONTAINER_NAME="unireger$i"
+      - CONTAINER_NAME="{{.Task.Slot}}"
     secrets:
       - secret1
       - secret2
