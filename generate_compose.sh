@@ -11,6 +11,9 @@ x-defaults:
     - TZ=Europe/Moscow
     - CI_COMMIT_REF_NAME
     - CI_COMMIT_SHORT_SHA
+    - CONTAINER_NAME=${HOSTNAME}
+  labels:
+    io.portainer.accesscontrol.teams: portainer-odata-$CI_PROJECT_NAME
 services:
 EOL
 
