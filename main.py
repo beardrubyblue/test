@@ -52,7 +52,7 @@ YANDEX_KIND_ID = 50
 RAMBLER_KIND_ID = 31
 REGISTRATION_STARTED = False
 random.seed()
-PROJECT_NAME = os.getenv('CONTAINER_NAME')
+PROJECT_NAME = 'UniReger' + os.getenv('CONTAINER_NAME')
 logging.critical(f"Project Name: {PROJECT_NAME}")
 APP = FastAPI(title='UniReger')
 APP.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
