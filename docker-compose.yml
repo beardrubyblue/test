@@ -13,7 +13,7 @@ services:
   app:
     << : *defaults
     environment:
-      - CONTAINER_NAME="{{.Task.Slot}}"
+      - CONTAINER_NAME={{.Task.Slot}}
     secrets:
       - secret1
       - secret2
