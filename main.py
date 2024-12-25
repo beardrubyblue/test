@@ -1,5 +1,4 @@
 import logging
-import os
 import re
 import string
 import datetime
@@ -683,7 +682,6 @@ async def gmail_account_registration(context, page, users):
             import cv2
             from pyzbar.pyzbar import decode
 
-
             image = cv2.imread('./screenshot.png')
             qr_codes = decode(image)
 
@@ -693,7 +691,6 @@ async def gmail_account_registration(context, page, users):
                     print(data)
             else:
                 print("QR-код не найден или не может быть декодирован.")
-
 
         await asyncio.sleep(60000000000000000000000000000000000000000000000)
 
@@ -1620,14 +1617,6 @@ async def ya_mail_ru_registration(context, page, user):
 #         add_loggs(0, f'Ошибка: {e}')
 #         return e
 
-
-
-
-
-
-
-
-
 @APP.get("/@facebook-register")
 async def facebook(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей YAmail"""
@@ -1639,9 +1628,6 @@ async def facebook(count: Optional[int] = None):
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
 
-    path_to_extension = "./Captcha-Solver-Chrome"
-    user_data_dir = "/tmp/test-user-data-dir"
-
     while count is None or len(accounts) < count:
         if proxy_index >= len(proxy_list):
             proxy_list = await standart_get_proxies(kind=2, ptype=3)
@@ -1652,7 +1638,7 @@ async def facebook(count: Optional[int] = None):
         if " " in host:
             host = host.replace(" ", "")
         proxy = {
-            'server': f'http://193.31.100.73:9450',
+            'server': 'http://193.31.100.73:9450',
             'username': 'S0t7FB',
             'password': 'GKshby'
         }
@@ -1700,10 +1686,9 @@ async def facebook_registration(context, page, user):
     phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
     logging.critical(password)
     logging.critical(phone_jd)
-    phone_string = phone_jd['phone'][1:11]
+    # phone_string = phone_jd['phone'][1:11]
     sms = ''
     try:
-
         # Инициализация браузера
         await asyncio.sleep(1)
         await page.goto('https://en-gb.facebook.com/reg/?app_id=1862952583919182&logger_id')
@@ -1737,7 +1722,6 @@ async def facebook_registration(context, page, user):
         # Выбор пола
         await random_delay(1, 1.5)
         await page.click(f'input[name="sex"][value="{gender}"]')  # Пол (1 - мужской, 2 - женский)
-
 
         # Нажатие кнопки регистрации
         await random_delay(1, 1.5)
@@ -1777,7 +1761,6 @@ async def facebook_registration(context, page, user):
             if not iframe3:
                 print("Элемент iframe3 не найден")
                 return
-
 
             # Получить атрибут src из iframe
             iframe_src = await iframe3.get_attribute("src")
@@ -1853,7 +1836,6 @@ async def facebook_registration(context, page, user):
         logging.critical(f"Ошибка: {e}")
         add_loggs(f'Ошибка: {e}', 1)
         return {"error": str(e)}
-
 
 
 APP.mount("/", StaticFiles(directory="ui", html=True), name="ui")
