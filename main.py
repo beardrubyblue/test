@@ -21,10 +21,12 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from twocaptcha import TwoCaptcha
+from fake_useragent import UserAgent
 import psycopg
 import configs
 from models import AccountCreation
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
+UA = UserAgent()
 DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
 SECURITY = HTTPBasic()
@@ -52,8 +54,8 @@ YANDEX_KIND_ID = 50
 RAMBLER_KIND_ID = 31
 REGISTRATION_STARTED = False
 random.seed()
-CONTAINER_NAME = 'UniReger' + os.getenv('CONTAINER_NAME')
-logging.critical(f"CONTAINER_NAME: {CONTAINER_NAME}")
+# CONTAINER_NAME = 'UniReger' + os.getenv('CONTAINER_NAME')
+# logging.critical(f"CONTAINER_NAME: {CONTAINER_NAME}")
 APP = FastAPI(title='UniReger')
 APP.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
@@ -543,15 +545,19 @@ async def send_acc(kind_id, phone_jd: str, password, first_name, last_name, birt
 
 @APP.get("/gmail-register")
 async def gmail_register(count: Optional[int] = None):
-    """регистрация одного или пачки учётных записей GMail"""
+    """Регистрация одного или пачки учётных записей GMail"""
+
     accounts = []
     count_acc = 0
     proxy_list = await standart_get_proxies(kind=2)
+
     proxy_index = 0
     if len(proxy_list) == 0:
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
     while count is None or len(accounts) < count:
+
+        # -----Proxy generate-----
         if proxy_index >= len(proxy_list):
             proxy_list = await standart_get_proxies(kind=2)
             proxy_index = 0
@@ -566,16 +572,18 @@ async def gmail_register(count: Optional[int] = None):
             'password': password
         }
 
-        add_loggs(f'proxy: {proxy}', 1)
-        add_loggs(f'proxy: {pr}', 1)
+        # -----UserAgent generate-----
+        user_agent = UA.random
 
+        # -----User generate-----
         users = json.loads(
             await standart_request('get', f'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id={GMAIL_KIND_ID}'))
 
+        # -----Start simulation-----
         async with async_playwright() as playwright:
             chromium = playwright.firefox
-            browser = await chromium.launch()
-            context = await browser.new_context(proxy=proxy)
+            browser = await chromium.launch(headless=False)
+            context = await browser.new_context(proxy=proxy, user_agent=user_agent)
             page = await context.new_page()
             account = await gmail_account_registration(context, page, users)
             await browser.close()
@@ -591,7 +599,7 @@ async def gmail_register(count: Optional[int] = None):
 
 async def gmail_account_registration(context, page, users):
 
-    # -----params-----
+    # -----Params-----
     humanoid_id = users['id']
     add_loggs(f'humanoid_id: {humanoid_id}', 1)
     first_name = users['first_name']
@@ -609,7 +617,7 @@ async def gmail_account_registration(context, page, users):
     gmail = generate_mail(first_name, last_name, year)
     password = generate_pass(random.randint(15, 20))
 
-    # -----mining-----
+    # -----Mining-----
     try:
         await page.goto('https://google.com')
         await asyncio.sleep(4)
@@ -618,75 +626,89 @@ async def gmail_account_registration(context, page, users):
         await page.locator('xpath=//*[@id="yDmH0d"]/c-wiz/div/div[3]/div/div[2]/div/div/div[1]/div/button').click()
         await asyncio.sleep(2)
         await page.locator('xpath=//*[@id="yDmH0d"]/c-wiz/div/div[3]/div/div[2]/div/div/div[2]/div/ul/li[1]').click()
-        await asyncio.sleep(2)
 
-        # -----fullName-----
-        await page.fill('#firstName', first_name)
-        await asyncio.sleep(0.1)
-        await page.fill('#lastName', last_name)
-        await asyncio.sleep(0.1)
-        add_loggs(f'name: {first_name}, {last_name}', 1)
+        # -----FullName-----
+        await random_delay(0.3, 1)
+        await page.type('#firstName', first_name, delay=random.uniform(0.1, 0.3))
+        await random_delay(0.3, 1)
+        await page.type('#lastName', last_name, delay=random.uniform(0.1, 0.3))
+        await random_delay(0.3, 1)
         await page.click('.VfPpkd-LgbsSe')
         await page.wait_for_timeout(2000)
 
-        # -----birthday-----
-        await page.fill('#day', day)
-        await asyncio.sleep(0.1)
+        # -----Birthday-----
+        await page.type('#day', day, delay=random.uniform(0.1, 0.3))
+        await random_delay(0.3, 1)
         await page.select_option('#month', index=int(month))
-        await asyncio.sleep(0.1)
-        await page.fill('#year', year)
-        await asyncio.sleep(0.1)
-        add_loggs(f'date: {users["birth_date"]}', 1)
+        await random_delay(0.3, 1)
+        await page.type('#year', year, delay=random.uniform(0.1, 0.3))
 
-        # -----gender-----
+        # -----Gender-----
+        await random_delay(0.3, 1)
         await page.select_option('#gender', index=gender)
-        await asyncio.sleep(0.1)
-        add_loggs(f'gender: {users["sex"]}', 1)
+        await random_delay(0.3, 1)
         await page.click('.VfPpkd-LgbsSe')
-        await asyncio.sleep(4)
+        await random_delay(3, 4.5)
 
-        # -----gmail-----
+        # -----Gmail-----
         element = await page.query_selector('body')
         elem = await element.text_content()
         if 'Создать собственный адрес Gmail' in elem.strip():
-            await asyncio.sleep(1)
+            await random_delay(1, 1.5)
             await page.click(
                 'xpath=/html/body/div[1]/div[1]/div[2]/c-wiz/div/div[2]/div/div/div/form/span/section/div/div/div[1]/div[1]/div/span/div[3]/div/div[1]/div/div[3]/div')
-            await asyncio.sleep(2)
-            await page.fill('input[name="Username"]', gmail)
-            await asyncio.sleep(0.2)
-            add_loggs(f'gmail: {gmail}', 1)
-            await page.click('#next')
-            await asyncio.sleep(4)
-        else:
-            await page.fill('input[name="Username"]', gmail, timeout=500)
-            await asyncio.sleep(0.1)
+            await random_delay(1, 1.5)
+            await page.type('input[name="Username"]', gmail, delay=random.uniform(0.1, 0.3))
+            await random_delay(0.3, 1)
             await page.click('#next', timeout=100)
-            add_loggs(f'gmail: {gmail}', 1)
+            await random_delay(3.5, 4.5)
+        else:
+            await page.type('input[name="Username"]', gmail, delay=random.uniform(0.1, 0.3))
+            await random_delay(0.3, 1)
+            await page.click('#next', timeout=100)
 
-        # -----password-----
-        await page.fill('input[name="Passwd"]', password)
-        await asyncio.sleep(0.2)
-        await page.fill('input[name="PasswdAgain"]', password)
-        await asyncio.sleep(0.2)
-        add_loggs(f'pass   {password}', 1)
+        # -----Password-----
+        await page.type('input[name="Passwd"]', password, delay=random.uniform(0.1, 0.3))
+        await random_delay(0.3, 1)
+        await page.type('input[name="PasswdAgain"]', password, delay=random.uniform(0.1, 0.3))
+        await random_delay(0.3, 1)
         await page.click('.VfPpkd-LgbsSe')
-        await asyncio.sleep(5)
+        await random_delay(4, 6)
+        element = await page.query_selector('body')
+        elem = await element.text_content()
+        if 'Отсканируйте QR-код, чтобы подтвердить номер телефона' in elem.strip():
+            await page.locator(".pSHvwe").screenshot(path="screenshot.png")
+            await random_delay(4, 6)
 
-        # -----phone-----
+            import cv2
+            from pyzbar.pyzbar import decode
+
+
+            image = cv2.imread('./screenshot.png')
+            qr_codes = decode(image)
+
+            if qr_codes:
+                for qr_code in qr_codes:
+                    data = qr_code.data.decode('utf-8')
+                    print(data)
+            else:
+                print("QR-код не найден или не может быть декодирован.")
+
+
+        await asyncio.sleep(60000000000000000000000000000000000000000000000)
+
+        # -----Phone-----
         element = await page.query_selector('body')
         elem = await element.text_content()
         if 'wants to access your Google Account' in elem.strip() or 'Не удалось создать аккаунт Google.' in elem.strip():
-            add_loggs('Не удалось создать аккаунт Google.', 1)
             return {'Ошибка': 'Не удалось создать аккаунт Google.'}
 
-        await page.fill('#phoneNumberId', phone_string, timeout=10000)
-        await asyncio.sleep(0.2)
-        add_loggs(f'phone: {phone_string}', 1)
+        await page.type('#phoneNumberId', phone_string, delay=random.uniform(0.1, 0.3))
+        await random_delay(0.3, 1)
         await page.click('.VfPpkd-LgbsSe')
-        await asyncio.sleep(2)
+        await random_delay(1.3, 2)
 
-        # -----sms-----
+        # -----Sms-----
         for r in range(30):
             url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(
                 phone_jd['listenFromTimestamp'])
@@ -701,19 +723,18 @@ async def gmail_account_registration(context, page, users):
         if not sms:
             return 'bad proxy or phone'
 
-        await page.fill('#code', sms, timeout=3000)
-        add_loggs(f'sms  {sms}', 1)
-        await asyncio.sleep(0.2)
+        await page.type('#code', sms, delay=random.uniform(0.1, 0.3))
+        await random_delay(0.3, 1)
         await page.click('.VfPpkd-LgbsSe')
-        await asyncio.sleep(3)
+        await random_delay(2.3, 3)
 
-        # -----politic-----
+        # -----Politic-----
         await page.click('xpath=/html/body/div[1]/div[1]/div[2]/div/div/div[3]/div/div[1]/div[2]/div/div/button')
-        await asyncio.sleep(3)
+        await random_delay(2.3, 3)
         await page.click('.VfPpkd-LgbsSe')
-        await asyncio.sleep(3)
+        await random_delay(2.3, 3)
         await page.click('xpath=/html/body/div[1]/div[1]/div[2]/c-wiz/div/div[3]/div/div[1]/div/div/button')
-        await asyncio.sleep(3)
+        await random_delay(2.3, 3)
 
         cookies = await context.cookies()
         cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
@@ -724,7 +745,6 @@ async def gmail_account_registration(context, page, users):
                                  cookie_list, gmail)
             if res.status == 200:
                 break
-        add_loggs('Created', 1)
         url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
         await standart_request('post', url, data={'service': 'gmail'})
 
@@ -978,23 +998,37 @@ async def vk_mail_ru_registration(context, page, user):
     humanoid_birth_date = user[4]['birth_date']
     try:
         await page.goto("https://id.vk.com/")
-        await asyncio.sleep(2)
+        await random_delay(1, 1.5)
         add_loggs('Start Registration', 1)
         await page.click('xpath=//*[@id="about_section"]/section/div[1]/div/div[1]/button')
-        await asyncio.sleep(2)
-        await page.fill('input', phone)
+        await random_delay(2, 3.5)
+        await page.type('input[name="login"]', phone[1:], delay=random.uniform(0.1, 0.3))
+        await random_delay(2, 3.5)
         await page.click('button[type="submit"]')
-        await asyncio.sleep(1)
+        await random_delay(5, 6.5)
         element = await page.query_selector('body')
         elem = await element.text_content()
         if "Войти при помощи пароля" in elem.strip() or "Sign in using password" in elem.strip():
             await page.click('.vkc__Bottom__switchToPassword')
-            await page.fill('input[name="password"]', password)
+            await random_delay(2, 3.5)
+            await page.type('input[name="password"]', password, delay=random.uniform(0.1, 0.3))
+            await random_delay(2, 3.5)
             await page.click('button[type="submit"]')
+            await random_delay(2, 3.5)
         else:
-            await page.fill('input[name="password"]', password)
+            await page.click('button[data-test-id="other-verification-methods"]')
+            await random_delay(2, 3.5)
+            await page.click('xpath=/html/body/div[1]/div/div/div/div/div[2]/div/div[2]/div/div/div/div/div[2]/div[1]/div/div/div[3]')
+            await random_delay(2, 3.5)
+            await page.type('input[name="password"]', password, delay=random.uniform(0.1, 0.3))
+            await random_delay(2, 3.5)
             await page.click('button[type="submit"]')
-        await asyncio.sleep(10)
+            await random_delay(2, 3.5)
+
+            # await page.type('input[name="password"]', password, delay=random.uniform(0.1, 0.3))
+            # await random_delay(2, 3.5)
+            # await page.click('button[type="submit"]')
+        await random_delay(9, 11.5)
 
         # if humanoid_id is None:
         #     await asyncio.sleep(5)
@@ -1050,10 +1084,10 @@ async def vk_mail_ru_registration(context, page, user):
         #     DBC.execute(f'update accounts set humanoid_id = {humanoid["id"]} where id = {user_id}')
         #     await asyncio.sleep(2)
         await page.goto("https://vk.mail.ru")
-        await asyncio.sleep(5)
+        await random_delay(5, 7.5)
         await page.click('button[type="submit"]')
 
-        await asyncio.sleep(10)
+        await random_delay(10, 12.5)
         element = await page.query_selector('body')
         elem = await element.text_content()
         if "Verify it's you" in elem.strip():
@@ -1585,6 +1619,242 @@ async def ya_mail_ru_registration(context, page, user):
 #     except Exception as e:
 #         add_loggs(0, f'Ошибка: {e}')
 #         return e
+
+
+
+
+
+
+
+
+
+@APP.get("/@facebook-register")
+async def facebook(count: Optional[int] = None):
+    """регистрация одного или пачки учётных записей YAmail"""
+    accounts = []
+    count_acc = 0
+    proxy_list = await standart_get_proxies(kind=2)
+    proxy_index = 0
+    if len(proxy_list) == 0:
+        standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
+    logging.critical(len(proxy_list))
+
+    path_to_extension = "./Captcha-Solver-Chrome"
+    user_data_dir = "/tmp/test-user-data-dir"
+
+    while count is None or len(accounts) < count:
+        if proxy_index >= len(proxy_list):
+            proxy_list = await standart_get_proxies(kind=2, ptype=3)
+            proxy_index = 0
+        pr = proxy_list[proxy_index].split('://')[1].split('@')
+        username, password = pr[0].split(':')
+        host, port = pr[1].split(':')
+        if " " in host:
+            host = host.replace(" ", "")
+        proxy = {
+            'server': f'http://193.31.100.73:9450',
+            'username': 'S0t7FB',
+            'password': 'GKshby'
+        }
+        user = json.loads(
+            await standart_request('get', f'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id={RAMBLER_KIND_ID}'))
+
+        async with async_playwright() as playwright:
+            chromium = playwright.chromium
+            context = await chromium.launch(
+                headless=False,
+                proxy=proxy
+            )
+            page = await context.new_page()
+            account = await facebook_registration(context, page, user)
+            logging.critical(account)
+            await context.close()
+
+            add_loggs(f'Ответ: {account}', 1)
+            accounts.append(account)
+            add_loggs('------------------------------------', 1)
+
+        proxy_index += 1
+        count_acc += 1
+        logging.critical(count_acc)
+    return {'accounts': accounts}
+
+async def random_delay(min_sec: float, max_sec: float):
+    delay = random.uniform(min_sec, max_sec)
+    await asyncio.sleep(delay)
+
+async def facebook_registration(context, page, user):
+    # -----params-----
+    humanoid_id = user['id']
+    first_name = user['first_name']
+    last_name = user['last_name']
+    day = int(user['birth_date'].split('-')[2])
+    month = int(user['birth_date'].split('-')[1])
+    year = user['birth_date'].split('-')[0]
+    if user['sex'] == 'female':
+        gender = 2
+    else:
+        gender = 1
+    password = generate_pass(random.randint(15, 20))
+    rambler_mail = generate_mail(first_name, last_name, year)
+    phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
+    logging.critical(password)
+    logging.critical(phone_jd)
+    phone_string = phone_jd['phone'][1:11]
+    sms = ''
+    try:
+
+        # Инициализация браузера
+        await asyncio.sleep(1)
+        await page.goto('https://en-gb.facebook.com/reg/?app_id=1862952583919182&logger_id')
+        await asyncio.sleep(3)
+
+        # Имя
+        await random_delay(1, 1.5)
+        await page.type('input[name="firstname"]', first_name, delay=random.uniform(0.1, 0.3))
+
+        # Фамилия
+        await random_delay(1, 1.5)
+        await page.type('input[name="lastname"]', last_name, delay=random.uniform(0.1, 0.3))
+
+        # Телефон
+        await random_delay(1, 1.5)
+        await page.type('input[name="reg_email__"]', phone_jd['phone'],
+                        delay=random.uniform(0.1, 0.3))
+
+        # Пароль
+        await random_delay(1, 1.5)
+        await page.type('input[name="reg_passwd__"]', password, delay=random.uniform(0.1, 0.3))
+
+        # Дата рождения
+        await random_delay(1, 1.5)
+        await page.select_option('select[name="birthday_day"]', str(day))  # День
+        await random_delay(1, 1.5)
+        await page.select_option('select[name="birthday_month"]', str(month))  # Месяц
+        await random_delay(1, 1.5)
+        await page.select_option('select[name="birthday_year"]', str(year))  # Год
+
+        # Выбор пола
+        await random_delay(1, 1.5)
+        await page.click(f'input[name="sex"][value="{gender}"]')  # Пол (1 - мужской, 2 - женский)
+
+
+        # Нажатие кнопки регистрации
+        await random_delay(1, 1.5)
+        await page.click('button[name="websubmit"]')
+
+        await asyncio.sleep(20)
+
+        # Нажатие кнопки продолжение (180 дней)
+        await page.click('div[aria-label="Continue"]')
+
+        await asyncio.sleep(20)
+        frames = page.frames
+        logging.critical(frames)
+        await asyncio.sleep(20000000000000000000000000000)
+        element = await page.query_selector('body')
+        elem = await element.text_content()
+        if "Enter the text from the image." in elem.strip():
+            await page.locator(".xz74otr").screenshot(path="screenshot.png")
+            await asyncio.sleep(
+                5000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
+        elif "Help us confirm that it's you" in elem.strip():
+            frames = page.frames
+            logging.critical(frames)
+
+            iframe_element = await page.query_selector('iframe#arkose-captcha')
+            if not iframe_element:
+                print("Iframe не найден")
+                return
+
+            # Найти input внутри iframe
+            iframe2 = await iframe_element.query_selector('iframe[title="Verification challenge"]')
+            if not iframe2:
+                print("Элемент iframe2 не найден")
+                return
+
+            iframe3 = await iframe2.query_selector('iframe#game-core-frame')
+            if not iframe3:
+                print("Элемент iframe3 не найден")
+                return
+
+
+            # Получить атрибут src из iframe
+            iframe_src = await iframe3.get_attribute("src")
+            if not iframe_src:
+                print("Не удалось получить src iframe")
+                return
+
+            # Извлечь значения параметров pk и surl из src
+            from urllib.parse import parse_qs, urlparse
+            parsed_url = urlparse(iframe_src)
+            query_params = parse_qs(parsed_url.query)
+            pk = query_params.get("pk", [None])[0]
+            surl = query_params.get("surl", [None])[0]
+
+            print(f"PK: {pk}")
+            print(f"SURL: {surl}")
+
+            # Переключиться на iframe
+            iframe = await iframe_element.content_frame()
+            if not iframe:
+                print("Не удалось переключиться на iframe")
+                return
+
+            # Найти input внутри iframe
+            input_element = await iframe3.query_selector('#FunCaptcha-Token')
+            if not input_element:
+                print("Элемент <input> не найден")
+                return
+
+            # Обновить значение атрибута value
+            new_value = f"{pk}|surl={surl}"
+            await input_element.evaluate("(el, value) => el.value = value", new_value)
+            print(f"Значение обновлено на: {new_value}")
+
+            # captcha
+        elif 'Enter the confirmation code from the text message' in elem.strip():
+            logging.critical("Ожидание SMS-кода.")
+
+            for r in range(30):
+                url = f'http://10.9.20.135:3000/phones/messages/{phone_jd["phone"]}?fromTs=0{phone_jd["listenFromTimestamp"]}'
+                sms = await standart_request('get', url)
+                if sms != '{"messages":[]}':
+                    break
+                await asyncio.sleep(0.2)
+
+            pattern = r'\d+'
+            sms = re.findall(pattern, sms)
+            sms = ' '.join(sms)
+            logging.critical(f"Получен SMS-код: {sms}")
+
+            await page.type('input[name="code"]', sms,
+                            delay=random.uniform(0.1, 0.3))
+
+            await page.click('button[name="confirm"]')
+
+        await page.fill('input[name="email"]', rambler_mail)
+
+        await page.click('div[aria-label="Send Login Code"]')
+
+        await page.fill('xpath=/html/body/div[1]/div/div[1]/div/div/div/div/div[2]/div/div/div[1]/div/div/div[1]/div/div/div/div/div/div/div/div[2]/div/div/label/div/input', sms)
+
+        await page.click('div[aria-label="Next"]')
+        await asyncio.sleep(500000000000000000000000000)
+        logging.critical("Регистрация завершена.")
+        return {
+            "kind_id": RAMBLER_KIND_ID,
+            "phone": phone_jd['phone'],
+            "password": password,
+            "humanoid_id": humanoid_id,
+            # "last_cookies": cookie_list
+        }
+    except Exception as e:
+        logging.critical(f"Ошибка: {e}")
+        add_loggs(f'Ошибка: {e}', 1)
+        return {"error": str(e)}
+
+
 
 APP.mount("/", StaticFiles(directory="ui", html=True), name="ui")
 
