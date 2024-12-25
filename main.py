@@ -1665,9 +1665,11 @@ async def facebook(count: Optional[int] = None):
         logging.critical(count_acc)
     return {'accounts': accounts}
 
+
 async def random_delay(min_sec: float, max_sec: float):
     delay = random.uniform(min_sec, max_sec)
     await asyncio.sleep(delay)
+
 
 async def facebook_registration(context, page, user):
     # -----params-----
