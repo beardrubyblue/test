@@ -442,7 +442,7 @@ def vk_register(kind='1'):
                 jd = json.loads(rr.text)['response']
                 logging.critical('SID: ' + login_sid)
                 password = js_userandom_string(21)
-                hrr = requests.get('https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=7')
+                hrr = requests.get('https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=2')
                 humanoid = json.loads(hrr.text)
                 first_name = humanoid['first_name']
                 last_name = humanoid['last_name']
