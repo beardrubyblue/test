@@ -160,7 +160,10 @@ def get_proxies(kind: int, amount: int = 1000):
     """функция возвращает список полученных проксей с сайта https://free-proxy-list.net или из https://proxy-manager.arbat.dev или из https://www.sslproxies.org"""
     proxies = []
     if kind == 1:
-        soup = BeautifulSoup(requests.get('https://free-proxy-list.net').content, 'html.parser')
+        pr = {
+            'https': f'https://{configs.ProxyUserOfKind3}@193.187.144.37:8000'
+        }
+        soup = BeautifulSoup(requests.get('https://free-proxy-list.net').content, 'html.parser', proxies=pr)
         for row in soup.find('table', attrs={'class': 'table table-striped table-bordered'}).find_all('tr')[1:]:
             tds = row.find_all('td')
             if tds[2].text.strip() != 'RU' and tds[6].text.strip() == 'yes':
