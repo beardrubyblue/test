@@ -5,10 +5,6 @@ with open('/run/secrets/secret1') as f:
 with open('/run/secrets/secret2') as f:
     VRS2 = f.readlines()
     f.close()
-with open('/run/secrets/secret3') as f:
-    VS3 = f.readlines()
-    f.close()
-ProxyUserOfKind3 = VS3[0].replace('"', '').replace("'", '')
 TwoCaptchaApiKey = VRS1[0].replace('"', '')
 
 

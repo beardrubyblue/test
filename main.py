@@ -355,7 +355,7 @@ def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.v
     at = asyncio.run(standart_execute_sql(f"select info->>'access_token' from accounts where id={account_id}"))
     html = 'Try Another Method please. A ha Ha ha ha HAAAA !!! :)'
     if api_method == 'https://api.vk.com/method/users.get':
-        html = asyncio.run(standart_request('post', api_method, data={'users_ids': ids, 'access_token': at[0], 'v': v}))
+        html = asyncio.run(standart_request('post', api_method, data={'user_ids': ids, 'access_token': at[0], 'v': v}))
     if api_method == 'https://api.vk.com/method/groups.getById':
         html = asyncio.run(standart_request('post', api_method, data={'group_ids': ids, 'access_token': at[0], 'v': v}))
     if api_method == 'https://api.vk.com/method/users.getSubscriptions':

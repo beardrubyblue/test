@@ -44,8 +44,7 @@ secrets:
     file: /APIKey.json
   secret2:
     file: /DBConfig.json
-  secret3:
-    file: /ProxyUserOfKind3.json
+
 
 networks:
   default:
