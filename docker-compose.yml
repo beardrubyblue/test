@@ -17,7 +17,6 @@ services:
     secrets:
       - secret1
       - secret2
-      - secret3
     deploy:
       mode: replicated
       replicas: 5
