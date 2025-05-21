@@ -29,7 +29,7 @@ logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 
 UA = UserAgent()
 
-DB = psycopg.connect(dbname='postgres', user='postgres',password='svdbjnsj5788393930_sdjdjd',host='10.9.28.54',port=5432)
+DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
 
 SECURITY = HTTPBasic()
@@ -160,7 +160,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
 
 async def standart_execute_sql(sql: str):
     """Подключение к БД проекта и выполнение там переданного SQL с возвращением его результатов."""
-    db = await psycopg.AsyncConnection.connect(dbname='postgres', user='postgres',password='svdbjnsj5788393930_sdjdjd',host='10.9.28.54',port=5432)
+    db = await psycopg.AsyncConnection.connect(**configs.db_config())
     dbc = db.cursor()
     await dbc.execute(sql)
     if dbc.description:
@@ -176,7 +176,7 @@ def get_proxies(kind: int, amount: int = 1000):
     proxies = []
     if kind == 1:
         pr = {
-            'http': f'http://WgdSgr:xfYRp3@193.187.144.37:8000'
+            'http': 'http://WgdSgr:xfYRp3@193.187.144.37:8000'
         }
         soup = BeautifulSoup(requests.get('https://free-proxy-list.net', proxies=pr).content, 'html.parser')
         for row in soup.find('table', attrs={'class': 'table table-striped table-bordered'}).find_all('tr')[1:]:
@@ -560,6 +560,7 @@ async def send_acc(kind_id, phone_jd: str, password, first_name, last_name, birt
     async with aiohttp.ClientSession() as session:
         async with session.post('https://accman.ad.dev.arbat.dev/create', json=data) as response:
             return response
+
 
 async def send_acc_vk(phone_jd: str, password, mid, first_name, last_name, birthday, humanoid_id, last_cookies, access_token):
     data = {
@@ -1308,14 +1309,13 @@ async def vk_register_new(count: Optional[int] = None):
             proxy_list = await standart_get_proxies(1)
             proxy_index = 0
         pr = proxy_list[proxy_index]
-
         proxy = {
             'server': pr
         }
         async with async_playwright() as playwright:
             chromium = playwright.chromium
             browser = await chromium.launch(headless=False)
-            context = await browser.new_context()
+            context = await browser.new_context(proxy=proxy)
             page = await context.new_page()
             account = await vk_registeration_new(context, page)
             await browser.close()
@@ -1328,7 +1328,7 @@ async def vk_register_new(count: Optional[int] = None):
 
 
 async def vk_registeration_new(context, page):
-    humanoid = json.loads(await standart_request('get', f'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=2'))
+    humanoid = json.loads(await standart_request('get', 'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=2'))
     logging.critical(humanoid)
     day = humanoid['birth_date'].split('-')[2]
     month = humanoid['birth_date'].split('-')[1]
@@ -1479,9 +1479,7 @@ async def vk_registeration_new(context, page):
                     cookies = await context.cookies()
                     cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
                     cookie_list = [cookie_dict]
-                    res = await send_acc_vk(phone_jd['phone'], password, mid, humanoid['first_name'],
-                                         humanoid['last_name'], f'{day}.{month}.{year}', humanoid['id'],
-                                         cookie_list, token['access_token'])
+                    res = await send_acc_vk(phone_jd['phone'], password, mid, humanoid['first_name'], humanoid['last_name'], f'{day}.{month}.{year}', humanoid['id'], cookie_list, token['access_token'])
                     await asyncio.sleep(5)
                     if res.status == 200:
                         break
