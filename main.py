@@ -1314,7 +1314,7 @@ async def vk_register_new(count: Optional[int] = None):
         }
         async with async_playwright() as playwright:
             chromium = playwright.chromium
-            browser = await chromium.launch(headless=False)
+            browser = await chromium.launch(headless=True)
             context = await browser.new_context(proxy=proxy)
             page = await context.new_page()
             account = await vk_registeration_new(context, page)
