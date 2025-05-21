@@ -1505,4 +1505,4 @@ async def vk_registeration_new(context, page):
 APP.mount("/", StaticFiles(directory="ui", html=True), name="ui")
 
 if __name__ == "__main__":
-    uvicorn.run(APP, host="0.0.0.0", port=9000)
+    uvicorn.run(APP, host="0.0.0.0", port=5000)
