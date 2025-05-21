@@ -542,7 +542,7 @@ def generate_pass(length):
     return password
 
 
-async def send_acc(kind_id, phone_jd: str, password, first_name, last_name, birthday, humanoid_id, last_cookies, email: str('')):
+async def send_acc(kind_id, phone_jd: str, password, first_name, last_name, birthday, humanoid_id, last_cookies, email: str = ''):
     data = {
         'kind_id': kind_id,
         'phone': phone_jd,
