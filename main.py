@@ -24,11 +24,16 @@ from fake_useragent import UserAgent
 import psycopg
 import configs
 from models import AccountCreation
+
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
+
 UA = UserAgent()
-DB = psycopg.connect(**configs.db_config())
+
+DB = psycopg.connect(dbname='postgres', user='postgres',password='svdbjnsj5788393930_sdjdjd',host='10.9.28.54',port=5432)
 DBC = DB.cursor()
+
 SECURITY = HTTPBasic()
+
 CC = {
     'server': 'rucaptcha.com',
     'apiKey': 'configs.TwoCaptchaApiKey',
@@ -37,20 +42,25 @@ CC = {
     'defaultTimeout': 120,
     'recaptchaTimeout': 600,
     'pollingInterval': 10}
+
 SOLVER = TwoCaptcha(**CC)
+
 HEADERS = {}
+
 with open('Names.txt') as F:
     Names = F.readlines()
     F.close()
 with open('UserAgents.txt') as F:
     UserAgents = F.readlines()
     F.close()
+
 STATISTICS = []
 GMAIL_KIND_ID = 3
 MAIL_KIND_ID = 19
 VK_MAIL_RU = 35
 YANDEX_KIND_ID = 50
 RAMBLER_KIND_ID = 31
+FACEBOOK_KIND_ID = 75
 REGISTRATION_STARTED = False
 random.seed()
 # CONTAINER_NAME = 'UniReger' + os.getenv('CONTAINER_NAME')
@@ -90,6 +100,11 @@ async def standart_request(method: str, url: str, proxy_url: str = None, timeout
     return response
 
 
+async def random_delay(min_sec: float, max_sec: float):
+    delay = random.uniform(min_sec, max_sec)
+    await asyncio.sleep(delay)
+
+
 async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU', max_amount: int = 10000):
     """Функция создаёт список из URL-строк прокси вида type://login:password@host:port. Прокси для этого берутся с одного из сайтов: [https://free-proxy-list.net или https://www.sslproxies.org] [https://proxy-manager.arbat.dev] [https://proxy6.net]."""
     proxy_list = []
@@ -100,7 +115,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
         pt = 'socks5://'
     if ptype == 3:
         pt = 'http://'
-    # Получение бесплатных https прокси случайных стран с сайтов [https://free-proxy-list.net  или https://www.sslproxies.org].
+    # Получение бесплатных https прокси случайных стран с сайтов [https://free-proxy-list.net или https://www.sslproxies.org].
     if kind == 1 and ptype == 3:
         async with aiohttp.ClientSession() as session:
             response = await session.get('https://free-proxy-list.net')
@@ -123,14 +138,14 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
     if kind == 3 and ptype in [2, 3]:
         proxy_list.append(f'{pt}{configs.ProxyUserOfKind3}@193.187.144.37:8000')
     # Получение платных https прокси указанной страны из объединения playwright сайта [https://proxy-manager.arbat.dev].
-    if kind == 4 and ptype == 3:
+    if kind == 4:
         params = {'limit': 10000, 'sla': '0.7'}
         async with aiohttp.ClientSession() as session:
-            response = await session.get('https://proxy-manager.arbat.dev/pools/b4485d4d-d678-4b5f-9ada-b972db01764b/proxies', params=params)
+            response = await session.get('https://proxy-manager.arbat.dev/pools/956e7252-3f64-4822-88d8-d85c65903d01/proxies', params=params)
             jd = json.loads(await response.text(errors='replace'))
             for proxy in jd:
                 if proxy['proxy']['proxy_type'] == ptype and proxy['proxy']['country_code'] == country:
-                    proxy_list.append(f"{pt}{proxy['proxy']['login']}:{proxy['proxy']['password']}@{proxy['proxy']['host']}:{proxy['proxy']['port']}")
+                    proxy_list.append(f"http://{proxy['proxy']['login']}:{proxy['proxy']['password']}@{proxy['proxy']['host']}:{proxy['proxy']['port']}")
     # Быстрое получение одной платной https или socks5 прокси указанной страны из объединения proxy6_net_pool сайта [https://proxy-manager.arbat.dev], которая дольше всех не использовалась.
     if kind == 5 and ptype in [2, 3]:
         params = {'pool_id': '9f687b07-b5f5-4227-9d04-4888ac5be496', 'sla': '0.7', "country": country}
@@ -145,7 +160,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
 
 async def standart_execute_sql(sql: str):
     """Подключение к БД проекта и выполнение там переданного SQL с возвращением его результатов."""
-    db = await psycopg.AsyncConnection.connect(**configs.db_config())
+    db = await psycopg.AsyncConnection.connect(dbname='postgres', user='postgres',password='svdbjnsj5788393930_sdjdjd',host='10.9.28.54',port=5432)
     dbc = db.cursor()
     await dbc.execute(sql)
     if dbc.description:
@@ -157,13 +172,13 @@ async def standart_execute_sql(sql: str):
 
 
 def get_proxies(kind: int, amount: int = 1000):
-    """функция возвращает список полученных проксей с сайта https://free-proxy-list.net или из https://proxy-manager.arbat.dev или из https://www.sslproxies.org"""
+    """функция возвращает список полученных проксей с сайта https://free-proxy-list.net, или из https://proxy-manager.arbat.dev, или из https://www.sslproxies.org"""
     proxies = []
     if kind == 1:
         pr = {
-            'https': f'https://{configs.ProxyUserOfKind3}@193.187.144.37:8000'
+            'http': f'http://WgdSgr:xfYRp3@193.187.144.37:8000'
         }
-        soup = BeautifulSoup(requests.get('https://free-proxy-list.net').content, 'html.parser', proxies=pr)
+        soup = BeautifulSoup(requests.get('https://free-proxy-list.net', proxies=pr).content, 'html.parser')
         for row in soup.find('table', attrs={'class': 'table table-striped table-bordered'}).find_all('tr')[1:]:
             tds = row.find_all('td')
             if tds[2].text.strip() != 'RU' and tds[6].text.strip() == 'yes':
@@ -527,7 +542,7 @@ def generate_pass(length):
     return password
 
 
-async def send_acc(kind_id, phone_jd: str, password, first_name, last_name, birthday, humanoid_id, last_cookies, email):
+async def send_acc(kind_id, phone_jd: str, password, first_name, last_name, birthday, humanoid_id, last_cookies, email: str('')):
     data = {
         'kind_id': kind_id,
         'phone': phone_jd,
@@ -537,6 +552,26 @@ async def send_acc(kind_id, phone_jd: str, password, first_name, last_name, birt
             'first_name': first_name,
             'last_name': last_name,
             'birth_date': birthday
+        },
+        "humanoid_id": humanoid_id,
+        "last_cookies": last_cookies
+    }
+    logging.critical(data)
+    async with aiohttp.ClientSession() as session:
+        async with session.post('https://accman.ad.dev.arbat.dev/create', json=data) as response:
+            return response
+
+async def send_acc_vk(phone_jd: str, password, mid, first_name, last_name, birthday, humanoid_id, last_cookies, access_token):
+    data = {
+        'kind_id': 2,
+        'phone': phone_jd,
+        'password': password,
+        'info': {
+            'mid': mid,
+            'first_name': first_name,
+            'last_name': last_name,
+            'birth_date': birthday,
+            'access_token': access_token
         },
         "humanoid_id": humanoid_id,
         "last_cookies": last_cookies
@@ -604,6 +639,7 @@ async def gmail_register(count: Optional[int] = None):
 async def gmail_account_registration(context, page, users):
 
     # -----Params-----
+    global sms
     humanoid_id = users['id']
     add_loggs(f'humanoid_id: {humanoid_id}', 1)
     first_name = users['first_name']
@@ -681,23 +717,7 @@ async def gmail_account_registration(context, page, users):
         element = await page.query_selector('body')
         elem = await element.text_content()
         if 'Отсканируйте QR-код, чтобы подтвердить номер телефона' in elem.strip():
-            await page.locator(".pSHvwe").screenshot(path="screenshot.png")
-            await random_delay(4, 6)
-
-            import cv2
-            from pyzbar.pyzbar import decode
-
-            image = cv2.imread('./screenshot.png')
-            qr_codes = decode(image)
-
-            if qr_codes:
-                for qr_code in qr_codes:
-                    data = qr_code.data.decode('utf-8')
-                    print(data)
-            else:
-                print("QR-код не найден или не может быть декодирован.")
-
-        await asyncio.sleep(60000000000000000000000000000000000000000000000)
+            await asyncio.sleep(60000000000000000000000000000000000000000000000)
 
         # -----Phone-----
         element = await page.query_selector('body')
@@ -806,6 +826,7 @@ async def mailru_register(count: Optional[int] = None):
 
 
 async def email_account_registration(context, page, user):
+    global sms, password, cookie_list
     humanoid_id = user['id']
     first_name = user['first_name']
     last_name = user['last_name']
@@ -930,12 +951,12 @@ async def email_account_registration(context, page, user):
                         break
                     await asyncio.sleep(60)
                 add_loggs('Created', 1)
-                return AccountCreation(
-                    phone=phone,
-                    password=password,
-                    humanoid_id=humanoid_id,
-                    last_cookies=cookie_list
-                )
+            return AccountCreation(
+                phone=phone,
+                password=password,
+                humanoid_id=humanoid_id,
+                last_cookies=cookie_list
+            )
         except Exception as e:
             logging.critical(e)
             return f"Ошибка при заполнении: {e}"
@@ -991,7 +1012,7 @@ async def vk_mail_ru(count: Optional[int] = None):
 
 async def vk_mail_ru_registration(context, page, user):
     # -----params-----
-    # user_id = user[0]
+    global sms
     humanoid_id = user[7]
     phone = user[2]
     password = user[3]
@@ -1153,124 +1174,8 @@ async def vk_mail_ru_registration(context, page, user):
         return e
 
 
-@APP.get("/@ya-mail-ru-register")
-async def ya_mail_ru(count: Optional[int] = None):
-    """регистрация одного или пачки учётных записей YAmail"""
-    accounts = []
-    count_acc = 0
-    proxy_list = await standart_get_proxies(kind=2)
-    proxy_index = 0
-    if len(proxy_list) == 0:
-        standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
-    logging.critical(len(proxy_list))
-    while count is None or len(accounts) < count:
-        if proxy_index >= len(proxy_list):
-            proxy_list = await standart_get_proxies(kind=2)
-            proxy_index = 0
-        pr = proxy_list[proxy_index].split('://')[1].split('@')
-        username, password = pr[0].split(':')
-        host, port = pr[1].split(':')
-        if " " in host:
-            host = host.replace(" ", "")
-        proxy = {
-            'server': f'http://{host}:{port}',
-            'username': username,
-            'password': password
-        }
-        user = json.loads(
-            await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={YANDEX_KIND_ID}'))
-        async with async_playwright() as playwright:
-            chromium = playwright.chromium
-            browser = await chromium.launch()
-            context = await browser.new_context(proxy=proxy)
-            page = await context.new_page()
-            account = await ya_mail_ru_registration(context, page, user)
-            logging.critical(account)
-            await browser.close()
-            add_loggs(f'Ответ: {account}', 1)
-            accounts.append(account)
-            add_loggs('------------------------------------', 1)
-
-        proxy_index += 1
-        count_acc += 1
-        logging.critical(count_acc)
-    return {'accounts': accounts}
-
-
-async def ya_mail_ru_registration(context, page, user):
-    # -----params-----
-    humanoid_id = user['id']
-    first_name = user['first_name']
-    last_name = user['last_name']
-    year = user['birth_date'].split('-')[0]
-    password = generate_pass(random.randint(15, 20))
-    ya_mail = generate_mail(first_name, last_name, year)
-    phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
-    phone_string = phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
-    try:
-        await page.goto("https://passport.yandex.ru/registration/mail?from=mail&require_hint=1&origin=hostroot_homer_reg_ru&retpath=https%3A%2F%2Fmail.yandex.ru&backpath=https%3A%2F%2Fmail.yandex.ru%3Fnoretpath%3D1")
-        await asyncio.sleep(2)
-        add_loggs('Start Registration', 1)
-        await page.fill('input[name="firstname"]', first_name)
-        await page.fill('input[name="lastname"]', last_name)
-        await page.fill('input[name="login"]', ya_mail)
-        await page.fill('input[name="password"]', password)
-        await page.fill('input[name="password_confirm"]', password)
-        await page.fill('input[name="phone"]', phone_string)
-        await asyncio.sleep(2)
-        await page.click('button[type="submit"]')
-        await asyncio.sleep(2)
-        for r in range(30):
-            url = 'http://10.9.20.135:3000/phones/messages/' + phone_jd['phone'] + '?fromTs=0' + str(
-                phone_jd['listenFromTimestamp'])
-            sms = await standart_request('get', url)
-            if sms != '{"messages":[]}':
-                break
-            await asyncio.sleep(0.2)
-        pattern = r'(\d{3}-\d{3})'
-        match = re.search(pattern, sms)
-        if match:
-            code = match.group(1)
-        else:
-            code = ""
-        await asyncio.sleep(2)
-        await page.fill('input[name="phoneCode"]', code)
-        await asyncio.sleep(2)
-        await page.click('button[type="submit"]')
-        await asyncio.sleep(5)
-        await page.click('xpath=//*[@id="root"]/div/div[1]/div[2]/main/div/div/div/div[3]/div/span/a')
-        await asyncio.sleep(5)
-        cookies = await context.cookies()
-        cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
-        cookie_list = [cookie_dict]
-        element = await page.query_selector('body')
-        elem = await element.text_content()
-        if "В папке «Входящие» нет писем" in elem.strip():
-            while True:
-                mail = ya_mail + '@yandex.ru'
-                res = await send_acc(YANDEX_KIND_ID, phone_jd['phone'], password, first_name, last_name, user['birth_date'], humanoid_id,
-                                     cookie_list, mail)
-                if res.status == 200:
-                    break
-            url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
-            await standart_request('post', url, data={'service': 'yandex'})
-        # await page.goto('https://id.yandex.ru/security/enter-methods')
-        # await page.click('div[data-testid="password-only-list-item"]')
-        await asyncio.sleep(3)
-        return AccountCreation(
-            kind_id=YANDEX_KIND_ID,
-            phone=phone_jd['phone'],
-            password=password,
-            humanoid_id=humanoid_id,
-            last_cookies=cookie_list
-        )
-    except Exception as e:
-        add_loggs(f'Ошибка:   {e}', 1)
-        return e
-
-
-# @app.get("/@rambler-mail-ru-register")
-# async def rambler_mail_ru(count: Optional[int] = None):
+# @APP.get("/@ya-mail-ru-register")
+# async def ya_mail_ru(count: Optional[int] = None):
 #     """регистрация одного или пачки учётных записей YAmail"""
 #     accounts = []
 #     count_acc = 0
@@ -1279,13 +1184,9 @@ async def ya_mail_ru_registration(context, page, user):
 #     if len(proxy_list) == 0:
 #         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
 #     logging.critical(len(proxy_list))
-#
-#     path_to_extension = "./Captcha-Solver-Chrome"
-#     user_data_dir = "/tmp/test-user-data-dir"
-#
 #     while count is None or len(accounts) < count:
 #         if proxy_index >= len(proxy_list):
-#             proxy_list = await standart_get_proxies(kind=2, ptype=3)
+#             proxy_list = await standart_get_proxies(kind=2)
 #             proxy_index = 0
 #         pr = proxy_list[proxy_index].split('://')[1].split('@')
 #         username, password = pr[0].split(':')
@@ -1298,25 +1199,15 @@ async def ya_mail_ru_registration(context, page, user):
 #             'password': password
 #         }
 #         user = json.loads(
-#             await standart_request('get', f'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id={RAMBLER_KIND_ID}'))
-#
+#             await standart_request('get', f'https://accman-odata.arbat.dev/get-innocent-humanoid?kind_id={YANDEX_KIND_ID}'))
 #         async with async_playwright() as playwright:
 #             chromium = playwright.chromium
-#             context = await chromium.launch_persistent_context(
-#                 user_data_dir,
-#                 headless=True,
-#                 args=[
-#                     f"--disable-extensions-except={path_to_extension}",
-#                     f"--load-extension={path_to_extension}",
-#                 ],
-#                 http_credentials={"username": username, "password": password},
-#                 proxy=proxy
-#             )
+#             browser = await chromium.launch()
+#             context = await browser.new_context(proxy=proxy)
 #             page = await context.new_page()
-#             account = await rambler_mail_ru_registration(context, page, user)
+#             account = await ya_mail_ru_registration(context, page, user)
 #             logging.critical(account)
-#             await context.close()
-#             shutil.rmtree(user_data_dir)
+#             await browser.close()
 #             add_loggs(f'Ответ: {account}', 1)
 #             accounts.append(account)
 #             add_loggs('------------------------------------', 1)
@@ -1327,525 +1218,293 @@ async def ya_mail_ru_registration(context, page, user):
 #     return {'accounts': accounts}
 #
 #
-# async def rambler_mail_ru_registration(context, page, user):
+# async def ya_mail_ru_registration(context, page, user):
 #     # -----params-----
 #     humanoid_id = user['id']
 #     first_name = user['first_name']
 #     last_name = user['last_name']
-#     day = int(user['birth_date'].split('-')[2])
-#     month = int(user['birth_date'].split('-')[1])
 #     year = user['birth_date'].split('-')[0]
-#     if user['sex'] == 'female':
-#         gender = 2
-#     else:
-#         gender = 1
 #     password = generate_pass(random.randint(15, 20))
-#     rambler_mail = generate_mail(first_name, last_name, year)
+#     ya_mail = generate_mail(first_name, last_name, year)
 #     phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
-#     phone_string = phone_jd['phone'][1:11]
+#     phone_string = phone_jd['phone'][1:4] + ' ' + phone_jd['phone'][4:7] + '-' + phone_jd['phone'][7:9] + '-' + phone_jd['phone'][9:11]
 #     try:
-#         await asyncio.sleep(3)
-#         logging.critical("Инициализация браузера для регистрации на Rambler.")
-#         await page.goto('chrome://extensions/')
-#         await page.goto('https://2captcha.com/res.php?action=userinfo&key=b7daa375616afc09a250286108ea037d&header_acao=1&json=1')
-#         page.on("dialog", lambda dialog: dialog.accept(prompt_text="your_username:your_password"))
-#         await page.goto('chrome-extension://ngnebjnkjhkljjjhhhpjljfiipoggnbh/options/options.html')
+#         await page.goto("https://passport.yandex.ru/registration/mail?from=mail&require_hint=1&origin=hostroot_homer_reg_ru&retpath=https%3A%2F%2Fmail.yandex.ru&backpath=https%3A%2F%2Fmail.yandex.ru%3Fnoretpath%3D1")
 #         await asyncio.sleep(2)
-#         await page.fill('input[name="apiKey"]', 'b7daa375616afc09a250286108ea037d')
-#         await asyncio.sleep(1)
-#         for i in range(1):
-#             await page.click('button[id="connect"]')
-#             await asyncio.sleep(0.5)
-#         await asyncio.sleep(3)
-#
-#         logging.critical("Заполнение формы регистрации на Rambler.")
-#         await page.goto("https://id.rambler.ru/login-20/mail-registration")
-#         await page.wait_for_selector('.rui-Input-input', timeout=30000)
-#         elements = await page.query_selector_all('.rui-Input-input')
-#         await elements[0].fill(rambler_mail)
-#         await elements[2].fill(password)
-#         await elements[3].fill(password)
-#         await elements[5].fill(phone_string)
 #         add_loggs('Start Registration', 1)
-#         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/div/div/div[2]/button')
-#         await asyncio.sleep(10)
-#         logging.critical('captcha')
-#         await page.click('.captcha-solver')
-#         logging.critical('successful')
-#         await asyncio.sleep(30)
-#         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/div/div/div[2]/button')
-#         logging.critical("Ожидание SMS-кода.")
-#
+#         await page.fill('input[name="firstname"]', first_name)
+#         await page.fill('input[name="lastname"]', last_name)
+#         await page.fill('input[name="login"]', ya_mail)
+#         await page.fill('input[name="password"]', password)
+#         await page.fill('input[name="password_confirm"]', password)
+#         await page.fill('input[name="phone"]', phone_string)
+#         await asyncio.sleep(2)
+#         await page.click('button[type="submit"]')
+#         await asyncio.sleep(2)
 #         for r in range(30):
-#             url = f'http://10.9.20.135:3000/phones/messages/{phone_jd["phone"]}?fromTs=0{phone_jd["listenFromTimestamp"]}'
+#             url = 'http://10.9.20.135:3000/phones/messages/' + phone_jd['phone'] + '?fromTs=0' + str(
+#                 phone_jd['listenFromTimestamp'])
 #             sms = await standart_request('get', url)
 #             if sms != '{"messages":[]}':
 #                 break
 #             await asyncio.sleep(0.2)
-#
-#         pattern = r'\d+'
-#         sms = re.findall(pattern, sms)
-#         sms = ' '.join(sms)
-#         logging.critical(f"Получен SMS-код: {sms}")
-#         await page.fill('#sms', sms, timeout=1000)
-#         await page.click('xpath=//*[@id="__next"]/div/div/div/div/div/div/div[1]/form/button')
+#         pattern = r'(\d{3}-\d{3})'
+#         match = re.search(pattern, sms)
+#         if match:
+#             code = match.group(1)
+#         else:
+#             code = ""
+#         await asyncio.sleep(2)
+#         await page.fill('input[name="phoneCode"]', code)
+#         await asyncio.sleep(2)
+#         await page.click('button[type="submit"]')
 #         await asyncio.sleep(5)
-#         element = await page.query_selector('body')
-#         elem = await element.text_content()
-#         if "Скопируйте информацию ниже и обратитесь с ней в службу поддержки:" in elem.strip():
-#             return {'Ошибка': 'Ошибка при регистрации почты'}
-#         await page.click('xpath=/html/body/div/div/div/div/footer/div/a')
-#         await asyncio.sleep(1)
-#         await page.click('xpath=/html/body/div[3]/div/div/button')
-#         await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/section[1]/div/h5/button')
-#         await asyncio.sleep(1)
-#         await page.fill('input[id="firstname"]', first_name)
-#         await asyncio.sleep(1)
-#         await page.fill('input[id="lastname"]', last_name)
-#         await asyncio.sleep(1)
-#         await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/span[1]/button')
-#         await asyncio.sleep(1)
-#         await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/section[2]/div/span/button')
-#         await asyncio.sleep(1)
-#         await page.click('#birthday')
-#         await asyncio.sleep(1)
-#         await page.click(
-#             f'xpath=/html/body/div[1]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[1]/div/div[2]/div/div/div[1]/div/div/div[{day + 1}]')
-#         await asyncio.sleep(1)
-#         await page.click(
-#             'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[1]/div/input')
-#         await asyncio.sleep(1)
-#
-#         await page.click(
-#             f'xpath=/html/body/div[1]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[2]/div/div[2]/div/div/div[1]/div/div/div[{month + 1}]')
-#         await asyncio.sleep(1)
-#         await page.click(
-#             'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div[3]/div/div/div/input')
-#         await asyncio.sleep(1)
-#         await page.locator('div.rui-Select-menuItem', has_text=f'{year}').click()
-#         await asyncio.sleep(1)
-#         await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/span[1]/button')
-#         await asyncio.sleep(1)
-#         await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/section[3]/div/span/button')
-#         await asyncio.sleep(1)
-#         await page.click('xpath=//*[@id="gender"]')
-#         await asyncio.sleep(1)
-#         await page.click(
-#             f'xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/section/div/div/div/div/div/div[2]/div/div/div[1]/div/div/div[{gender + 1}]')
-#         await asyncio.sleep(1)
-#         await page.click('xpath=//*[@id="root"]/div/div[2]/div/div/section[2]/div[2]/form/span[1]/button')
-#         await asyncio.sleep(1)
+#         await page.click('xpath=//*[@id="root"]/div/div[1]/div[2]/main/div/div/div/div[3]/div/span/a')
+#         await asyncio.sleep(5)
 #         cookies = await context.cookies()
 #         cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
 #         cookie_list = [cookie_dict]
-#
-#         while True:
-#             email = f'{rambler_mail}@rambler.ru'
-#             res = await send_acc(RAMBLER_KIND_ID, phone_jd['phone'], password, first_name, last_name, user['birth_date'], humanoid_id, cookie_list, email)
-#             add_loggs('Created', 1)
-#             if res.status == 200:
-#                 break
-#
-#         logging.critical("Регистрация завершена.")
-#         return {
-#             "kind_id": RAMBLER_KIND_ID,
-#             "phone": phone_jd['phone'],
-#             "password": password,
-#             "humanoid_id": humanoid_id,
-#             "last_cookies": cookie_list
-#         }
+#         element = await page.query_selector('body')
+#         elem = await element.text_content()
+#         if "В папке «Входящие» нет писем" in elem.strip():
+#             while True:
+#                 mail = ya_mail + '@yandex.ru'
+#                 res = await send_acc(YANDEX_KIND_ID, phone_jd['phone'], password, first_name, last_name, user['birth_date'], humanoid_id,
+#                                      cookie_list, mail)
+#                 if res.status == 200:
+#                     break
+#             url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
+#             await standart_request('post', url, data={'service': 'yandex'})
+#         # await page.goto('https://id.yandex.ru/security/enter-methods')
+#         # await page.click('div[data-testid="password-only-list-item"]')
+#         await asyncio.sleep(3)
+#         return AccountCreation(
+#             kind_id=YANDEX_KIND_ID,
+#             phone=phone_jd['phone'],
+#             password=password,
+#             humanoid_id=humanoid_id,
+#             last_cookies=cookie_list
+#         )
 #     except Exception as e:
-#         logging.critical(f"Ошибка: {e}")
-#         add_loggs(f'Ошибка: {e}', 1)
-#         return {"error": str(e)}
-# @app.get("/@ok_restration")
-# async def ok_restration(count: Optional[int] = None):
-#     accounts = []
-#     count_acc = 0
-#     users = await standart_execute_sql("select * from accounts where kind_id = 20 and block = false and phone LIKE '79%' and phone not in (select phone from accounts where kind_id = 1)")
-#     logging.critical(len(users))
-#     while count is None or len(accounts) < count:
-#         if len(accounts) == count:
-#             standart_finish('MISSION ACCOMPLISHED!')
-#         proxy_list = await standart_get_proxies(kind=2, ptype=3)
-#         proxy_index = 0
-#         logging.critical(len(proxy_list))
-#         if proxy_index >= len(proxy_list):
-#             proxy_list = await standart_get_proxies(kind=2, ptype=3)
-#             proxy_index = 0
-#         pr = proxy_list[proxy_index].split('://')[1].split('@')
-#         username_proxy, password_proxy = pr[0].split(':')
-#         host, port = pr[1].split(':')
-#         if " " in host:
-#             host = host.replace(" ", "")
-#         proxy = {
-#             'server': f'http://{host}:{port}',
-#             'username': username_proxy,
-#             'password': password_proxy
-#         }
-#         async with async_playwright() as playwright:
-#             chromium = playwright.chromium
-#             browser = await chromium.launch(headless=False)
-#             context = await browser.new_context(proxy=proxy)
-#             page = await context.new_page()
-#             account = await ok_restrations(context, page, users[count_acc + 10])
-#             await browser.close()
-#             accounts.append(account)
-#             add_loggs(0, '------------------------------------')
-#
-#         proxy_index += 1
-#         count_acc += 1
-#         logging.critical(count_acc)
-#     standart_finish('MISSION ACCOMPLISHED!')
-#     return {'accounts': accounts}
-#
-#
-# async def ok_restrations(context, page, user):
-#     humanoid_id = user[7]
-#     phone = user[2]
-#     # password = user[3]
-#     humanoid_first_name = user[4]['first_name']
-#     humanoid_last_name = user[4]['last_name']
-#     humanoid_birth_date = user[4]['birth_date']
-#     id = user[0]
-#     humanoid_email = user[4]['email']
-#     try:
-#         await page.goto("https://ok.ru/")
-#         logging.critical('run')
-#         await asyncio.sleep(1)
-#         await page.click('a[class="button-pro __sec mb-3x __wide"]')
-#         await page.screenshot(path="screen.png", full_page=True)
-#         await page.fill('input[id="field_phone"]', phone)
-#         await asyncio.sleep(5)
-#         await page.click('input[class="button-pro __wide js-proceed-registration"]')
-#         await asyncio.sleep(10)
-#         await page.screenshot(path="screen.png", full_page=True)
-#         element = await page.query_selector('body')
-#         elem = await element.text_content()
-#         if "Введите код подтверждения" in elem.strip():
-#             response = await standart_request('get', f'http://10.9.20.135:3000/phones/messages/{phone}?fromTs=0')
-#             await asyncio.sleep(15)
-#             pattern = r"OK: код (\d+)"
-#             kod = re.findall(pattern, response)
-#             kod = ' '.join(kod)
-#             kod = kod[:6]
-#             logging.critical(str(kod))
-#             await page.fill('input[id="smsCode"]', kod)
-#             await page.screenshot(path="screen.png", full_page=True)
-#             await page.click('input[value="Далее"]')
-#         elif 'Введите код из' in elem.strip() or 'Enter SMS' in elem.strip():
-#             logging.critical('2')
-#             logging.critical(str(phone))
-#             response = await standart_request('get', f'http://10.9.20.135:3000/phones/messages/{phone}?fromTs=0')
-#             await asyncio.sleep(15)
-#             pattern = r"OK: код (\d+)"
-#             kod = re.findall(pattern, response)
-#             kod = ' '.join(kod)
-#             if kod == '':
-#                 pattern = r"VK: (\d+)"
-#                 kod = re.findall(pattern, response)
-#                 kod = ' '.join(kod)
-#                 kod = kod[:6]
-#             logging.critical(str(kod))
-#             try:
-#                 await page.wait_for_selector('input[name="otp-cell"]')
-#                 element_exists = True
-#             except Exception:
-#                 element_exists = False
-#             if element_exists:
-#                 await page.fill('input[name="otp-cell"]', kod)
-#             else:
-#                 await page.fill('input[id="otp"]', kod)
-#                 await page.press('input[id="otp"]', 'Enter')
-#         await asyncio.sleep(5)
-#         await page.screenshot(path="screen.png", full_page=True)
-#         element = await page.query_selector('body')
-#         elem = await element.text_content()
-#         if "Придумайте пароль" in elem.strip():
-#             characters = string.ascii_letters + string.digits
-#             passw = ''.join(random.choice(characters) for _ in range(15))
-#             await page.fill('input[id="field_password"]', passw)
-#             await page.click('input[value="Далее"]')
-#         await asyncio.sleep(5)
-#         await page.screenshot(path="screen.png", full_page=True)
-#         element = await page.query_selector('body')
-#         elem = await element.text_content()
-#         if "Расскажите о себе" in elem.strip():
-#             await page.fill('input[id="field_fieldName"]', humanoid_first_name)
-#             await page.fill('input[id="field_surname"]', humanoid_last_name)
-#             await page.fill('input[id="field_birthday"]', humanoid_birth_date)
-#             sex = await standart_execute_sql(f'select sex from humanoids where id = {humanoid_id}')
-#             if 'female' in sex[0s]:
-#                 await page.locator('text=женщина').click()
-#             else:
-#                 await page.locator('text=мужчина').click()
-#             await page.screenshot(path="screen.png", full_page=True)
-#             await page.click('input[class="button-pro __wide"]')
-#         await page.screenshot(path="screen.png", full_page=True)
-#         await asyncio.sleep(5)
-#         await page.screenshot(path="screen.png", full_page=True)
-#         await asyncio.sleep(50000000000000000)
-#         element = await page.query_selector('body')
-#         elem = await element.text_content()
-#         if 'Безопасность' in elem.strip():
-#             await page.goto("https://ok.ru/devaccess")
-#             await page.click('input[id="inp-accept"]')
-#             await page.screenshot(path="screen.png", full_page=True)
-#             await page.click('input[id="hook_FormButton_button_submit_request"]')
-#             await asyncio.sleep(15)
-#         element = await page.query_selector('body')
-#         elem = await element.text_content()
-#         if 'Права разработчика выданы' in elem.strip():
-#
-#             if access_token != '' and sig != '' and application_key != '':
-#                 while True:
-#                     cookies = await context.cookies()
-#                     cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
-#                     cookie_list = [cookie_dict]
-#                     res = await send_acc(1, user[2], passw, humanoid_first_name,
-#                                          humanoid_last_name, humanoid_birth_date, humanoid_id,
-#                                          cookie_list, humanoid_email, access_token, sig, application_key)
-#                     if res.status == 200:
-#                         break
-#                     return AccountCreation(
-#                         kind_id=1,
-#                         phone=user[2],
-#                         password=passw,
-#                         info=user[4],
-#                         humanoid_id=humanoid_id,
-#                         last_cookies=cookie_list
-#                     )
-#             else:
-#                 add_loggs('Ошибка: No ok', 1)
-#                 return {'Error': 'No ok'}
-#     except Exception as e:
-#         add_loggs(0, f'Ошибка: {e}')
+#         add_loggs(f'Ошибка:   {e}', 1)
 #         return e
 
-@APP.get("/@facebook-register")
-async def facebook(count: Optional[int] = None):
-    """регистрация одного или пачки учётных записей YAmail"""
+
+@APP.get("/@vk-register-new")
+async def vk_register_new(count: Optional[int] = None):
+    """регистрация одного или пачки учётных записей VKMail """
     accounts = []
     count_acc = 0
-    proxy_list = await standart_get_proxies(kind=2)
+    proxy_list = await standart_get_proxies(1)
+    logging.critical(proxy_list)
     proxy_index = 0
     if len(proxy_list) == 0:
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     logging.critical(len(proxy_list))
-
     while count is None or len(accounts) < count:
+        if len(accounts) == count:
+            standart_finish('MISSION ACCOMPLISHED!')
         if proxy_index >= len(proxy_list):
-            proxy_list = await standart_get_proxies(kind=2, ptype=3)
+            proxy_list = await standart_get_proxies(1)
             proxy_index = 0
-        pr = proxy_list[proxy_index].split('://')[1].split('@')
-        username, password = pr[0].split(':')
-        host, port = pr[1].split(':')
-        if " " in host:
-            host = host.replace(" ", "")
-        proxy = {
-            'server': 'http://193.31.100.73:9450',
-            'username': 'S0t7FB',
-            'password': 'GKshby'
-        }
-        user = json.loads(
-            await standart_request('get', f'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id={RAMBLER_KIND_ID}'))
+        pr = proxy_list[proxy_index]
 
+        proxy = {
+            'server': pr
+        }
         async with async_playwright() as playwright:
             chromium = playwright.chromium
-            context = await chromium.launch(
-                headless=False,
-                proxy=proxy
-            )
+            browser = await chromium.launch(headless=False)
+            context = await browser.new_context()
             page = await context.new_page()
-            account = await facebook_registration(context, page, user)
-            logging.critical(account)
-            await context.close()
-
-            add_loggs(f'Ответ: {account}', 1)
+            account = await vk_registeration_new(context, page)
+            await browser.close()
             accounts.append(account)
-            add_loggs('------------------------------------', 1)
-
         proxy_index += 1
         count_acc += 1
         logging.critical(count_acc)
+    # standart_finish('MISSION ACCOMPLISHED!')
     return {'accounts': accounts}
 
 
-async def random_delay(min_sec: float, max_sec: float):
-    delay = random.uniform(min_sec, max_sec)
-    await asyncio.sleep(delay)
+async def vk_registeration_new(context, page):
+    humanoid = json.loads(await standart_request('get', f'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=2'))
+    logging.critical(humanoid)
+    day = humanoid['birth_date'].split('-')[2]
+    month = humanoid['birth_date'].split('-')[1]
+    year = humanoid['birth_date'].split('-')[0]
+    logging.critical(f'{day}{month}{year}')
+    phone_jd = json.loads(
+        await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=vk&bank=virtual'))
+    password = generate_pass(15)
 
-
-async def facebook_registration(context, page, user):
-    # -----params-----
-    humanoid_id = user['id']
-    first_name = user['first_name']
-    last_name = user['last_name']
-    day = int(user['birth_date'].split('-')[2])
-    month = int(user['birth_date'].split('-')[1])
-    year = user['birth_date'].split('-')[0]
-    if user['sex'] == 'female':
-        gender = 2
-    else:
-        gender = 1
-    password = generate_pass(random.randint(15, 20))
-    rambler_mail = generate_mail(first_name, last_name, year)
-    phone_jd = json.loads(await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=gmail&bank=virtual'))
-    logging.critical(password)
-    logging.critical(phone_jd)
-    # phone_string = phone_jd['phone'][1:11]
-    sms = ''
     try:
-        # Инициализация браузера
-        await asyncio.sleep(1)
-        await page.goto('https://en-gb.facebook.com/reg/?app_id=1862952583919182&logger_id')
-        await asyncio.sleep(3)
+        await page.goto("https://vk.com/")
+        await asyncio.sleep(10)
 
-        # Имя
-        await random_delay(1, 1.5)
-        await page.type('input[name="firstname"]', first_name, delay=random.uniform(0.1, 0.3))
-
-        # Фамилия
-        await random_delay(1, 1.5)
-        await page.type('input[name="lastname"]', last_name, delay=random.uniform(0.1, 0.3))
-
-        # Телефон
-        await random_delay(1, 1.5)
-        await page.type('input[name="reg_email__"]', phone_jd['phone'],
-                        delay=random.uniform(0.1, 0.3))
-
-        # Пароль
-        await random_delay(1, 1.5)
-        await page.type('input[name="reg_passwd__"]', password, delay=random.uniform(0.1, 0.3))
-
-        # Дата рождения
-        await random_delay(1, 1.5)
-        await page.select_option('select[name="birthday_day"]', str(day))  # День
-        await random_delay(1, 1.5)
-        await page.select_option('select[name="birthday_month"]', str(month))  # Месяц
-        await random_delay(1, 1.5)
-        await page.select_option('select[name="birthday_year"]', str(year))  # Год
-
-        # Выбор пола
-        await random_delay(1, 1.5)
-        await page.click(f'input[name="sex"][value="{gender}"]')  # Пол (1 - мужской, 2 - женский)
-
-        # Нажатие кнопки регистрации
-        await random_delay(1, 1.5)
-        await page.click('button[name="websubmit"]')
-
-        await asyncio.sleep(20)
-
-        # Нажатие кнопки продолжение (180 дней)
-        await page.click('div[aria-label="Continue"]')
-
-        await asyncio.sleep(20)
-        frames = page.frames
-        logging.critical(frames)
-        await asyncio.sleep(20000000000000000000000000000)
         element = await page.query_selector('body')
         elem = await element.text_content()
-        if "Enter the text from the image." in elem.strip():
-            await page.locator(".xz74otr").screenshot(path="screenshot.png")
-            await asyncio.sleep(
-                5000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)
-        elif "Help us confirm that it's you" in elem.strip():
-            frames = page.frames
-            logging.critical(frames)
+        if "Вход ВКонтакте" in elem.strip():
+            await page.click('button[data-testid="signup"]')
+            await random_delay(3, 5)
+            await page.type('input[name="phone"]', phone_jd['phone'][1:], delay=random.uniform(0.1, 0.3))
+            await random_delay(1, 3)
+            await page.click('button[type="submit"]')
+            await random_delay(3, 5)
 
-            iframe_element = await page.query_selector('iframe#arkose-captcha')
-            if not iframe_element:
-                print("Iframe не найден")
-                return
+            captcha_element = await page.query_selector('.vkc__CaptchaPopup__image')
 
-            # Найти input внутри iframe
-            iframe2 = await iframe_element.query_selector('iframe[title="Verification challenge"]')
-            if not iframe2:
-                print("Элемент iframe2 не найден")
-                return
+            if captcha_element:
+                await captcha_element.screenshot(path='screenshot.png')
 
-            iframe3 = await iframe2.query_selector('iframe#game-core-frame')
-            if not iframe3:
-                print("Элемент iframe3 не найден")
-                return
+                async with aiohttp.ClientSession() as session:
+                    with open("screenshot.png", "rb") as f:
+                        async with session.post(
+                                "https://captcher.ad.dev.arbat.dev/solve_text_captcha_file?consumer=unireger&service=RuCaptcha",
+                                data={"file": f}) as response:
+                            result = await response.json()
 
-            # Получить атрибут src из iframe
-            iframe_src = await iframe3.get_attribute("src")
-            if not iframe_src:
-                print("Не удалось получить src iframe")
-                return
+                captcha_text = result.get('solution', '')
+                await page.type('input[id="captcha-text"]', captcha_text, delay=random.uniform(0.1, 0.3))
+            await asyncio.sleep(10)
 
-            # Извлечь значения параметров pk и surl из src
-            from urllib.parse import parse_qs, urlparse
-            parsed_url = urlparse(iframe_src)
-            query_params = parse_qs(parsed_url.query)
-            pk = query_params.get("pk", [None])[0]
-            surl = query_params.get("surl", [None])[0]
-
-            print(f"PK: {pk}")
-            print(f"SURL: {surl}")
-
-            # Переключиться на iframe
-            iframe = await iframe_element.content_frame()
-            if not iframe:
-                print("Не удалось переключиться на iframe")
-                return
-
-            # Найти input внутри iframe
-            input_element = await iframe3.query_selector('#FunCaptcha-Token')
-            if not input_element:
-                print("Элемент <input> не найден")
-                return
-
-            # Обновить значение атрибута value
-            new_value = f"{pk}|surl={surl}"
-            await input_element.evaluate("(el, value) => el.value = value", new_value)
-            print(f"Значение обновлено на: {new_value}")
-
-            # captcha
-        elif 'Enter the confirmation code from the text message' in elem.strip():
-            logging.critical("Ожидание SMS-кода.")
-
-            for r in range(30):
-                url = f'http://10.9.20.135:3000/phones/messages/{phone_jd["phone"]}?fromTs=0{phone_jd["listenFromTimestamp"]}'
+            for r in range(15):
+                url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(phone_jd['listenFromTimestamp'])
                 sms = await standart_request('get', url)
+                logging.critical(sms)
                 if sms != '{"messages":[]}':
                     break
-                await asyncio.sleep(0.2)
-
-            pattern = r'\d+'
+                await asyncio.sleep(1)
+            pattern = r"\d+"
             sms = re.findall(pattern, sms)
             sms = ' '.join(sms)
-            logging.critical(f"Получен SMS-код: {sms}")
+            if sms == '{"messages":[]}':
+                return 'Смс не пришло'
+            await page.type('input[name="otp"]', sms, delay=random.uniform(0.1, 0.3))
+            await asyncio.sleep(1)
 
-            await page.type('input[name="code"]', sms,
-                            delay=random.uniform(0.1, 0.3))
+            await page.click('button[type="submit"]')
+            await asyncio.sleep(15)
 
-            await page.click('button[name="confirm"]')
+            element = await page.query_selector('body')
+            elem = await element.text_content()
+            if "Отвязать номер от аккаунта?" in elem.strip():
+                return 'Аккаунт уже есть'
 
-        await page.fill('input[name="email"]', rambler_mail)
+            await page.type('input[name="first_name"]', humanoid['first_name'], delay=random.uniform(0.1, 0.3))
+            await random_delay(1, 3)
+            await page.type('input[name="last_name"]', humanoid['last_name'], delay=random.uniform(0.1, 0.3))
+            await random_delay(1, 3)
+            if humanoid['sex'] == 'female':
+                await page.click('input[data-test-id="signup-sex-female"]', force=True)
+            else:
+                await page.click('input[data-test-id="signup-sex-male"]', force=True)
 
-        await page.click('div[aria-label="Send Login Code"]')
+            await random_delay(2, 3)
+            await page.click('span.vkuiDateInput__input')
+            await random_delay(2, 3)
 
-        await page.fill('xpath=/html/body/div[1]/div/div[1]/div/div/div/div/div[2]/div/div/div[1]/div/div/div[1]/div/div/div/div/div/div/div/div[2]/div/div/label/div/input', sms)
+            await page.type('span.vkuiDateInput__input', str(day), delay=random.uniform(0.3, 0.6))
+            await random_delay(2, 3)
+            await page.type('span.vkuiDateInput__input', str(month), delay=random.uniform(0.3, 0.6))
+            await random_delay(2, 3)
+            await page.type('span.vkuiDateInput__input', str(year), delay=random.uniform(0.3, 0.6))
+            await random_delay(2, 3)
+            await page.click('button[form="signupForm"]')
 
-        await page.click('div[aria-label="Next"]')
-        await asyncio.sleep(500000000000000000000000000)
-        logging.critical("Регистрация завершена.")
-        return {
-            "kind_id": RAMBLER_KIND_ID,
-            "phone": phone_jd['phone'],
-            "password": password,
-            "humanoid_id": humanoid_id,
-            # "last_cookies": cookie_list
-        }
+            await random_delay(5, 10)
+            await page.click('xpath=//*[@id="content"]/div[5]/a')
+            await random_delay(2, 5)
+            await page.click('xpath=//*[@id="content"]/div[5]/a')
+            await random_delay(2, 5)
+            await page.click('xpath=//*[@id="content"]/div[5]/a')
+            await random_delay(2, 5)
+            await page.click('xpath=//*[@id="react_rootJoinAvatar"]/div/section/div[4]/div/a')
+            await random_delay(5, 10)
+
+            await page.goto('https://id.vk.com/account/#/personal')
+            await asyncio.sleep(10)
+
+            id_value = await page.inner_text('.CopyId-id-u0mkt3 span')
+            mid = re.findall(r'\d+', id_value)[0]
+            logging.critical(mid)
+            await random_delay(1, 3)
+
+            await page.goto('https://id.vk.com/account/#/otp-settings')
+            await asyncio.sleep(10)
+
+            await page.click('div[data-test-id="otp-cell-app"]')
+            await random_delay(3, 6)
+            await page.click('button[data-test-id="reset_sessions_modal_continue_button"]')
+            await random_delay(5, 10)
+
+            for r in range(15):
+                url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(phone_jd['listenFromTimestamp'])
+                sms = await standart_request('get', url)
+                logging.critical(sms)
+                if sms != '{"messages":[]}':
+                    break
+                await asyncio.sleep(1)
+            pattern = r"\d+"
+            sms = re.findall(pattern, sms)
+            sms = ' '.join(sms)
+            if sms == '{"messages":[]}':
+                return 'Смс не пришло'
+            try:
+                for i, digit in enumerate(sms):
+                    input_selector = f'input[data-test-id="cua_codebase_input_enter_code_{i}"]'
+                    await page.fill(input_selector, digit)
+            except Exception as e:
+                logging.critical(e)
+                pass
+            await asyncio.sleep(5)
+            await page.type('input[data-test-id="cua_set_password_input"]', password, delay=random.uniform(0.1, 0.3))
+            await random_delay(3, 6)
+            await page.type('input[data-test-id="cua_set_password_confirm_input"]', password, delay=random.uniform(0.1, 0.3))
+            await random_delay(3, 6)
+            await page.click('button[data-test-id="cua_set_password_button_submit"]')
+            await random_delay(20, 60)
+            logging.critical('tokeeeeeeeeen')
+            rr = get_access_token(phone_jd['phone'], password)
+            token = json.loads(rr.text)
+            logging.critical(token['access_token'])
+
+            await page.goto('https://vk.com/feed')
+
+            await random_delay(10, 20)
+            element = await page.query_selector('body')
+            elem = await element.text_content()
+            if "Лента" in elem.strip():
+                while True:
+                    cookies = await context.cookies()
+                    cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+                    cookie_list = [cookie_dict]
+                    res = await send_acc_vk(phone_jd['phone'], password, mid, humanoid['first_name'],
+                                         humanoid['last_name'], f'{day}.{month}.{year}', humanoid['id'],
+                                         cookie_list, token['access_token'])
+                    await asyncio.sleep(5)
+                    if res.status == 200:
+                        break
+
+        return AccountCreation(
+            kind_id=2,
+            phone=phone_jd['phone'],
+            password=password,
+            info={
+                "mid": mid,
+                "first_name": humanoid['first_name'],
+                "last_name": humanoid['last_name'],
+                "birth_date": humanoid['birth_date'],
+                "access_token": token['access_token']
+            },
+            humanoid_id=humanoid['id'],
+            last_cookies=cookie_list
+        )
     except Exception as e:
-        logging.critical(f"Ошибка: {e}")
-        add_loggs(f'Ошибка: {e}', 1)
-        return {"error": str(e)}
+        return e
 
 
 APP.mount("/", StaticFiles(directory="ui", html=True), name="ui")
 
 if __name__ == "__main__":
-    uvicorn.run(APP, host="0.0.0.0", port=5000)
+    uvicorn.run(APP, host="0.0.0.0", port=9000)

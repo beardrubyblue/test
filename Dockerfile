@@ -6,5 +6,4 @@ RUN playwright install-deps
 RUN playwright install firefox
 RUN playwright install chromium
 COPY . .
-COPY Captcha-Solver-Chrome /app/Captcha-Solver-Chrome
 ENTRYPOINT ["python", "main.py"]

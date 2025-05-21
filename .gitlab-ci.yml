@@ -44,8 +44,6 @@ build:
     - export VAULT_TOKEN=$(vault write -field=token auth/jwt/login role=opendata jwt=$CI_JOB_JWT)
     - vault kv get -field=api_key -format=json opendata/unireger > /APIKey.json
     - vault kv get -field=db_config -format=json opendata/unireger > /DBConfig.json
-#    - chmod +x ./generate_compose.sh
-#    - sh ./generate_compose.sh
     - docker stack deploy --with-registry-auth --prune -c docker-compose.yml $CI_PROJECT_NAME
     - stack_wait $CI_PROJECT_NAME
 
