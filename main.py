@@ -379,7 +379,7 @@ def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.v
 
 
 @APP.get("/vk-mass-accounts-check")
-def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 1, offset: int = 0,  api_method: str = 'https://api.vk.com/method/groups.getById', v: str = '5.154', credentials: HTTPBasicCredentials = Depends(SECURITY)):
+def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 1, offset: int = 0, api_method: str = 'https://api.vk.com/method/groups.getById', v: str = '5.154', credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Выполнение массовое проверки учётных записей ВК."""
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!')
