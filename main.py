@@ -2,6 +2,7 @@ import logging
 import re
 import string
 import datetime
+from logging import exception
 from typing import Optional
 import requests
 import asyncio
@@ -388,16 +389,19 @@ def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 10, offset: in
     for account in accounts:
         success = False
         while success is False:
-            proxy_url = proxy_list[(account[0] - 1) % len(proxy_list)]
-            if api_method == 'https://api.vk.com/method/groups.getById':
-                ids_count = random.randint(1, 10)
-                ids = ''
-                for c in range(ids_count):
-                    ids += str(random.randint(1, 200000000)) + ','
-                resp = asyncio.run(standart_request('post', api_method, proxy_url=proxy_url, data={'group_ids': ids[:-1], 'access_token': account[1], 'v': v}))
-            jr = json.loads(resp)
-            logging.critical('AccountID: ' + str(account[0]) + ' ' + str(jr))
-            success = True
+            try:
+                proxy_url = proxy_list[(account[0] - 1) % len(proxy_list)]
+                if api_method == 'https://api.vk.com/method/groups.getById':
+                    ids_count = random.randint(1, 10)
+                    ids = ''
+                    for c in range(ids_count):
+                        ids += str(random.randint(1, 200000000)) + ','
+                    resp = asyncio.run(standart_request('post', api_method, proxy_url=proxy_url, data={'group_ids': ids[:-1], 'access_token': account[1], 'v': v}))
+                jr = json.loads(resp)
+                logging.critical('AccountID: ' + str(account[0]) + ' ' + str(jr))
+                success = True
+            except Exception as e:
+                logging.critical(e)
     html = '!WELL DONE!'
     return HTMLResponse(content=html)
 
