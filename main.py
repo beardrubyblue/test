@@ -386,12 +386,15 @@ def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 10, offset: in
     accounts = asyncio.run(standart_execute_sql(f"select id, info->>'access_token' from accounts where kind_id={account_kind_id} order by id limit {limit} offset {offset}"))
     html = ''
     for account in accounts:
-        logging.critical('AccountID: ' + str(account[0]))
-        html += 'AccountID: ' + str(account[0]) + '<BR>'
-    # at = asyncio.run(standart_execute_sql(f"select info->>'access_token' from accounts where id={account_id}"))
-    # html = 'Try Another Method please. A ha Ha ha ha HAAAA !!! :)'
-    # if api_method == 'https://api.vk.com/method/groups.getById':
-    #     html = asyncio.run(standart_request('post', api_method, data={'group_ids': ids, 'access_token': at[0], 'v': v}))
+        if api_method == 'https://api.vk.com/method/groups.getById':
+            ids_count = random.randint(1, 10)
+            ids = ''
+            for c in range(ids_count):
+                ids += random.randint(1, 200000000) + ','
+            resp = asyncio.run(standart_request('post', api_method, data={'group_ids': ids[:-1], 'access_token': account[1], 'v': v}))
+        jr = json.loads(resp)
+        logging.critical('AccountID: ' + str(account[0]) + ' ' + str(jr))
+        html += 'AccountID: ' + str(account[0]) + ' ' + str(jr) + '<BR>'
     return HTMLResponse(content=html)
 
 
