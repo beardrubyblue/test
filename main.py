@@ -1310,7 +1310,7 @@ async def vk_mail_ru_registration(context, page, user):
 
 @APP.get("/@vk-register-new")
 async def vk_register_new(count: Optional[int] = None):
-    """регистрация одного или пачки учётных записей VKMail """
+    """регистрация одного или пачки учётных записей VKMail  """
     accounts = []
     count_acc = 0
     proxy_list = await standart_get_proxies(1)
@@ -1329,6 +1329,7 @@ async def vk_register_new(count: Optional[int] = None):
         proxy = {
             'server': pr
         }
+        logging.critical(proxy)
         async with async_playwright() as playwright:
             chromium = playwright.chromium
             browser = await chromium.launch(headless=True)
