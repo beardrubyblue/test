@@ -2,7 +2,6 @@ import logging
 import re
 import string
 import datetime
-from logging import exception
 from typing import Optional
 import requests
 import asyncio
