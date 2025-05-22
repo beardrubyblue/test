@@ -378,6 +378,23 @@ def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.v
     return HTMLResponse(content=html)
 
 
+@APP.get("/vk-mass-accounts-check")
+def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 1, offset: int = 0,  api_method: str = 'https://api.vk.com/method/groups.getById', v: str = '5.154', credentials: HTTPBasicCredentials = Depends(SECURITY)):
+    """Выполнение массовое проверки учётных записей ВК."""
+    if credentials.username != 'AlanD' or credentials.password != 'Bober666':
+        return HTMLResponse(content='В доступе отказано!')
+    accounts = asyncio.run(standart_execute_sql(f"select id, info->>'access_token' from accounts where kind_id={account_kind_id} order by id limit {limit} offset {offset}"))
+    html = ''
+    for account in accounts:
+        logging.critical(account)
+        html += str(account)
+    # at = asyncio.run(standart_execute_sql(f"select info->>'access_token' from accounts where id={account_id}"))
+    # html = 'Try Another Method please. A ha Ha ha ha HAAAA !!! :)'
+    # if api_method == 'https://api.vk.com/method/groups.getById':
+    #     html = asyncio.run(standart_request('post', api_method, data={'group_ids': ids, 'access_token': at[0], 'v': v}))
+    return HTMLResponse(content=html)
+
+
 @APP.get("/vk-register")
 # def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
 def vk_register(kind='1'):
