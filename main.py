@@ -395,7 +395,7 @@ def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 10, offset: in
             resp = asyncio.run(standart_request('post', api_method, proxy_url=proxy_url, data={'group_ids': ids[:-1], 'access_token': account[1], 'v': v}))
         jr = json.loads(resp)
         logging.critical('AccountID: ' + str(account[0]) + ' ' + str(jr))
-    html += '!WELL DONE!'
+    html = '!WELL DONE!'
     return HTMLResponse(content=html)
 
 
