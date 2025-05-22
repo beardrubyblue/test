@@ -384,7 +384,6 @@ def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 10, offset: in
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!')
     accounts = asyncio.run(standart_execute_sql(f"select id, info->>'access_token' from accounts where kind_id={account_kind_id} order by id limit {limit} offset {offset}"))
-    html = ''
     proxy_list = asyncio.run(standart_get_proxies(kind=2))
     for account in accounts:
         proxy_url = proxy_list[(account[0] - 1) % len(proxy_list)]
@@ -396,7 +395,7 @@ def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 10, offset: in
             resp = asyncio.run(standart_request('post', api_method, proxy_url=proxy_url, data={'group_ids': ids[:-1], 'access_token': account[1], 'v': v}))
         jr = json.loads(resp)
         logging.critical('AccountID: ' + str(account[0]) + ' ' + str(jr))
-        html += 'AccountID: ' + str(account[0]) + ' ' + str(jr) + '<BR>'
+    html += '!WELL DONE!'
     return HTMLResponse(content=html)
 
 
