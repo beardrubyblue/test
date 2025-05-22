@@ -19,10 +19,10 @@ services:
       - secret2
     deploy:
       mode: replicated
-      replicas: 5
+      replicas: 10
       resources:
         limits:
-          memory: 1024M
+          memory: 10240M
       restart_policy:
         condition: any
       labels:
