@@ -384,7 +384,7 @@ def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 10, offset: in
     if credentials.username != 'AlanD' or credentials.password != 'Bober666':
         return HTMLResponse(content='В доступе отказано!')
     accounts = asyncio.run(standart_execute_sql(f"select id, info->>'access_token' from accounts where kind_id={account_kind_id} order by id limit {limit} offset {offset}"))
-    proxy_list = asyncio.run(standart_get_proxies(kind=2))
+    proxy_list = asyncio.run(standart_get_proxies(kind=2, ptype=2))
     for account in accounts:
         success = False
         while success is False:
