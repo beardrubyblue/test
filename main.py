@@ -388,10 +388,10 @@ def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 10, offset: in
     for account in accounts:
         success = False
         try_number = 0
+        proxy_url = proxy_list[(account[0] - 1) % len(proxy_list)]
         while success is False:
             try_number += 1
             try:
-                proxy_url = proxy_list[(account[0] - 1) % len(proxy_list)]
                 if api_method == 'https://api.vk.com/method/groups.getById':
                     ids_count = random.randint(1, 10)
                     ids = ''
