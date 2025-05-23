@@ -387,8 +387,9 @@ def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 10, offset: in
     proxy_list = asyncio.run(standart_get_proxies(kind=2, ptype=2))
     for account in accounts:
         success = False
+        try_number = 0
         while success is False:
-            try_number = 0
+            try_number += 1
             try:
                 proxy_url = proxy_list[(account[0] - 1) % len(proxy_list)]
                 if api_method == 'https://api.vk.com/method/groups.getById':
@@ -401,8 +402,7 @@ def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 10, offset: in
                 logging.critical('AccountID: ' + str(account[0]) + ' ' + str(jr))
                 success = True
             except Exception as e:
-                try_number += 1
-                logging.critical(f'TRY {try_number} {e}')
+                logging.critical(f'TRY #{try_number} {e}')
                 time.sleep(5)
                 if try_number % 10 == 0:
                     proxy_url = random.choice(proxy_url)
