@@ -399,10 +399,10 @@ def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 10, offset: in
                         ids += str(random.randint(1, 200000000)) + ','
                     resp = asyncio.run(standart_request('post', api_method, proxy_url=proxy_url, data={'group_ids': ids[:-1], 'access_token': account[1], 'v': v}))
                 jr = json.loads(resp)
-                logging.critical('AccountID: ' + str(account[0]) + ' ' + str(jr))
+                logging.critical('ProxyURL: ' + proxy_url + 'AccountID: ' + str(account[0]) + ' ' + str(jr))
                 success = True
             except Exception as e:
-                logging.critical(f'TRY #{try_number} {e}')
+                logging.critical(f'TRY #{try_number} ProxyURL: {proxy_url} {e}')
                 time.sleep(5)
                 if try_number % 10 == 0:
                     proxy_url = random.choice(proxy_url)
