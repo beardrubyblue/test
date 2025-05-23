@@ -405,7 +405,7 @@ def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 10, offset: in
             except Exception as e:
                 logging.critical(f'TRY #{try_number} ProxyURL: {proxy_url} {e}')
                 time.sleep(5)
-                if try_number % 10 == 0:
+                if try_number % 5 == 0:
                     proxy_url = random.choice(proxy_url)
     html = '!WELL DONE!'
     return HTMLResponse(content=html)
