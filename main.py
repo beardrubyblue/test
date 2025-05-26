@@ -1656,9 +1656,11 @@ async def vk_registeration_mobile_new(context, page):
                 except json.JSONDecodeError:
                     return "Ошибка декодирования JSON"
 
-            messages = sms_data.get("messages", [])
-            if not messages:
-                return "Смс не пришло"
+                messages = sms_data.get("messages", [])
+                if not messages:
+                    return "Смс не пришло"
+                else:
+                    break
 
             # Берём только первый текст сообщения
             msg_text = messages[0]
