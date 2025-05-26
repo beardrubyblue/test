@@ -19,7 +19,7 @@ services:
       - secret2
     deploy:
       mode: replicated
-      replicas: 5
+      replicas: 1
       resources:
         limits:
           memory: 1024M
