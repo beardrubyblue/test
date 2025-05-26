@@ -378,6 +378,39 @@ def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.v
     return HTMLResponse(content=html)
 
 
+@APP.get("/vk-mass-accounts-check")
+def vk_mass_accounts_check(account_kind_id: int = 2, limit: int = 10, offset: int = 0, api_method: str = 'https://api.vk.com/method/groups.getById', v: str = '5.154', credentials: HTTPBasicCredentials = Depends(SECURITY)):
+    """Выполнение массовое проверки учётных записей ВК."""
+    if credentials.username != 'AlanD' or credentials.password != 'Bober666':
+        return HTMLResponse(content='В доступе отказано!')
+    accounts = asyncio.run(standart_execute_sql(f"select id, info->>'access_token' from accounts where kind_id={account_kind_id} order by id limit {limit} offset {offset}"))
+    proxy_list = asyncio.run(standart_get_proxies(kind=2, ptype=2))
+    logging.critical('Proxy List Length: ' + str(len(proxy_list)))
+    for account in accounts:
+        success = False
+        try_number = 0
+        proxy_url = proxy_list[(account[0] - 1) % len(proxy_list)]
+        while success is False:
+            try_number += 1
+            try:
+                if api_method == 'https://api.vk.com/method/groups.getById':
+                    ids_count = random.randint(1, 10)
+                    ids = ''
+                    for c in range(ids_count):
+                        ids += str(random.randint(1, 200000000)) + ','
+                    resp = asyncio.run(standart_request('post', api_method, proxy_url=proxy_url, data={'group_ids': ids[:-1], 'access_token': account[1], 'v': v}))
+                jr = json.loads(resp)
+                logging.critical('ProxyURL: ' + proxy_url + ' AccountID: ' + str(account[0]) + ' ' + str(jr))
+                success = True
+            except Exception as e:
+                logging.critical(f'TRY #{try_number} ProxyURL: {proxy_url} {e}')
+                time.sleep(5)
+                if try_number % 5 == 0:
+                    proxy_url = random.choice(proxy_list)
+    html = '!WELL DONE!'
+    return HTMLResponse(content=html)
+
+
 @APP.get("/vk-register")
 # def vk_register(kind='1', credentials: HTTPBasicCredentials = Depends(SECURITY)):
 def vk_register(kind='1'):
