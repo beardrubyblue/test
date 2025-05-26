@@ -1560,7 +1560,7 @@ async def vk_registeration_new(context, page):
 
 @APP.get("/@vk-register-mobile-new")
 async def vk_register_new(count: Optional[int] = None):
-    """регистрация одного или пачки учётных записей VKMail  """
+    """регистрация одного или пачки учётных записей VK mobile  """
     accounts = []
     count_acc = 0
     proxy_list = await standart_get_proxies(kind=5)
