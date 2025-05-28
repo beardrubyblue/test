@@ -1364,7 +1364,7 @@ async def vk_register_new(count: Optional[int] = None):
         proxy_index += 1
         count_acc += 1
         logging.critical(count_acc)
-    # standart_finish('MISSION ACCOMPLISHED!')
+    standart_finish('MISSION ACCOMPLISHED!')
     return {'accounts': accounts}
 
 
@@ -1393,22 +1393,6 @@ async def vk_registeration_new(context, page):
             await page.click('button[type="submit"]')
             await random_delay(3, 5)
 
-            # captcha_element = await page.query_selector('.vkc__CaptchaPopup__image')
-            #
-            # if captcha_element:
-            #     await captcha_element.screenshot(path='screenshot.png')
-            #
-            #     async with aiohttp.ClientSession() as session:
-            #         with open("screenshot.png", "rb") as f:
-            #             async with session.post(
-            #                     "https://captcher.ad.dev.arbat.dev/solve_text_captcha_file?consumer=unireger&service=RuCaptcha",
-            #                     data={"file": f}) as response:
-            #                 result = await response.json()
-            #
-            #     captcha_text = result.get('solution', '')
-            #     await page.type('input[id="captcha-text"]', captcha_text, delay=random.uniform(0.1, 0.3))
-            # await asyncio.sleep(10)
-
             for r in range(15):
                 url = f'http://10.9.20.135:3000/phones/messages/{phone_jd["phone"]}?fromTs=0{phone_jd["listenFromTimestamp"]}'
                 sms = await standart_request('get', url)
@@ -1420,19 +1404,17 @@ async def vk_registeration_new(context, page):
                     logging.error("Не удалось декодировать JSON из sms")
                     sms_data = {}
 
-                if sms_data.get("messages"):  # если messages НЕ пустой
+                if sms_data.get("messages"):
                     break
 
                 await asyncio.sleep(1)
 
-            # После выхода из цикла
             if not sms_data.get("messages"):
                 logging.critical("Смс не пришло")
                 return "Смс не пришло"
 
-            # Извлекаем код из сообщений
             pattern = r"\d+"
-            sms_text = json.dumps(sms_data)  # или конкретное сообщение, если знаешь структуру
+            sms_text = json.dumps(sms_data)
             digits = re.findall(pattern, sms_text)
             sms_code = ' '.join(digits)
 
@@ -1483,7 +1465,6 @@ async def vk_registeration_new(context, page):
 
             id_value = await page.inner_text('.CopyId-id-u0mkt3 span')
             mid = re.findall(r'\d+', id_value)[0]
-            logging.critical(mid)
             await random_delay(1, 3)
 
             await page.goto('https://id.vk.com/account/#/otp-settings')
@@ -1497,7 +1478,6 @@ async def vk_registeration_new(context, page):
             for r in range(15):
                 url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(phone_jd['listenFromTimestamp'])
                 sms = await standart_request('get', url)
-                logging.critical(sms)
                 if sms != '{"messages":[]}':
                     break
                 await asyncio.sleep(1)
@@ -1520,10 +1500,8 @@ async def vk_registeration_new(context, page):
             await random_delay(3, 6)
             await page.click('button[data-test-id="cua_set_password_button_submit"]')
             await random_delay(20, 60)
-            logging.critical('tokeeeeeeeeen')
             rr = get_access_token(phone_jd['phone'], password)
             token = json.loads(rr.text)
-            logging.critical(token['access_token'])
 
             await page.goto('https://vk.com/feed')
 
@@ -1586,7 +1564,6 @@ async def vk_register_mobile_new(count: Optional[int] = None):
             "password": password
         }
 
-        logging.critical(proxy)
         async with async_playwright() as playwright:
             iphone_13 = playwright.devices['iPhone 13']
             chromium = playwright.chromium
@@ -1599,7 +1576,7 @@ async def vk_register_mobile_new(count: Optional[int] = None):
         proxy_index += 1
         count_acc += 1
         logging.critical(count_acc)
-    # standart_finish('MISSION ACCOMPLISHED!')
+    standart_finish('MISSION ACCOMPLISHED!')
     return {'accounts': accounts}
 
 
@@ -1630,51 +1607,30 @@ async def vk_registeration_mobile_new(context, page):
             await page.click('button[type="submit"]')
             await random_delay(3, 5)
 
-            # captcha_element = await page.query_selector('.vkc__CaptchaPopup__image')
-            #
-            # if captcha_element:
-            #     await captcha_element.screenshot(path='screenshot.png')
-            #
-            #     async with aiohttp.ClientSession() as session:
-            #         with open("screenshot.png", "rb") as f:
-            #             async with session.post(
-            #                     "https://captcher.ad.dev.arbat.dev/solve_text_captcha_file?consumer=unireger&service=RuCaptcha",
-            #                     data={"file": f}) as response:
-            #                 result = await response.json()
-            #
-            #     captcha_text = result.get('solution', '')
-            #     await page.type('input[id="captcha-text"]', captcha_text, delay=random.uniform(0.1, 0.3))
-            # await asyncio.sleep(10)
-
             for r in range(15):
                 url = f'http://10.9.20.135:3000/phones/messages/{phone_jd["phone"]}?fromTs=0{phone_jd["listenFromTimestamp"]}'
                 sms_raw = await standart_request('get', url)
-                logging.critical(sms_raw)
 
-                try:
-                    sms_data = json.loads(sms_raw)
-                except json.JSONDecodeError:
-                    return "Ошибка декодирования JSON"
+                if sms_raw != '{"messages":[]}':
+                    try:
+                        sms_data = json.loads(sms_raw)
+                        break
+                    except json.JSONDecodeError:
+                        return "Ошибка декодирования JSON"
 
-                messages = sms_data.get("messages", [])
-                if not messages:
-                    return "Смс не пришло"
-                else:
-                    break
+            messages = sms_data.get("messages", [])
+            if not messages:
+                logging.critical("Смс не пришло")
+                return "Смс не пришло"
 
-            # Берём только первый текст сообщения
             msg_text = messages[0]
-            logging.critical(f"Текст СМС: {msg_text}")
 
-            # Ищем 6-значный код (или первый набор цифр)
             match = re.search(r"\b\d{4,8}\b", msg_text)
             if not match:
                 return "Код не найден в СМС"
 
             otp_code = match.group()
-            logging.critical(f"OTP-код: {otp_code}")
 
-            # Вводим код
             await page.type('input[name="otp"]', otp_code, delay=random.uniform(0.1, 0.3))
             await asyncio.sleep(1)
 
@@ -1683,7 +1639,6 @@ async def vk_registeration_mobile_new(context, page):
 
             element = await page.query_selector('body')
             elem = await element.text_content()
-            logging.critical(elem)
             if "Отвязать номер от аккаунта?" in elem.strip():
                 return 'Аккаунт уже есть'
 
@@ -1726,7 +1681,6 @@ async def vk_registeration_mobile_new(context, page):
 
             id_value = await page.inner_text('.CopyId-id-u0mkt3 span')
             mid = re.findall(r'\d+', id_value)[0]
-            logging.critical(mid)
             await random_delay(1, 3)
 
             await page.goto('https://id.vk.com/account/#/otp-settings')
@@ -1763,10 +1717,8 @@ async def vk_registeration_mobile_new(context, page):
             await random_delay(5, 7)
             await page.click('button[data-test-id="cua_set_password_button_submit"]')
             await random_delay(20, 60)
-            logging.critical('tokeeeeeeeeen')
             rr = get_access_token(phone_jd['phone'], password)
             token = json.loads(rr.text)
-            logging.critical(token['access_token'])
 
             await page.goto('https://vk.com/feed')
 
