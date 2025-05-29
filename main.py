@@ -1596,7 +1596,10 @@ async def vk_registeration_mobile_new(context, page):
     password = generate_pass(15)
 
     try:
+        await page.screenshot(path="screen.png", full_page=True)
+        screen(id_user=74, message="vk_reg_page", id_screen=id)
         await page.goto("https://vk.com/")
+        logging.critical('3re3rfew')
         await asyncio.sleep(10)
         await page.screenshot(path="screen.png", full_page=True)
         screen(id_user=74, message="vk_reg_page", id_screen=id)
