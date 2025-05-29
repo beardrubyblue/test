@@ -1619,7 +1619,7 @@ async def vk_registeration_mobile_new(context, page):
             for r in range(15):
                 url = f'http://10.9.20.135:3000/phones/messages/{phone_jd["phone"]}?fromTs=0{phone_jd["listenFromTimestamp"]}'
                 sms_raw = await standart_request('get', url)
-
+                logging.critical(sms_raw)
                 if sms_raw != '{"messages":[]}':
                     try:
                         sms_data = json.loads(sms_raw)
