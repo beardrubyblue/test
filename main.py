@@ -1598,7 +1598,8 @@ async def vk_registeration_mobile_new(context, page):
     try:
         await page.goto("https://vk.com/")
         await asyncio.sleep(10)
-
+        await page.screenshot(path="screen.png", full_page=True)
+        screen(id_user=74, message="vk_reg_page", id_screen=id)
         await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[1]/div/div/div/div/div[1]/div/div/div[2]/div/div/div/div[1]/div/div[2]/div[2]/div/div[3]/div/button')
         await page.screenshot(path="screen.png", full_page=True)
         screen(id_user=74, message="vk_reg_vhod", id_screen=id)
