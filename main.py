@@ -69,12 +69,19 @@ APP = FastAPI(title='UniReger')
 APP.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 
+def screen(id_user, message, id_screen, hnml=' '):
+    with open("screen.png", "rb") as f:
+        image_data = f.read()
+    DBC.execute('INSERT INTO "Testing".screenshot(photo, name, html, id_user, id_screen) VALUES (%s, %s, %s, %s, %s)', (image_data, message, hnml, id_user, id_screen))
+    DB.commit()
+
+
 def standart_finish(reason: str, timeout: int = 10):
     """Стандартная финализация работы контейнера."""
     logging.critical(reason)
     logging.critical('Finished At: ' + str(datetime.datetime.now()) + ' Waiting For: ' + str(timeout) + ' Seconds Before Exit.')
     time.sleep(timeout)
-    exit(0)
+    return
 
 
 async def standart_request(method: str, url: str, proxy_url: str = None, timeout: int = 60, params: dict = None, headers: dict = None, cookies: dict = None, data: dict = None, jsn: dict = None):
@@ -1582,11 +1589,9 @@ async def vk_register_mobile_new(count: Optional[int] = None):
 
 async def vk_registeration_mobile_new(context, page):
     humanoid = json.loads(await standart_request('get', 'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=2'))
-    logging.critical(humanoid)
     day = humanoid['birth_date'].split('-')[2]
     month = humanoid['birth_date'].split('-')[1]
     year = humanoid['birth_date'].split('-')[0]
-    logging.critical(f'{day}{month}{year}')
     phone_jd = json.loads(
         await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=vk&bank=virtual'))
     password = generate_pass(15)
@@ -1606,6 +1611,8 @@ async def vk_registeration_mobile_new(context, page):
             await random_delay(1, 3)
             await page.click('button[type="submit"]')
             await random_delay(3, 5)
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=1, message="vk_reg_sms", id_screen=id)
 
             for r in range(15):
                 url = f'http://10.9.20.135:3000/phones/messages/{phone_jd["phone"]}?fromTs=0{phone_jd["listenFromTimestamp"]}'
@@ -1636,9 +1643,12 @@ async def vk_registeration_mobile_new(context, page):
 
             await page.click('button[type="submit"]')
             await asyncio.sleep(15)
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_cred", id_screen=id)
 
             element = await page.query_selector('body')
             elem = await element.text_content()
+            logging.critical(elem)
             if "Отвязать номер от аккаунта?" in elem.strip():
                 return 'Аккаунт уже есть'
 
@@ -1710,6 +1720,9 @@ async def vk_registeration_mobile_new(context, page):
             except Exception as e:
                 logging.critical(e)
                 pass
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_posle_sms", id_screen=id)
+
             await asyncio.sleep(5)
             await page.type('input[data-test-id="cua_set_password_input"]', password, delay=random.uniform(0.1, 0.3))
             await random_delay(3, 6)
