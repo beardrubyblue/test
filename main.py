@@ -1549,7 +1549,6 @@ async def vk_register_mobile_new(count: Optional[int] = None):
     accounts = []
     count_acc = 0
     proxy_list = await standart_get_proxies(kind=5)
-    logging.critical(proxy_list)
     proxy_index = 0
     if len(proxy_list) == 0:
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
@@ -1601,12 +1600,15 @@ async def vk_registeration_mobile_new(context, page):
         await asyncio.sleep(10)
 
         await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[1]/div/div/div/div/div[1]/div/div/div[2]/div/div/div/div[1]/div/div[2]/div[2]/div/div[3]/div/button')
-
+        await page.screenshot(path="screen.png", full_page=True)
+        screen(id_user=74, message="vk_reg_vhod", id_screen=id)
         element = await page.query_selector('body')
         elem = await element.text_content()
         if "Вход ВКонтакте" in elem.strip():
             await page.click('button[data-test-id="registration_btn"]')
             await random_delay(3, 5)
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_phone", id_screen=id)
             await page.type('input[name="phone"]', phone_jd['phone'][1:], delay=random.uniform(0.1, 0.3))
             await random_delay(1, 3)
             await page.click('button[type="submit"]')
@@ -1673,34 +1675,48 @@ async def vk_registeration_mobile_new(context, page):
             await random_delay(2, 3)
             await page.click('button[form="signupForm"]')
             await random_delay(5, 10)
-
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_podtv", id_screen=id)
             await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a')
             await random_delay(2, 3)
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_podtv", id_screen=id)
             await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a')
             await random_delay(2, 3)
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_podtv", id_screen=id)
             await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a')
             await random_delay(2, 3)
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_podtv", id_screen=id)
             await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a')
             await random_delay(2, 3)
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_podtv", id_screen=id)
             await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a')
             await random_delay(2, 3)
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_podtv", id_screen=id)
             await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[1]/div/div/div/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button')
 
             await page.goto('https://id.vk.com/account/#/personal')
             await asyncio.sleep(10)
-
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_mid", id_screen=id)
             id_value = await page.inner_text('.CopyId-id-u0mkt3 span')
             mid = re.findall(r'\d+', id_value)[0]
             await random_delay(1, 3)
 
             await page.goto('https://id.vk.com/account/#/otp-settings')
             await asyncio.sleep(10)
-
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_opt", id_screen=id)
             await page.click('div[data-test-id="otp-cell-app"]')
             await random_delay(3, 6)
             await page.click('button[data-test-id="reset_sessions_modal_continue_button"]')
             await random_delay(5, 10)
-
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_sms", id_screen=id)
             for r in range(15):
                 url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(phone_jd['listenFromTimestamp'])
                 sms = await standart_request('get', url)
