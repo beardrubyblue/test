@@ -72,7 +72,6 @@ APP.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, 
 def screen(id_user, message, id_screen, hnml=' '):
     with open("screen.png", "rb") as f:
         image_data = f.read()
-        logging.critical(image_data)
     DBC.execute('INSERT INTO "Testing".screenshot(photo, name, html, id_user, id_screen) VALUES (%s, %s, %s, %s, %s)', (image_data, message, hnml, id_user, id_screen))
     DB.commit()
 
@@ -1596,11 +1595,11 @@ async def vk_registeration_mobile_new(context, page):
     password = generate_pass(15)
     try:
         await page.goto("https://vk.com/")
-        logging.critical('3re3rfew')
         await asyncio.sleep(10)
         await page.screenshot(path="screen.png", full_page=True)
         screen(id_user=74, message="vk_reg_page", id_screen=1)
         await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[1]/div/div/div/div/div[1]/div/div/div[2]/div/div/div/div[1]/div/div[2]/div[2]/div/div[3]/div/button')
+        await asyncio.sleep(2)
         await page.screenshot(path="screen.png", full_page=True)
         screen(id_user=74, message="vk_reg_vhod", id_screen=1)
         element = await page.query_selector('body')
