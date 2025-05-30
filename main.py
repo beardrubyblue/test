@@ -1651,7 +1651,9 @@ async def vk_registeration_mobile_new(context, page):
             element = await page.query_selector('body')
             elem = await element.text_content()
             logging.critical(elem)
-            if "Отвязать номер от аккаунта?" in elem.strip():
+            if "отвязать номер от аккаунта" in elem.lower():
+                url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
+                await standart_request('post', url, data={'service': 'vk'})
                 return 'Аккаунт уже есть'
 
             await page.type('input[name="first_name"]', humanoid['first_name'], delay=random.uniform(0.1, 0.3))
