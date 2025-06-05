@@ -382,6 +382,10 @@ def vk_execute_api_method(account_id: int = 51, api_method: str = 'https://api.v
         html = asyncio.run(standart_request('post', api_method, data={'group_ids': ids, 'access_token': at[0], 'v': v}))
     if api_method == 'https://api.vk.com/method/users.getSubscriptions':
         html = asyncio.run(standart_request('post', api_method, data={'user_id': int(ids), 'offset': offset, 'extended': True, 'count': 1, 'access_token': at[0], 'v': v}))
+    if api_method == 'https://api.vk.com/method/wall.get':
+        html = asyncio.run(standart_request('post', api_method, data={'domain': int(ids), 'access_token': at[0], 'v': v}))
+
+
     return HTMLResponse(content=html)
 
 
