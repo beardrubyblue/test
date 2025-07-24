@@ -779,6 +779,7 @@ async def run():
                 kod = response['messages'][0][0:6]
             await page.screenshot(path="screen.png", full_page=True)
             logging.critical('message="before_email_after_kod"')
+
             try:
                 await page.wait_for_selector('input[name="otp-cell"]')
                 element_exists = True
@@ -825,7 +826,7 @@ async def run():
         elem = await element.text_content()
         if 'Account blocked' in elem.strip():
             logging.critical('acc block')
-
+        logging.critical('parsemethods')
         parsed_methods = await parse_all_methods(page, method_urls)
         await browser.close()
 
