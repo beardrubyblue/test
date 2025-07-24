@@ -11,7 +11,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from twocaptcha import TwoCaptcha
 from playwright.async_api import async_playwright
-from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+from configs import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 DB = psycopg.connect(**configs.db_config())
