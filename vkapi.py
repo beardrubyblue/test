@@ -1,13 +1,11 @@
 import os
 import json
-import time
 import random
 import logging
 import asyncio
 import configs
 import aiohttp
 import psycopg
-import schedule
 import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -28,6 +26,7 @@ CC = {
     'recaptchaTimeout': 600,
     'pollingInterval': 10}
 SOLVER = TwoCaptcha(**CC)
+
 
 async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU', max_amount: int = 10000):
     """Функция создаёт список из URL-строк прокси вида type://login:password@host:port. Прокси для этого берутся с одного из сайтов: [https://free-proxy-list.net или https://www.sslproxies.org] [https://proxy-manager.arbat.dev] [https://proxy6.net]."""
@@ -671,10 +670,12 @@ async def parse_method_page(page, url):
         logging.warning(f"Ошибка при парсинге {url}: {e}")
         return None
 
+
 async def parse_all_methods(page, urls):
     tasks = [parse_method_page(page, url) for url in urls]
     results = await asyncio.gather(*tasks)
     return [r for r in results if r]
+
 
 # 🔍 Сравнение изменений
 def compare_data(old, new):
