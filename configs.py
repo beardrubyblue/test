@@ -19,5 +19,6 @@ def db_config():
     """Получение параметров подключение к БД из секретов проекта."""
     return convert_string_to_kwargs(VRS2[0].replace('"', ''))
 
+
 TELEGRAM_BOT_TOKEN = "7662864620:AAHzmaB4om-E6XG6VA0J5K2As4yghce5Lv0"
 TELEGRAM_CHAT_ID = "729600548"
