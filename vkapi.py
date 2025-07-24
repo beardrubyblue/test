@@ -665,6 +665,7 @@ async def parse_method_page(page, url):
                 index += 1
 
         method_name = url.strip().split("/")[-1]
+        logging.critical({method_name: method_data})
         return {method_name: method_data} if method_data else None
     except Exception as e:
         logging.warning(f"Ошибка при парсинге {url}: {e}")
