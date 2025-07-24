@@ -649,6 +649,8 @@ def send_telegram_message(text):
 async def parse_method_page(page, url):
     try:
         await page.goto(url, timeout=20000)
+        await page.wait_for_load_state("networkidle")
+        await asyncio.sleep(2)
         html = await page.content()
         logging.critical(html)
         await page.wait_for_selector("section.sc-fwQFQH.cYVjhi", timeout=7000)
