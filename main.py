@@ -24,7 +24,7 @@ from fake_useragent import UserAgent
 import psycopg
 import configs
 from models import AccountCreation
-
+import vkapi
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 
 UA = UserAgent()
@@ -1791,4 +1791,6 @@ async def vk_registeration_mobile_new(context, page):
 APP.mount("/", StaticFiles(directory="ui", html=True), name="ui")
 
 if __name__ == "__main__":
+    print("🔁 Скрипт запущен. Ожидаем расписание каждые 12 часов...")
+    asyncio.run(vkapi.scheduler())
     uvicorn.run(APP, host="0.0.0.0", port=5000)
