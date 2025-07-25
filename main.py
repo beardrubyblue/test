@@ -63,8 +63,8 @@ RAMBLER_KIND_ID = 31
 FACEBOOK_KIND_ID = 75
 REGISTRATION_STARTED = False
 random.seed()
-# CONTAINER_NAME = 'UniReger' + os.getenv('CONTAINER_NAME')
-# logging.critical(f"CONTAINER_NAME: {CONTAINER_NAME}")
+CONTAINER_NAME = 'UniReger' + os.getenv('CONTAINER_NAME')
+logging.critical(f"CONTAINER_NAME: {CONTAINER_NAME}")
 APP = FastAPI(title='UniReger')
 APP.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
