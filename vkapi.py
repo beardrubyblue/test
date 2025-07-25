@@ -6,7 +6,7 @@ import logging
 import asyncio
 import aiohttp
 from datetime import datetime, timedelta
-from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+from configs import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 
