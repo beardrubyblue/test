@@ -132,7 +132,7 @@ def compare_data(old, new):
     return changes
 
 
-async def run():
+async def run(return_json=False):
     logging.critical(f"\nЗапуск: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     with open("method_urls.json", "r", encoding="utf-8") as f:
@@ -149,16 +149,40 @@ async def run():
 
     changes = compare_data(previous, parsed_methods)
 
-    if changes:
-        msg = "Обнаружены изменения в VK API:\n\n" + "\n".join(changes)
-        send_telegram_message(msg)
-        logging.info(msg)
-    else:
-        send_telegram_message("Изменений не обнаружено.")
-        logging.critical("Изменений не обнаружено.")
+    new_methods = []
+    new_method_names = {list(x.keys())[0] for x in parsed_methods}
+    old_method_names = set(method_names)
+    new_only = new_method_names - old_method_names
+
+    if new_only:
+        new_urls = [f"https://dev.vk.com/method/{m}" for m in new_only]
+        urls.extend(new_urls)
+        new_methods = list(new_only)
+        with open("method_urls.json", "w", encoding="utf-8") as f:
+            json.dump(urls, f, ensure_ascii=False, indent=2)
+
+    if not return_json:
+        if changes or new_methods:
+            text = ""
+            if new_methods:
+                text += "Найдены новые методы:\n" + "\n".join(new_methods) + "\n\n"
+            if changes:
+                text += "Изменения в параметрах:\n" + "\n".join(changes)
+            send_telegram_message(text)
+            logging.info(text)
+        else:
+            send_telegram_message("Изменений не обнаружено.")
+            logging.critical("Изменений не обнаружено.")
 
     with open(prev_file, "w", encoding="utf-8") as f:
         json.dump(parsed_methods, f, ensure_ascii=False, indent=2)
+
+    if return_json:
+        return {
+            "new_methods": new_methods,
+            "changes": changes,
+            "status": "ok" if changes or new_methods else "no_changes"
+        }
 
 
 async def scheduler():

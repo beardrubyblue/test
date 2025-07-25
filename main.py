@@ -1789,6 +1789,15 @@ async def vk_registeration_mobile_new(context, page):
         return e
 
 
+@APP.get("/check-vk-api")
+def check_vk_api():
+    try:
+        result = asyncio.run(vkapi.run(return_json=True))
+        return JSONResponse(content=result)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
 APP.mount("/", StaticFiles(directory="ui", html=True), name="ui")
 
 if __name__ == "__main__":
