@@ -43,6 +43,7 @@ def extract_params(method_data):
     result = {}
     for idx, param in enumerate(params, 1):
         name = param.get("name")
+        logging.critical(name)
         type_ = param.get("type")
         if name and type_:
             result[str(idx)] = f"{name}: {type_}"
