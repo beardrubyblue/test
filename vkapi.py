@@ -51,7 +51,6 @@ def extract_params(method_data):
 
 async def fetch_method_info(session, method, proxy):
     try:
-        logging.critical(f"📡 {method} через {proxy}")
         url = "https://api.vk.com/method/documentation.getPage"
         params = {
             "access_token": ANON_TOKEN,
