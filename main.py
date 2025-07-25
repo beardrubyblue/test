@@ -1791,6 +1791,6 @@ async def vk_registeration_mobile_new(context, page):
 APP.mount("/", StaticFiles(directory="ui", html=True), name="ui")
 
 if __name__ == "__main__":
-    print("🔁 Скрипт запущен. Ожидаем расписание каждые 12 часов...")
+    logging.critical("⏰ Скрипт запущен. Будет выполняться каждый день в 10:00 по Москве...")
     asyncio.run(vkapi.scheduler())
     uvicorn.run(APP, host="0.0.0.0", port=5000)
