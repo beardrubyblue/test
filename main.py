@@ -1807,4 +1807,5 @@ if __name__ == "__main__":
     if CONTAINER_NAME == 'UniReger1':
         logging.critical("Скрипт запущен. Будет выполняться каждый день в 10:00 по Москве...")
         asyncio.run(vkapi.scheduler())
+        uvicorn.run(APP, host="0.0.0.0", port=5000)
     uvicorn.run(APP, host="0.0.0.0", port=5000)
