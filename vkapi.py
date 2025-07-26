@@ -197,11 +197,11 @@ async def run(return_json=False):
         json.dump(parsed_methods, f, ensure_ascii=False, indent=2)
 
     if return_json:
-        logging.critical({
+        return {
             "new_methods": new_methods,
             "changes": changes,
             "status": "ok" if changes or new_methods else "no_changes"
-        })
+        }
 
 
 async def scheduler():
