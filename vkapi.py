@@ -10,8 +10,7 @@ from configs import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 
-ANON_TOKEN = "vk1.a.pdwny8KZf7civ7yqyhyB1UQz3B-JDknlatyGtR-cdT1cGxmlG-8EvMJLtCTbuUsS-Jjn4tq8_tG04w1XhlsQ7auiUY_p6yU-ShWVihtNes0N_ylWLZMLIFzKodsPfAQrU-Y4BtNFPin4Ja2TXNNaXthtxTIe_1ffpEYka5eywLKr9FlaWeLsF57Pp04hFSpBImA6if7wd9sCq8SMtyhO4Q"
-
+ANON_TOKEN = None
 MSK_TZ = pytz.timezone("Europe/Moscow")
 proxy_list = []
 proxy_index = 0
@@ -60,7 +59,6 @@ def extract_params(method_data):
     result = {}
     for idx, param in enumerate(params, 1):
         name = param.get("name")
-        logging.critical(name)
         type_ = param.get("type")
         if name and type_:
             result[str(idx)] = f"{name}: {type_}"
@@ -83,7 +81,6 @@ async def fetch_method_info(session, method, proxy):
             info = data.get("response", {}).get("page", {})
             if info:
                 param_data = extract_params(info)
-                logging.critical({method: param_data})
                 return {method: param_data}
     except Exception as e:
         logging.warning(f"Ошибка при получении {method}: {e}")
@@ -199,12 +196,12 @@ async def run(return_json=False):
     with open(prev_file, "w", encoding="utf-8") as f:
         json.dump(parsed_methods, f, ensure_ascii=False, indent=2)
 
-    if return_json:
-        return {
+    if  not return_json:
+        logging.critical( {
             "new_methods": new_methods,
             "changes": changes,
             "status": "ok" if changes or new_methods else "no_changes"
-        }
+        })
 
 
 async def scheduler():
