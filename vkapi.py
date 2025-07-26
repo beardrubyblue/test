@@ -196,7 +196,7 @@ async def run(return_json=False):
     with open(prev_file, "w", encoding="utf-8") as f:
         json.dump(parsed_methods, f, ensure_ascii=False, indent=2)
 
-    if not return_json:
+    if return_json:
         logging.critical({
             "new_methods": new_methods,
             "changes": changes,
