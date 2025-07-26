@@ -10,7 +10,7 @@ from configs import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 
-ANON_TOKEN = "anonym.eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+ANON_TOKEN = "vk1.a.pdwny8KZf7civ7yqyhyB1UQz3B-JDknlatyGtR-cdT1cGxmlG-8EvMJLtCTbuUsS-Jjn4tq8_tG04w1XhlsQ7auiUY_p6yU-ShWVihtNes0N_ylWLZMLIFzKodsPfAQrU-Y4BtNFPin4Ja2TXNNaXthtxTIe_1ffpEYka5eywLKr9FlaWeLsF57Pp04hFSpBImA6if7wd9sCq8SMtyhO4Q"
 
 MSK_TZ = pytz.timezone("Europe/Moscow")
 proxy_list = []
@@ -32,6 +32,23 @@ async def standart_get_proxies(kind=2, ptype=3, country='RU', max_amount=10000):
     return proxy_list[:max_amount]
 
 
+async def get_fresh_token():
+    global ANON_TOKEN
+    logging.critical("🔄 Получаем свежий токен...")
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get('https://dev.vk.com/getAnonymousToken') as token_resp:
+                token_data = await token_resp.json()
+                new_token = token_data.get("response", {}).get("token")
+                if new_token:
+                    ANON_TOKEN = new_token
+                    logging.critical("✅ Токен успешно получен перед запуском.")
+                else:
+                    logging.error("❌ Не удалось получить токен: пустой ответ.")
+    except Exception as e:
+        logging.error(f"❌ Ошибка при получении токена: {e}")
+
+
 def send_telegram_message(text):
     import requests
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
@@ -51,6 +68,8 @@ def extract_params(method_data):
 
 
 async def fetch_method_info(session, method, proxy):
+    global ANON_TOKEN
+
     try:
         url = "https://api.vk.com/method/documentation.getPage"
         params = {
@@ -139,6 +158,8 @@ async def run(return_json=False):
     with open("method_urls.json", "r", encoding="utf-8") as f:
         urls = json.load(f)
     method_names = [url.split("/")[-1] for url in urls]
+
+    await get_fresh_token()
 
     parsed_methods = await parse_all_methods_api(method_names)
 
