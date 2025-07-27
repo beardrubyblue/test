@@ -1792,11 +1792,8 @@ async def vk_registeration_mobile_new(context, page):
 @APP.get("/check-vk-api")
 def check_vk_api():
     try:
-        if CONTAINER_NAME == 'UniReger1':
-            result = asyncio.run(vkapi.run(return_json=True))
-            return JSONResponse(content=result)
-        else:
-            return 'не первый контейнер'
+        result = asyncio.run(vkapi.run(return_json=True))
+        return JSONResponse(content=result)
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 
