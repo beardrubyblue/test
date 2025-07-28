@@ -137,7 +137,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
     if kind == 2 and ptype in [2, 3]:
         params = {'pool_id': '9f687b07-b5f5-4227-9d04-4888ac5be496', 'limit': 10000, 'sla': '0.7'}
         async with aiohttp.ClientSession() as session:
-            response = await session.get('https://proxy-manager.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params)
+            response = await session.get('https://proxy-manager.ad.dev.arbat.dev/pools/9f687b07-b5f5-4227-9d04-4888ac5be496/proxies', params=params)
             jd = json.loads(await response.text(errors='replace'))
             for proxy in jd:
                 if proxy['proxy']['proxy_type'] == ptype and proxy['proxy']['country_code'] == country:
@@ -149,7 +149,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
     if kind == 4:
         params = {'limit': 10000, 'sla': '0.7'}
         async with aiohttp.ClientSession() as session:
-            response = await session.get('https://proxy-manager.arbat.dev/pools/956e7252-3f64-4822-88d8-d85c65903d01/proxies', params=params)
+            response = await session.get('https://proxy-manager.ad.dev.arbat.dev/pools/956e7252-3f64-4822-88d8-d85c65903d01/proxies', params=params)
             jd = json.loads(await response.text(errors='replace'))
             for proxy in jd:
                 if proxy['proxy']['proxy_type'] == ptype and proxy['proxy']['country_code'] == country:
@@ -158,7 +158,7 @@ async def standart_get_proxies(kind: int = 3, ptype: str = 3, country: str = 'RU
     if kind == 5 and ptype in [2, 3]:
         params = {'pool_id': '9f687b07-b5f5-4227-9d04-4888ac5be496', 'sla': '0.7', "country": country, "proxy_type": 3}
         async with aiohttp.ClientSession() as session:
-            response = await session.get('https://proxy-manager.arbat.dev/proxies/use', params=params)
+            response = await session.get('https://proxy-manager.ad.dev.arbat.dev/proxies/use', params=params)
             jd = json.loads(await response.text(errors='replace'))
             proxy = jd['proxy']
             proxy_list.append(f"{pt}{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}")
