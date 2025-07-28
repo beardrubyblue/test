@@ -1589,7 +1589,7 @@ async def vk_register_mobile_new(count: Optional[int] = None):
 
 
 async def vk_registeration_mobile_new(context, page):
-    humanoid = json.loads(await standart_request('get', 'https://accman.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=2'))
+    humanoid = json.loads(await standart_request('get', 'https://accounts-manager.ad.dev.arbat.dev/get-innocent-humanoid?kind_id=2'))
     day = humanoid['birth_date'].split('-')[2]
     month = humanoid['birth_date'].split('-')[1]
     year = humanoid['birth_date'].split('-')[0]
