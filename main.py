@@ -1777,7 +1777,6 @@ async def vk_registeration_mobile_new(context, page):
             element = await page.query_selector('body')
             elem = await element.text_content()
             if "Лента" in elem.strip():
-                success_acc += 1
                 url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
                 await standart_request('post', url, data={'service': 'vk'})
                 while True:
