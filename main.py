@@ -1822,4 +1822,4 @@ if __name__ == "__main__":
         logging.critical("Скрипт запущен. Будет выполняться каждый день в 10:00 по Москве...")
         import threading
         threading.Thread(target=lambda: asyncio.run(vkapi.scheduler()), daemon=True).start()
-    uvicorn.run(APP, host="0.0.0.0", port=9000)
+    uvicorn.run(APP, host="0.0.0.0", port=5000)
