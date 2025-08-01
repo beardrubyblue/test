@@ -1646,12 +1646,11 @@ async def vk_registeration_mobile_new(context, page):
                         break
                     except json.JSONDecodeError:
                         return 'Ошибка декодирования JSON'
+            else:
+                logging.critical('Смс не пришло')
+                return 'sms_fail', None
 
             messages = sms_data.get('messages', [])
-            if not messages:
-                logging.critical('Смс не пришло')
-                return 'sms_fail'
-
             msg_text = messages[0]
 
             match = re.search(r"\b\d{4,8}\b", msg_text)
