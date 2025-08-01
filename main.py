@@ -1803,7 +1803,7 @@ async def vk_registeration_mobile_new(context, page):
             last_cookies=cookie_list
         )
     except Exception as e:
-        return e
+        return 'error', e
 
 
 @APP.get("/check-vk-api")
