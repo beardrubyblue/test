@@ -1550,6 +1550,8 @@ async def vk_registeration_new(context, page):
 async def vk_register_mobile_new(count: Optional[int] = None):
     """регистрация одного или пачки учётных записей VK mobile  """
     accounts = []
+    success_acc = 0
+    failed_sms_count = 0
     count_acc = 0
     proxy_list = await standart_get_proxies(kind=5)
     proxy_index = 0
@@ -1578,12 +1580,27 @@ async def vk_register_mobile_new(count: Optional[int] = None):
             browser = await chromium.launch(headless=True)
             context = await browser.new_context(**iphone_13, proxy=proxy)
             page = await context.new_page()
-            account = await vk_registeration_mobile_new(context, page)
+            status, account = await vk_registeration_mobile_new(context, page)
             await browser.close()
             accounts.append(account)
+            if status == "success":
+                accounts.append(account)
+                success_acc += 1
+            elif status == "sms_fail":
+                failed_sms_count += 1
         proxy_index += 1
         count_acc += 1
         logging.critical(count_acc)
+    try:
+        text = (
+            f"VK MOBILE РЕГИСТРАЦИЯ ЗАВЕРШЕНА\n"
+            f"Всего планировалось: {count if count is not None else 'неограниченно'}\n"
+            f"Успешно: {success_acc}\n"
+            f"Без СМС: {failed_sms_count}\n"
+        )
+        await vkapi.send_telegram_message(text)
+    except Exception as e:
+        logging.error(f"Ошибка при отправке сообщения в Telegram: {e}")
     standart_finish('MISSION ACCOMPLISHED!')
     return {'accounts': accounts}
 
@@ -1628,18 +1645,18 @@ async def vk_registeration_mobile_new(context, page):
                         sms_data = json.loads(sms_raw)
                         break
                     except json.JSONDecodeError:
-                        return "Ошибка декодирования JSON"
+                        return 'Ошибка декодирования JSON'
 
-            messages = sms_data.get("messages", [])
+            messages = sms_data.get('messages', [])
             if not messages:
-                logging.critical("Смс не пришло")
-                return "Смс не пришло"
+                logging.critical('Смс не пришло')
+                return 'sms_fail'
 
             msg_text = messages[0]
 
             match = re.search(r"\b\d{4,8}\b", msg_text)
             if not match:
-                return "Код не найден в СМС"
+                return 'Код не найден в СМС'
 
             otp_code = match.group()
 
@@ -1760,6 +1777,7 @@ async def vk_registeration_mobile_new(context, page):
             element = await page.query_selector('body')
             elem = await element.text_content()
             if "Лента" in elem.strip():
+                success_acc += 1
                 url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
                 await standart_request('post', url, data={'service': 'vk'})
                 while True:
@@ -1771,7 +1789,7 @@ async def vk_registeration_mobile_new(context, page):
                     if res.status == 200:
                         break
 
-        return AccountCreation(
+        return 'success', AccountCreation(
             kind_id=2,
             phone=phone_jd['phone'],
             password=password,
@@ -1805,4 +1823,4 @@ if __name__ == "__main__":
         logging.critical("Скрипт запущен. Будет выполняться каждый день в 10:00 по Москве...")
         import threading
         threading.Thread(target=lambda: asyncio.run(vkapi.scheduler()), daemon=True).start()
-    uvicorn.run(APP, host="0.0.0.0", port=5000)
+    uvicorn.run(APP, host="0.0.0.0", port=9000)
