@@ -622,7 +622,7 @@ async def send_acc_vk(phone_jd: str, password, mid, first_name, last_name, birth
     }
     logging.critical(data)
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://accman.ad.dev.arbat.dev/create', json=data) as response:
+        async with session.post('https://accounts-manager.ad.dev.arbat.dev/accounts/create', json=data) as response:
             return response
 
 
@@ -1769,7 +1769,7 @@ async def vk_registeration_mobile_new(context, page):
             await random_delay(20, 60)
             rr = get_access_token(phone_jd['phone'], password)
             token = json.loads(rr.text)
-
+            logging.critical(token)
             await page.goto('https://vk.com/feed')
 
             await random_delay(10, 20)
