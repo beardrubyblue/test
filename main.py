@@ -1784,7 +1784,6 @@ async def vk_registeration_mobile_new(context, page):
                 await send_acc_vk(phone_jd['phone'], password, mid, humanoid['first_name'], humanoid['last_name'], f'{day}.{month}.{year}', humanoid['id'], cookie_list, token['access_token'])
                 await asyncio.sleep(5)
 
-
         return 'success', AccountCreation(
             kind_id=2,
             phone=phone_jd['phone'],
