@@ -1645,7 +1645,7 @@ async def vk_registeration_mobile_new(context, page):
                         sms_data = json.loads(sms_raw)
                         break
                     except json.JSONDecodeError:
-                        return 'Ошибка декодирования JSON'
+                        return 'json_decode_error', None
             else:
                 logging.critical('Смс не пришло')
                 return 'sms_fail', None
@@ -1655,7 +1655,7 @@ async def vk_registeration_mobile_new(context, page):
 
             match = re.search(r"\b\d{4,8}\b", msg_text)
             if not match:
-                return 'Код не найден в СМС'
+                return 'otp_not_found', None
 
             otp_code = match.group()
 
@@ -1673,7 +1673,7 @@ async def vk_registeration_mobile_new(context, page):
             if "Отвязать номер от аккаунта?" in elem.lower():
                 url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
                 await standart_request('post', url, data={'service': 'vk'})
-                return 'Аккаунт уже есть'
+                return 'already_linked', None
 
             await page.type('input[name="first_name"]', humanoid['first_name'], delay=random.uniform(0.1, 0.3))
             await random_delay(1, 3)
@@ -1749,7 +1749,7 @@ async def vk_registeration_mobile_new(context, page):
             sms = re.findall(pattern, sms)
             sms = ' '.join(sms)
             if sms == '{"messages":[]}':
-                return 'Смс не пришло'
+                return 'sms_fail', None
             try:
                 for i, digit in enumerate(sms):
                     input_selector = f'input[data-test-id="cua_codebase_input_enter_code_{i}"]'
@@ -1778,14 +1778,12 @@ async def vk_registeration_mobile_new(context, page):
             if "Лента" in elem.strip():
                 url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
                 await standart_request('post', url, data={'service': 'vk'})
-                while True:
-                    cookies = await context.cookies()
-                    cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
-                    cookie_list = [cookie_dict]
-                    res = await send_acc_vk(phone_jd['phone'], password, mid, humanoid['first_name'], humanoid['last_name'], f'{day}.{month}.{year}', humanoid['id'], cookie_list, token['access_token'])
-                    await asyncio.sleep(5)
-                    if res.status == 200:
-                        break
+                cookies = await context.cookies()
+                cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+                cookie_list = [cookie_dict]
+                await send_acc_vk(phone_jd['phone'], password, mid, humanoid['first_name'], humanoid['last_name'], f'{day}.{month}.{year}', humanoid['id'], cookie_list, token['access_token'])
+                await asyncio.sleep(5)
+
 
         return 'success', AccountCreation(
             kind_id=2,
