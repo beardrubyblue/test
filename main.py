@@ -30,7 +30,7 @@ logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 
 UA = UserAgent()
 
-DB = psycopg.connect(**configs.db_config)
+DB = psycopg.connect(**configs.db_config())
 DBC = DB.cursor()
 
 SECURITY = HTTPBasic()
