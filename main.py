@@ -30,7 +30,7 @@ logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
 
 UA = UserAgent()
 
-DB = psycopg.connect(**configs.db_config())
+DB = psycopg.connect(**configs.db_config)
 DBC = DB.cursor()
 
 SECURITY = HTTPBasic()
@@ -1577,7 +1577,7 @@ async def vk_register_mobile_new(count: Optional[int] = None):
         async with async_playwright() as playwright:
             iphone_13 = playwright.devices['iPhone 13']
             chromium = playwright.chromium
-            browser = await chromium.launch(headless=True)
+            browser = await chromium.launch(headless=False)
             context = await browser.new_context(**iphone_13, proxy=proxy)
             page = await context.new_page()
             status, account = await vk_registeration_mobile_new(context, page)
@@ -1670,10 +1670,12 @@ async def vk_registeration_mobile_new(context, page):
             element = await page.query_selector('body')
             elem = await element.text_content()
             logging.critical(elem)
-            if "Отвязать номер от аккаунта?" in elem.lower():
+            if "Отвязать номер от аккаунта?" in elem:
                 url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
                 await standart_request('post', url, data={'service': 'vk'})
                 return 'already_linked', None
+            elif "Вы создаёте аккаунт ВКонтакте" in elem:
+                await page.click('xpath=/html/body/div/div/div/div/div/div/div/div/div/div/div/form/div[2]/button')
 
             await page.type('input[name="first_name"]', humanoid['first_name'], delay=random.uniform(0.1, 0.3))
             await random_delay(1, 3)
@@ -1697,8 +1699,29 @@ async def vk_registeration_mobile_new(context, page):
             await page.click('button[form="signupForm"]')
             await random_delay(5, 10)
             await page.screenshot(path="screen.png", full_page=True)
+            try:
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a')
+            except Exception as e:
+                logging.critical(e)
+                pass
+            try:
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button')
+            except Exception as e:
+                logging.critical(e)
+                pass
+
             screen(id_user=74, message="vk_reg_podtv", id_screen=1)
-            await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a')
+            try:
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a')
+            except Exception as e:
+                logging.critical(e)
+                pass
+            try:
+                await page.click(
+                    'xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button')
+            except Exception as e:
+                logging.critical(e)
+                pass
             await random_delay(2, 3)
             await page.screenshot(path="screen.png", full_page=True)
             screen(id_user=74, message="vk_reg_podtv", id_screen=1)
