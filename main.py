@@ -1843,8 +1843,6 @@ async def vk_registeration_mobile_new(context, page):
             last_cookies=cookie_list
         )
     except Exception as e:
-        logging.critical(e)
-        await asyncio.sleep(50000000000000000000000000)
         return 'error', e
 
 
