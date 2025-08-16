@@ -1577,7 +1577,7 @@ async def vk_register_mobile_new(count: Optional[int] = None):
         async with async_playwright() as playwright:
             iphone_13 = playwright.devices['iPhone 13']
             chromium = playwright.chromium
-            browser = await chromium.launch(headless=False)
+            browser = await chromium.launch(headless=True)
             context = await browser.new_context(**iphone_13, proxy=proxy)
             page = await context.new_page()
             status, account = await vk_registeration_mobile_new(context, page)
