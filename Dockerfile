@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     libenchant-2-2 \
     libgdk-pixbuf-xlib-2.0-0 \
-    --no-install-recommends && \
+    --no-install-recommends
 RUN playwright install firefox
 RUN playwright install chromium
 COPY . .
