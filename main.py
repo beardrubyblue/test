@@ -1,6 +1,5 @@
 import logging
 import re
-import os
 import string
 import datetime
 from typing import Optional
@@ -1700,48 +1699,69 @@ async def vk_registeration_mobile_new(context, page):
             await random_delay(5, 10)
             await page.screenshot(path="screen.png", full_page=True)
             try:
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a')
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=1000)
             except Exception as e:
+                logging.critical(1)
                 logging.critical(e)
-                pass
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=1000)
+            screen(id_user=74, message="vk_reg_podtv", id_screen=1)
             try:
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button')
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=1000)
             except Exception as e:
+                logging.critical(2)
                 logging.critical(e)
-                pass
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=1000)
 
+            await random_delay(2, 3)
+            await page.screenshot(path="screen.png", full_page=True)
             screen(id_user=74, message="vk_reg_podtv", id_screen=1)
             try:
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a')
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=1000)
+            except Exception as e:
+                logging.critical(3)
+                logging.critical(e)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=1000)
+            await random_delay(2, 3)
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_podtv", id_screen=1)
+
+            try:
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=1000)
+            except Exception as e:
+                logging.critical(4)
+                logging.critical(e)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=1000)
+
+            await random_delay(2, 3)
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_podtv", id_screen=1)
+
+            try:
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=1000)
+            except Exception as e:
+                logging.critical(5)
+                logging.critical(e)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=1000)
+
+            await random_delay(2, 3)
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_podtv", id_screen=1)
+
+            try:
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=1000)
+            except Exception as e:
+                logging.critical(6)
+                logging.critical(e)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=1000)
+
+            await random_delay(2, 3)
+            await page.screenshot(path="screen.png", full_page=True)
+            screen(id_user=74, message="vk_reg_podtv", id_screen=1)
+            try:
+                await page.click('xpath=//*[@id="main"]/div/div[2]/div/div/div[3]/button')
             except Exception as e:
                 logging.critical(e)
                 pass
-            try:
-                await page.click(
-                    'xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button')
-            except Exception as e:
-                logging.critical(e)
-                pass
-            await random_delay(2, 3)
-            await page.screenshot(path="screen.png", full_page=True)
-            screen(id_user=74, message="vk_reg_podtv", id_screen=1)
-            await page.click('xpath=//*[@id="mhead"]/a')
-            await random_delay(2, 3)
-            await page.screenshot(path="screen.png", full_page=True)
-            screen(id_user=74, message="vk_reg_podtv", id_screen=1)
-            await page.click('xpath=//*[@id="mhead"]/a')
-            await random_delay(2, 3)
-            await page.screenshot(path="screen.png", full_page=True)
-            screen(id_user=74, message="vk_reg_podtv", id_screen=1)
-            await page.click('xpath=//*[@id="mhead"]/a')
-            await random_delay(2, 3)
-            await page.screenshot(path="screen.png", full_page=True)
-            screen(id_user=74, message="vk_reg_podtv", id_screen=1)
-            await page.click('xpath=//*[@id="mhead"]/a')
-            await random_delay(2, 3)
-            await page.screenshot(path="screen.png", full_page=True)
-            screen(id_user=74, message="vk_reg_podtv", id_screen=1)
-            await page.click('xpath=//*[@id="main"]/div/div[2]/div/div/div[3]/button')
 
             await page.goto('https://id.vk.com/account/#/personal')
             await asyncio.sleep(10)
@@ -1822,6 +1842,8 @@ async def vk_registeration_mobile_new(context, page):
             last_cookies=cookie_list
         )
     except Exception as e:
+        logging.critical(e)
+        await asyncio.sleep(50000000000000000000000000)
         return 'error', e
 
 
