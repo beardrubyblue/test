@@ -580,7 +580,7 @@ def generate_mail(first_name, last_name, year):
 
 
 def generate_pass(length):
-    characters = string.ascii_letters + string.digits + string.digits
+    characters = string.ascii_letters + string.digits + string.hexdigits
     password = ''.join(random.choice(characters) for _ in range(length))
     return password
 
@@ -1552,6 +1552,8 @@ async def vk_register_mobile_new(count: Optional[int] = None):
     accounts = []
     success_acc = 0
     failed_sms_count = 0
+    already_linked_count = 0
+    phone_block_for_reg_count = 0
     count_acc = 0
     proxy_list = await standart_get_proxies(kind=5)
     proxy_index = 0
@@ -1588,6 +1590,10 @@ async def vk_register_mobile_new(count: Optional[int] = None):
                 success_acc += 1
             elif status == "sms_fail":
                 failed_sms_count += 1
+            elif status == "already_linked":
+                already_linked_count += 1
+            elif status == "phone_block_for_reg":
+                phone_block_for_reg_count += 1
         proxy_index += 1
         count_acc += 1
         logging.critical(count_acc)
@@ -1596,6 +1602,8 @@ async def vk_register_mobile_new(count: Optional[int] = None):
             f"VK MOBILE РЕГИСТРАЦИЯ ЗАВЕРШЕНА\n"
             f"Всего планировалось: {count if count is not None else 'неограниченно'}\n"
             f"Успешно: {success_acc}\n"
+            f"Уже зарегистрированны: {already_linked_count}\n"
+            f"Номер заблокирован для регистрации: {phone_block_for_reg_count}\n"
             f"Без СМС: {failed_sms_count}\n"
         )
         await vkapi.send_telegram_message(text)
@@ -1612,7 +1620,7 @@ async def vk_registeration_mobile_new(context, page):
     year = humanoid['birth_date'].split('-')[0]
     phone_jd = json.loads(
         await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=vk&bank=virtual'))
-    password = generate_pass(15)
+    password = generate_pass(25)
     try:
         await page.goto("https://vk.com/")
         await asyncio.sleep(10)
@@ -1635,7 +1643,11 @@ async def vk_registeration_mobile_new(context, page):
             await random_delay(3, 5)
             await page.screenshot(path="screen.png", full_page=True)
             screen(id_user=1, message="vk_reg_sms", id_screen=1)
-
+            element = await page.query_selector('body')
+            elem = await element.text_content()
+            if "Телефон был заблокирован для регистрации [1000]" in elem.strip():
+                logging.critical('phone_block_for_reg')
+                return 'phone_block_for_reg', None
             for r in range(15):
                 url = f'http://10.9.20.135:3000/phones/messages/{phone_jd["phone"]}?fromTs=0{phone_jd["listenFromTimestamp"]}'
                 sms_raw = await standart_request('get', url)
@@ -1670,9 +1682,10 @@ async def vk_registeration_mobile_new(context, page):
             element = await page.query_selector('body')
             elem = await element.text_content()
             logging.critical(elem)
-            if "Отвязать номер от аккаунта?" in elem:
+            if "Отвязать номер от аккаунта?" in elem:
                 url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
                 await standart_request('post', url, data={'service': 'vk'})
+                logging.critical('already_linked')
                 return 'already_linked', None
             elif "Вы создаёте аккаунт ВКонтакте" in elem:
                 await page.click('xpath=/html/body/div/div/div/div/div/div/div/div/div/div/div/form/div[2]/button')
