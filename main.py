@@ -334,7 +334,7 @@ def save_account(phone_jd: str, password: str, info: str, humanoid_id: int = Non
 
 def get_access_token(phone_string: str, password: str):
     """Запрос к https://oauth.vk.com/token возвращает access_token"""
-    while 0 == 0:
+    while True:
         try:
             proxy = get_proxies(2)[0]
             headers = {
@@ -345,7 +345,8 @@ def get_access_token(phone_string: str, password: str):
                 'content-type': 'application/x-www-form-urlencoded',
                 'origin': 'https://dev.vk.com',
                 'pragma': 'no-cache',
-                'referer': 'https://dev.vk.com/'}
+                'referer': 'https://dev.vk.com/'
+            }
             params = {
                 'grant_type': 'password',
                 'v': '5.131',
@@ -355,10 +356,43 @@ def get_access_token(phone_string: str, password: str):
                 'password': password,
                 'scope': 'notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories'
             }
-            rr = requests.get('https://oauth.vk.com/token', params=params, headers=headers, timeout=10, proxies={'https': f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}"})
-            return rr
-        except Exception as e:
-            logging.critical(e)
+            rr = None
+            try:
+                proxy_str = f"socks5://{proxy['login']}:{proxy['password']}@{proxy['host']}:{proxy['port']}"
+                rr = requests.get('https://oauth.vk.com/token', params=params, headers=headers, timeout=10, proxies={'https': proxy_str})
+                text = rr.text
+                logging.debug(f"First response: {text}")
+                if text.startswith('{"error":'):
+                    jd = json.loads(text)
+                    if isinstance(jd.get('error'), dict):
+                        error_data = jd['error']
+                    else:
+                        error_data = jd
+                    if error_data.get('error') == 'need_captcha' or error_data.get('error_code') == 14:
+                        captcha_img = error_data.get('captcha_img')
+                        captcha_sid = error_data.get('captcha_sid')
+                        response = requests.get(captcha_img)
+                        with open("LastCaptcha.jpg", 'wb') as f:
+                            f.write(response.content)
+                        cid = SOLVER.send(file="LastCaptcha.jpg")
+                        time.sleep(20)
+                        ck = SOLVER.get_result(cid)
+                        params['captcha_sid'] = captcha_sid
+                        params['captcha_key'] = ck
+                        rr = requests.get('https://oauth.vk.com/token', params=params, headers=headers, timeout=10, proxies={'https': proxy_str})
+
+                        logging.critical(f"Captcha retry response: {rr.text}")
+
+                return rr
+
+            except Exception as inner_e:
+                logging.critical(f"Inner error: {inner_e}")
+                continue
+
+        except Exception as outer_e:
+            logging.critical(f"Outer error: {outer_e}")
+            continue
+
 
 
 @APP.get("/vk-revive-access-token")
@@ -580,9 +614,12 @@ def generate_mail(first_name, last_name, year):
 
 
 def generate_pass(length):
-    characters = string.ascii_letters + string.digits + string.hexdigits
-    password = ''.join(random.choice(characters) for _ in range(length))
-    return password
+    characters = string.ascii_letters + string.digits  # буквы и цифры
+    specials = "!@#$%^&*()_+-=[]{};:,.?/"
+    password_list = [random.choice(characters) for _ in range(length - 1)]
+    password_list.append(random.choice(specials))
+    random.shuffle(password_list)
+    return ''.join(password_list)
 
 
 async def send_acc(kind_id, phone_jd: str, password, first_name, last_name, birthday, humanoid_id, last_cookies, email: str = ''):
@@ -1560,8 +1597,6 @@ async def vk_register_mobile_new(count: Optional[int] = None):
     if len(proxy_list) == 0:
         standart_finish('There Are No Proxies Found! Waiting 1000 Seconds Before Exit.')
     while count is None or len(accounts) < count:
-        if len(accounts) == count:
-            standart_finish('MISSION ACCOMPLISHED!')
         if proxy_index >= len(proxy_list):
             proxy_list = await standart_get_proxies(kind=5)
             proxy_index = 0
@@ -1585,8 +1620,8 @@ async def vk_register_mobile_new(count: Optional[int] = None):
             status, account = await vk_registeration_mobile_new(context, page)
             await browser.close()
             accounts.append(account)
+            logging.critical(len(accounts))
             if status == "success":
-                accounts.append(account)
                 success_acc += 1
             elif status == "sms_fail":
                 failed_sms_count += 1
@@ -1596,7 +1631,6 @@ async def vk_register_mobile_new(count: Optional[int] = None):
                 phone_block_for_reg_count += 1
         proxy_index += 1
         count_acc += 1
-        logging.critical(count_acc)
     try:
         text = (
             f"VK MOBILE РЕГИСТРАЦИЯ ЗАВЕРШЕНА\n"
@@ -1610,6 +1644,7 @@ async def vk_register_mobile_new(count: Optional[int] = None):
     except Exception as e:
         logging.error(f"Ошибка при отправке сообщения в Telegram: {e}")
     standart_finish('MISSION ACCOMPLISHED!')
+    logging.critical(len(accounts))
     return {'accounts': accounts}
 
 
@@ -1620,7 +1655,7 @@ async def vk_registeration_mobile_new(context, page):
     year = humanoid['birth_date'].split('-')[0]
     phone_jd = json.loads(
         await standart_request('get', 'http://10.9.20.135:3000/phones/random?service=vk&bank=virtual'))
-    password = generate_pass(25)
+    password = generate_pass(20)
     try:
         await page.goto("https://vk.com/")
         await asyncio.sleep(10)
@@ -1681,7 +1716,6 @@ async def vk_registeration_mobile_new(context, page):
 
             element = await page.query_selector('body')
             elem = await element.text_content()
-            logging.critical(elem)
             if "Отвязать номер от аккаунта?" in elem:
                 url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
                 await standart_request('post', url, data={'service': 'vk'})
@@ -1689,6 +1723,134 @@ async def vk_registeration_mobile_new(context, page):
                 return 'already_linked', None
             elif "Вы создаёте аккаунт ВКонтакте" in elem:
                 await page.click('xpath=/html/body/div/div/div/div/div/div/div/div/div/div/div/form/div[2]/button')
+            elif 'Главная' in elem:
+                logging.critical('vfdsbadfnbmfnbmernbrepieormbreopbmopermbopemrpobemrpob')
+                await asyncio.sleep(5)
+                await page.goto("https://id.vk.com/account/#/main")
+                await asyncio.sleep(2)
+                await page.goto("https://id.vk.com/account/#/personal")
+                await asyncio.sleep(2)
+                await page.fill('input[name="first_name"]', humanoid['first_name'])
+                await asyncio.sleep(2)
+                await page.fill('input[name="last_name"]', humanoid['last_name'])
+                await asyncio.sleep(1)
+                sex_map = {
+                    "female": "1",
+                    "male": "2",
+                }
+
+                value = sex_map[humanoid["sex"].lower()]
+                await page.select_option('select[data-test-id="sex-dropdown"]', value=value)
+                await asyncio.sleep(1)
+                await random_delay(2, 3)
+                logging.critical(f"{day}-{month}-{year}")
+                await page.type('input[data-test-id="birthday-datepicker"]', f"{day}{month}{year}", delay=random.uniform(0.3, 0.6))
+                # await page.click('span.vkuiDateInput__input')
+                # await random_delay(2, 3)
+                #
+                # await page.type('span.vkuiDateInput__input', str(day), delay=random.uniform(0.3, 0.6))
+                # await random_delay(2, 3)
+                # await page.type('span.vkuiDateInput__input', str(month), delay=random.uniform(0.3, 0.6))
+                # await random_delay(2, 3)
+                # await page.type('span.vkuiDateInput__input', str(year), delay=random.uniform(0.3, 0.6))
+                # await random_delay(2, 3)
+                # await page.screenshot(path="screen.png", full_page=True)
+                await random_delay(5, 10)
+
+                await page.click('button[data-test-id="personal-form-mobile-submit"]')
+                await asyncio.sleep(5)
+                await page.goto('https://id.vk.com/account/#/personal')
+                await asyncio.sleep(10)
+                await page.screenshot(path="screen.png", full_page=True)
+                screen(id_user=74, message="vk_reg_mid", id_screen=1)
+                id_value = await page.inner_text('.CopyId-id-u0mkt3 span')
+                mid = re.findall(r'\d+', id_value)[0]
+                await random_delay(1, 3)
+
+                await page.goto('https://id.vk.com/account/#/otp-settings')
+                await asyncio.sleep(10)
+                await page.screenshot(path="screen.png", full_page=True)
+                screen(id_user=74, message="vk_reg_opt", id_screen=1)
+                await page.click('div[data-test-id="otp-cell-app"]')
+                await random_delay(3, 6)
+                await page.click('button[data-test-id="reset_sessions_modal_continue_button"]')
+                await random_delay(5, 10)
+                await page.screenshot(path="screen.png", full_page=True)
+                screen(id_user=74, message="vk_reg_sms", id_screen=1)
+                for r in range(15):
+                    url = 'http://10.9.20.135:3000/phones/messages/' + str(phone_jd['phone']) + '?fromTs=0' + str(
+                        phone_jd['listenFromTimestamp'])
+                    sms = await standart_request('get', url)
+                    logging.critical(sms)
+                    if sms != '{"messages":[]}':
+                        break
+                    await asyncio.sleep(1)
+                pattern = r"\d+"
+                sms = re.findall(pattern, sms)
+                sms = ' '.join(sms)
+                if sms == '{"messages":[]}':
+                    return 'sms_fail', None
+                try:
+                    for i, digit in enumerate(sms):
+                        input_selector = f'input[data-test-id="cua_codebase_input_enter_code_{i}"]'
+                        await page.fill(input_selector, digit)
+                except Exception as e:
+                    logging.critical(e)
+                    pass
+                await page.screenshot(path="screen.png", full_page=True)
+                screen(id_user=74, message="vk_reg_posle_sms", id_screen=1)
+
+                await asyncio.sleep(5)
+                await page.type('input[data-test-id="cua_set_password_input"]', password,
+                                delay=random.uniform(0.1, 0.3))
+                await random_delay(3, 6)
+                await page.type('input[data-test-id="cua_set_password_confirm_input"]', password,
+                                delay=random.uniform(0.1, 0.3))
+                await random_delay(5, 7)
+                element = await page.query_selector('body')
+                elem = await element.text_content()
+                if "Пароль недостаточно надёжный" in elem.strip():
+                    password = generate_pass(20)
+                    await page.type('input[data-test-id="cua_set_password_input"]', password,
+                                    delay=random.uniform(0.1, 0.3))
+                    await random_delay(3, 6)
+                    await page.type('input[data-test-id="cua_set_password_confirm_input"]', password,
+                                    delay=random.uniform(0.1, 0.3))
+                    await random_delay(5, 7)
+                await page.click('button[data-test-id="cua_set_password_button_submit"]')
+                await random_delay(20, 60)
+                rr = get_access_token(phone_jd['phone'], password)
+                token = json.loads(rr.text)
+                logging.critical(token)
+                await page.goto('https://vk.com/feed')
+
+                await random_delay(10, 20)
+                element = await page.query_selector('body')
+                elem = await element.text_content()
+                if "Лента" in elem.strip():
+                    url = 'http://10.9.20.135:3000/phones/' + str(phone_jd['phone']) + '/link?'
+                    await standart_request('post', url, data={'service': 'vk'})
+                    cookies = await context.cookies()
+                    cookie_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+                    cookie_list = [cookie_dict]
+                    await send_acc_vk(phone_jd['phone'], password, mid, humanoid['first_name'], humanoid['last_name'],
+                                      f'{day}.{month}.{year}', humanoid['id'], cookie_list, token['access_token'])
+                    await asyncio.sleep(5)
+
+                return 'success', AccountCreation(
+                    kind_id=2,
+                    phone=phone_jd['phone'],
+                    password=password,
+                    info={
+                        "mid": mid,
+                        "first_name": humanoid['first_name'],
+                        "last_name": humanoid['last_name'],
+                        "birth_date": humanoid['birth_date'],
+                        "access_token": token['access_token']
+                    },
+                    humanoid_id=humanoid['id'],
+                    last_cookies=cookie_list
+                )
 
             await page.type('input[name="first_name"]', humanoid['first_name'], delay=random.uniform(0.1, 0.3))
             await random_delay(1, 3)
@@ -1713,60 +1875,66 @@ async def vk_registeration_mobile_new(context, page):
             await random_delay(5, 10)
             await page.screenshot(path="screen.png", full_page=True)
             try:
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=1000)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=2000)
             except Exception as e:
                 logging.critical(1)
                 logging.critical(e)
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=1000)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=2000)
             screen(id_user=74, message="vk_reg_podtv", id_screen=1)
             try:
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=1000)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=2000)
             except Exception as e:
                 logging.critical(2)
                 logging.critical(e)
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=1000)
+                try:
+                    await page.click('xpath=//*[@id="mhead"]/a')
+                except Exception as e:
+                    logging.critical(2.1)
+                    logging.critical(e)
+                    pass
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=2000)
 
             await random_delay(2, 3)
             await page.screenshot(path="screen.png", full_page=True)
             screen(id_user=74, message="vk_reg_podtv", id_screen=1)
             try:
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=1000)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=2000)
             except Exception as e:
                 logging.critical(3)
                 logging.critical(e)
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=1000)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=2000)
             await random_delay(2, 3)
             await page.screenshot(path="screen.png", full_page=True)
             screen(id_user=74, message="vk_reg_podtv", id_screen=1)
 
             try:
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=1000)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=2000)
             except Exception as e:
                 logging.critical(4)
                 logging.critical(e)
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=1000)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=2000)
 
             await random_delay(2, 3)
             await page.screenshot(path="screen.png", full_page=True)
             screen(id_user=74, message="vk_reg_podtv", id_screen=1)
 
             try:
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=1000)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=2000)
             except Exception as e:
                 logging.critical(5)
                 logging.critical(e)
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=1000)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=2000)
 
             await random_delay(2, 3)
             await page.screenshot(path="screen.png", full_page=True)
             screen(id_user=74, message="vk_reg_podtv", id_screen=1)
 
             try:
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=1000)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[1]/a', timeout=2000)
             except Exception as e:
                 logging.critical(6)
                 logging.critical(e)
-                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=1000)
+                await page.click('xpath=/html/body/div[4]/div[2]/div[2]/div/div[3]/div[3]/div/div/section/div/div/div/div/div/div[2]/div/div/div[3]/button', timeout=2000)
 
             await random_delay(2, 3)
             await page.screenshot(path="screen.png", full_page=True)
@@ -1822,12 +1990,24 @@ async def vk_registeration_mobile_new(context, page):
             await random_delay(3, 6)
             await page.type('input[data-test-id="cua_set_password_confirm_input"]', password, delay=random.uniform(0.1, 0.3))
             await random_delay(5, 7)
+
+            element = await page.query_selector('body')
+            elem = await element.text_content()
+            if "Пароль недостаточно надёжный" in elem.strip():
+                password = generate_pass(20)
+                await page.type('input[data-test-id="cua_set_password_input"]', password,
+                                delay=random.uniform(0.1, 0.3))
+                await random_delay(3, 6)
+                await page.type('input[data-test-id="cua_set_password_confirm_input"]', password,
+                                delay=random.uniform(0.1, 0.3))
+                await random_delay(5, 7)
+
             await page.click('button[data-test-id="cua_set_password_button_submit"]')
             await random_delay(20, 60)
             rr = get_access_token(phone_jd['phone'], password)
             token = json.loads(rr.text)
             logging.critical(token)
-            await page.goto('https://vk.com/feed')
+            await page.goto('https://vk.com/feed', timeout=60000)
 
             await random_delay(10, 20)
             element = await page.query_selector('body')
@@ -1856,6 +2036,7 @@ async def vk_registeration_mobile_new(context, page):
             last_cookies=cookie_list
         )
     except Exception as e:
+        logging.critical(e)
         return 'error', e
 
 
