@@ -394,7 +394,6 @@ def get_access_token(phone_string: str, password: str):
             continue
 
 
-
 @APP.get("/vk-revive-access-token")
 def vk_revive_access_token(phone_string: str, password: str, credentials: HTTPBasicCredentials = Depends(SECURITY)):
     """Воскрешение доступа к учётной записи ВК."""
