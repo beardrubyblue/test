@@ -207,3 +207,11 @@
 {"severity":"DEBUG","time":"2025-09-19T07:57:26.582Z","correlation_id":null,"event":"setup","model":"Ci::ApplicationRecord","start_service_discovery":false}
 {"severity":"DEBUG","time":"2025-09-19T07:57:44.243Z","correlation_id":null,"event":"setup","model":"ActiveRecord::Base","start_service_discovery":false}
 {"severity":"DEBUG","time":"2025-09-19T07:57:44.245Z","correlation_id":null,"event":"setup","model":"Ci::ApplicationRecord","start_service_discovery":false}
+{"severity":"DEBUG","time":"2025-09-19T07:58:01.255Z","correlation_id":null,"event":"setup","model":"ActiveRecord::Base","start_service_discovery":false}
+{"severity":"DEBUG","time":"2025-09-19T07:58:01.255Z","correlation_id":null,"event":"setup","model":"Ci::ApplicationRecord","start_service_discovery":false}
+{"severity":"DEBUG","time":"2025-09-19T07:58:18.709Z","correlation_id":null,"event":"setup","model":"ActiveRecord::Base","start_service_discovery":false}
+{"severity":"DEBUG","time":"2025-09-19T07:58:18.711Z","correlation_id":null,"event":"setup","model":"Ci::ApplicationRecord","start_service_discovery":false}
+{"severity":"DEBUG","time":"2025-09-19T07:58:36.614Z","correlation_id":null,"event":"setup","model":"ActiveRecord::Base","start_service_discovery":false}
+{"severity":"DEBUG","time":"2025-09-19T07:58:36.615Z","correlation_id":null,"event":"setup","model":"Ci::ApplicationRecord","start_service_discovery":false}
+{"severity":"DEBUG","time":"2025-09-19T07:58:56.092Z","correlation_id":null,"event":"setup","model":"ActiveRecord::Base","start_service_discovery":false}
+{"severity":"DEBUG","time":"2025-09-19T07:58:56.093Z","correlation_id":null,"event":"setup","model":"Ci::ApplicationRecord","start_service_discovery":false}

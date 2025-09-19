@@ -89,16 +89,6 @@ def git_cr():
 
     # 3) Создание новой ветки с заданным именем
     # убедимся, что база актуальна
-    if confirm(f"Обновить базовую ветку '{args.base}' (fetch + rebase) перед ответвлением?", True):
-        say_and_run(f"git fetch {shlex.quote(args.remote)}", check=False)
-        # если мы не на base — временно переключимся, чтобы подтянуть
-        if current != args.base:
-            say_and_run(f"git checkout {shlex.quote(args.base)}", check=True)
-            say_and_run(f"git pull --rebase {shlex.quote(args.remote)} {shlex.quote(args.base)}", check=False)
-            # вернёмся на исходную
-            say_and_run(f"git checkout {shlex.quote(current)}", check=True)
-        else:
-            say_and_run(f"git pull --rebase {shlex.quote(args.remote)} {shlex.quote(args.base)}", check=False)
 
     branch_name = input("Имя новой ветки (например, 'feature/123-support-oauth-2.0'): ").strip()
     if not branch_name:
