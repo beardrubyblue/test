@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c4da4922-9546-465a-8868-bf763293ae27" name="Changes" comment="feat: send tg result vk registration">
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="30L9oez8DxQlp42MMlYWunYDK1c" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Docker.gitlab.yml.gitlab: Compose Deployment.executor": "Run",
+    "Docker.gitlab.yml: Compose Deployment.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.vkapi.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Docker.gitlab.yml.gitlab: Compose Deployment">
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml" />
+      <method v="2" />
+    </configuration>
+    <configuration name="gitlab.yml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="envFilePath" value="" />
+          <option name="sourceFilePath" value="gitlab.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="gitlab.yml.gitlab: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="services">
+            <list>
+              <option value="gitlab" />
+            </list>
+          </option>
+          <option name="sourceFilePath" value="gitlab.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Docker.gitlab.yml.gitlab: Compose Deployment" />
+        <item itemvalue="Docker.gitlab.yml: Compose Deployment" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-4f4e415b4190-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.26053.29" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c4da4922-9546-465a-8868-bf763293ae27" name="Changes" comment="" />
+      <created>1753396161764</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1753396161764</updated>
+    </task>
+    <task id="LOCAL-00001" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753397152392</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1753397152392</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753397470017</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1753397470017</updated>
+    </task>
+    <task id="LOCAL-00003" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753397979232</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1753397979232</updated>
+    </task>
+    <task id="LOCAL-00004" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753398030129</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1753398030129</updated>
+    </task>
+    <task id="LOCAL-00005" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753398170276</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1753398170276</updated>
+    </task>
+    <task id="LOCAL-00006" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753398609424</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1753398609424</updated>
+    </task>
+    <task id="LOCAL-00007" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753398783326</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1753398783326</updated>
+    </task>
+    <task id="LOCAL-00008" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753399136915</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1753399136915</updated>
+    </task>
+    <task id="LOCAL-00009" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753399523050</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1753399523050</updated>
+    </task>
+    <task id="LOCAL-00010" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753404732220</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1753404732220</updated>
+    </task>
+    <task id="LOCAL-00011" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753404765386</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1753404765386</updated>
+    </task>
+    <task id="LOCAL-00012" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753404950907</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1753404950907</updated>
+    </task>
+    <task id="LOCAL-00013" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753405249806</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1753405249806</updated>
+    </task>
+    <task id="LOCAL-00014" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753405408650</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1753405408650</updated>
+    </task>
+    <task id="LOCAL-00015" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753405490243</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1753405490243</updated>
+    </task>
+    <task id="LOCAL-00016" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753405532313</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1753405532313</updated>
+    </task>
+    <task id="LOCAL-00017" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753405725531</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1753405725531</updated>
+    </task>
+    <task id="LOCAL-00018" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753405882517</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1753405882517</updated>
+    </task>
+    <task id="LOCAL-00019" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753432650446</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1753432650446</updated>
+    </task>
+    <task id="LOCAL-00020" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753486865996</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1753486865996</updated>
+    </task>
+    <task id="LOCAL-00021" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753486931627</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1753486931627</updated>
+    </task>
+    <task id="LOCAL-00022" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753487822414</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1753487822414</updated>
+    </task>
+    <task id="LOCAL-00023" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753490309739</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1753490309739</updated>
+    </task>
+    <task id="LOCAL-00024" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753491111729</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1753491111729</updated>
+    </task>
+    <task id="LOCAL-00025" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753491165397</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1753491165397</updated>
+    </task>
+    <task id="LOCAL-00026" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753491381060</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1753491381060</updated>
+    </task>
+    <task id="LOCAL-00027" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753491712672</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1753491712672</updated>
+    </task>
+    <task id="LOCAL-00028" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753491968262</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1753491968262</updated>
+    </task>
+    <task id="LOCAL-00029" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753492253179</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1753492253179</updated>
+    </task>
+    <task id="LOCAL-00030" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753492354879</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1753492354879</updated>
+    </task>
+    <task id="LOCAL-00031" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753656880581</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1753656880581</updated>
+    </task>
+    <task id="LOCAL-00032" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753740755987</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1753740755987</updated>
+    </task>
+    <task id="LOCAL-00033" summary="feat: vk api methods receiver">
+      <option name="closed" value="true" />
+      <created>1753741821247</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1753741821247</updated>
+    </task>
+    <task id="LOCAL-00034" summary="feat: send tg result vk registration">
+      <option name="closed" value="true" />
+      <created>1754090508705</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1754090508705</updated>
+    </task>
+    <task id="LOCAL-00035" summary="feat: send tg result vk registration">
+      <option name="closed" value="true" />
+      <created>1754090673872</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1754090673872</updated>
+    </task>
+    <task id="LOCAL-00036" summary="feat: send tg result vk registration">
+      <option name="closed" value="true" />
+      <created>1754090997268</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1754090997268</updated>
+    </task>
+    <task id="LOCAL-00037" summary="feat: send tg result vk registration">
+      <option name="closed" value="true" />
+      <created>1754091264819</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1754091264819</updated>
+    </task>
+    <task id="LOCAL-00038" summary="feat: send tg result vk registration">
+      <option name="closed" value="true" />
+      <created>1754091573551</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1754091573551</updated>
+    </task>
+    <task id="LOCAL-00039" summary="feat: send tg result vk registration">
+      <option name="closed" value="true" />
+      <created>1754694275631</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1754694275631</updated>
+    </task>
+    <task id="LOCAL-00040" summary="feat: send tg result vk registration">
+      <option name="closed" value="true" />
+      <created>1754696003354</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1754696003354</updated>
+    </task>
+    <task id="LOCAL-00041" summary="feat: send tg result vk registration">
+      <option name="closed" value="true" />
+      <created>1754697482273</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1754697482273</updated>
+    </task>
+    <task id="LOCAL-00042" summary="feat: send tg result vk registration">
+      <option name="closed" value="true" />
+      <created>1754697900375</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1754697900375</updated>
+    </task>
+    <task id="LOCAL-00043" summary="feat: send tg result vk registration">
+      <option name="closed" value="true" />
+      <created>1754947831415</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1754947831415</updated>
+    </task>
+    <task id="LOCAL-00044" summary="feat: send tg result vk registration">
+      <option name="closed" value="true" />
+      <created>1754947875864</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1754947875864</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat: vk api methods receiver" />
+    <MESSAGE value="feat: send tg result vk registration" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: send tg result vk registration" />
+  </component>
+</project>

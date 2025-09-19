@@ -1,0 +1,4 @@
+2025-09-19_06:51:30.61477 LOG:  starting PostgreSQL 16.8 on aarch64-unknown-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0, 64-bit
+2025-09-19_06:51:30.61532 LOG:  listening on Unix socket "/var/opt/gitlab/postgresql/.s.PGSQL.5432"
+2025-09-19_06:51:30.61792 LOG:  database system was shut down at 2025-09-19 06:51:29 GMT
+2025-09-19_06:51:30.62091 LOG:  database system is ready to accept connections

@@ -1,0 +1,52 @@
+2025-09-19_06:52:24.14489 {"timestamp":"2025-09-19T06:52:23.770Z","pid":861,"message":"Puma starting in cluster mode..."}
+2025-09-19_06:52:24.14498 {"timestamp":"2025-09-19T06:52:23.774Z","pid":861,"message":"* Puma version: 6.6.1 (\"Return to Forever\")"}
+2025-09-19_06:52:24.14502 {"timestamp":"2025-09-19T06:52:23.774Z","pid":861,"message":"* Ruby version: ruby 3.2.8 (2025-03-26 revision 13f495dc2c) [aarch64-linux]"}
+2025-09-19_06:52:24.14506 {"timestamp":"2025-09-19T06:52:23.774Z","pid":861,"message":"*  Min threads: 4"}
+2025-09-19_06:52:24.14509 {"timestamp":"2025-09-19T06:52:23.774Z","pid":861,"message":"*  Max threads: 4"}
+2025-09-19_06:52:24.14513 {"timestamp":"2025-09-19T06:52:23.774Z","pid":861,"message":"*  Environment: production"}
+2025-09-19_06:52:24.14517 {"timestamp":"2025-09-19T06:52:23.774Z","pid":861,"message":"*   Master PID: 861"}
+2025-09-19_06:52:24.14520 {"timestamp":"2025-09-19T06:52:23.774Z","pid":861,"message":"*      Workers: 2"}
+2025-09-19_06:52:24.14524 {"timestamp":"2025-09-19T06:52:23.774Z","pid":861,"message":"*     Restarts: (✔) hot (✖) phased (✖) refork"}
+2025-09-19_06:52:24.14527 {"timestamp":"2025-09-19T06:52:23.774Z","pid":861,"message":"* Preloading application"}
+2025-09-19_06:52:44.15527 {"timestamp":"2025-09-19T06:52:44.155Z","pid":861,"message":"* Listening on unix:///var/opt/gitlab/gitlab-rails/sockets/gitlab.socket"}
+2025-09-19_06:52:44.15557 bundler: failed to load command: puma (/opt/gitlab/embedded/bin/puma)
+2025-09-19_06:52:44.15639 /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/puma-6.6.1/lib/puma/binder.rb:342:in `initialize': Address already in use - bind(2) for "127.0.0.1" port 8080 (Errno::EADDRINUSE)
+2025-09-19_06:52:44.16141 	from /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/puma-6.6.1/lib/puma/binder.rb:342:in `new'
+2025-09-19_06:52:44.16146 	from /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/puma-6.6.1/lib/puma/binder.rb:342:in `add_tcp_listener'
+2025-09-19_06:52:44.16155 	from /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/puma-6.6.1/lib/puma/binder.rb:171:in `block in parse'
+2025-09-19_06:52:44.16211 	from /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/puma-6.6.1/lib/puma/binder.rb:154:in `each'
+2025-09-19_06:52:44.16214 	from /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/puma-6.6.1/lib/puma/binder.rb:154:in `parse'
+2025-09-19_06:52:44.16216 	from /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/puma-6.6.1/lib/puma/runner.rb:175:in `load_and_bind'
+2025-09-19_06:52:44.16218 	from /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/puma-6.6.1/lib/puma/cluster.rb:383:in `run'
+2025-09-19_06:52:44.16220 	from /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/puma-6.6.1/lib/puma/launcher.rb:203:in `run'
+2025-09-19_06:52:44.16222 	from /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/puma-6.6.1/lib/puma/cli.rb:75:in `run'
+2025-09-19_06:52:44.16224 	from /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/puma-6.6.1/bin/puma:10:in `<top (required)>'
+2025-09-19_06:52:44.16227 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/rubygems.rb:319:in `load'
+2025-09-19_06:52:44.16228 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/rubygems.rb:319:in `activate_and_load_bin_path'
+2025-09-19_06:52:44.16230 	from /opt/gitlab/embedded/bin/puma:25:in `<top (required)>'
+2025-09-19_06:52:44.16232 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/bundler/cli/exec.rb:59:in `load'
+2025-09-19_06:52:44.16233 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/bundler/cli/exec.rb:59:in `kernel_load'
+2025-09-19_06:52:44.16235 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/bundler/cli/exec.rb:23:in `run'
+2025-09-19_06:52:44.16236 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/bundler/cli.rb:451:in `exec'
+2025-09-19_06:52:44.16238 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/bundler/vendor/thor/lib/thor/command.rb:28:in `run'
+2025-09-19_06:52:44.16240 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/bundler/vendor/thor/lib/thor/invocation.rb:127:in `invoke_command'
+2025-09-19_06:52:44.16242 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/bundler/vendor/thor/lib/thor.rb:538:in `dispatch'
+2025-09-19_06:52:44.16248 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/bundler/cli.rb:35:in `dispatch'
+2025-09-19_06:52:44.16250 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/bundler/vendor/thor/lib/thor/base.rb:584:in `start'
+2025-09-19_06:52:44.16252 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/bundler/cli.rb:29:in `start'
+2025-09-19_06:52:44.16253 	from /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/bundler-2.7.1/exe/bundle:28:in `block in <top (required)>'
+2025-09-19_06:52:44.16255 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/bundler/friendly_errors.rb:118:in `with_friendly_errors'
+2025-09-19_06:52:44.16257 	from /opt/gitlab/embedded/lib/ruby/gems/3.2.0/gems/bundler-2.7.1/exe/bundle:20:in `<top (required)>'
+2025-09-19_06:52:44.16258 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/rubygems.rb:319:in `load'
+2025-09-19_06:52:44.16260 	from /opt/gitlab/embedded/lib/ruby/site_ruby/3.2.0/rubygems.rb:319:in `activate_and_load_bin_path'
+2025-09-19_06:52:44.16261 	from /opt/gitlab/embedded/bin/bundle:25:in `<main>'
+2025-09-19_06:52:45.09831 {"timestamp":"2025-09-19T06:52:45.093Z","pid":998,"message":"Puma starting in cluster mode..."}
+2025-09-19_06:52:45.09842 {"timestamp":"2025-09-19T06:52:45.098Z","pid":998,"message":"* Puma version: 6.6.1 (\"Return to Forever\")"}
+2025-09-19_06:52:45.09844 {"timestamp":"2025-09-19T06:52:45.098Z","pid":998,"message":"* Ruby version: ruby 3.2.8 (2025-03-26 revision 13f495dc2c) [aarch64-linux]"}
+2025-09-19_06:52:45.09846 {"timestamp":"2025-09-19T06:52:45.098Z","pid":998,"message":"*  Min threads: 4"}
+2025-09-19_06:52:45.09849 {"timestamp":"2025-09-19T06:52:45.098Z","pid":998,"message":"*  Max threads: 4"}
+2025-09-19_06:52:45.09851 {"timestamp":"2025-09-19T06:52:45.098Z","pid":998,"message":"*  Environment: production"}
+2025-09-19_06:52:45.09854 {"timestamp":"2025-09-19T06:52:45.098Z","pid":998,"message":"*   Master PID: 998"}
+2025-09-19_06:52:45.09856 {"timestamp":"2025-09-19T06:52:45.098Z","pid":998,"message":"*      Workers: 2"}
+2025-09-19_06:52:45.09860 {"timestamp":"2025-09-19T06:52:45.098Z","pid":998,"message":"*     Restarts: (✔) hot (✖) phased (✖) refork"}
+2025-09-19_06:52:45.09863 {"timestamp":"2025-09-19T06:52:45.098Z","pid":998,"message":"* Preloading application"}

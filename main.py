@@ -23,7 +23,7 @@ from fastapi.staticfiles import StaticFiles
 from twocaptcha import TwoCaptcha
 from fake_useragent import UserAgent
 import psycopg
-import configs
+# import configs
 from models import AccountCreation
 import vkapi
 logging.basicConfig(level=logging.CRITICAL, format="%(message)s")
