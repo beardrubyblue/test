@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import argparse
 import curses
 import re
@@ -8,7 +5,7 @@ import shlex
 import subprocess
 import sys
 
-TYPES = ["feat", "fix", "chore"]  # только первые три
+TYPES = ["feat", "fix", "chore"]
 
 def git_cr():
     parser = argparse.ArgumentParser(description="CR: стрелками выбираешь тип -> сообщение -> ветка -> пуш (авто-MR на GitLab).")
@@ -131,7 +128,7 @@ def git_cr():
     _, remote_url = say_and_run(f"git remote get-url {shlex.quote(args.remote)}", check=False, capture=True)
     is_gitlab = "gitlab" in (remote_url or "").lower()
     if is_gitlab:
-        push_cmd += " -o merge_request.create"  # ВСЕГДА добавляем для GitLab
+        push_cmd += " -o merge_request.create"
 
     if confirm(f"Выполнить пуш? ({push_cmd})", True):
         say_and_run(push_cmd, check=True)
@@ -141,8 +138,7 @@ def git_cr():
         say_and_run(f"git checkout {shlex.quote(original_branch)}", check=True)
 
     print("\n✅ Готово. Коммит создан, ветка сформирована, запушено и возвратился в исходную ветку.")
-    if is_gitlab:
-        print("📝 Для GitLab MR должен быть создан автоматически.")
+
 
 if __name__ == "__main__":
     git_cr()
