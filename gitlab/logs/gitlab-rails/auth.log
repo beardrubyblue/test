@@ -98,7 +98,4 @@
 {"severity":"INFO","time":"2025-09-19T07:57:10.996Z","gitlab_throttle_user_allowlist":[]}
 {"severity":"INFO","time":"2025-09-19T07:57:27.564Z","gitlab_throttle_user_allowlist":[]}
 {"severity":"INFO","time":"2025-09-19T07:57:45.217Z","gitlab_throttle_user_allowlist":[]}
-{"severity":"INFO","time":"2025-09-19T07:58:02.316Z","gitlab_throttle_user_allowlist":[]}
-{"severity":"INFO","time":"2025-09-19T07:58:19.624Z","gitlab_throttle_user_allowlist":[]}
-{"severity":"INFO","time":"2025-09-19T07:58:37.529Z","gitlab_throttle_user_allowlist":[]}
-{"severity":"INFO","time":"2025-09-19T07:58:57.384Z","gitlab_throttle_user_allowlist":[]}
+{"severity":"INFO","time":"2025-09-19T08:03:07.374Z","gitlab_throttle_user_allowlist":[]}
