@@ -5,18 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4da4922-9546-465a-8868-bf763293ae27" name="Changes" comment="feat: send tg result vk registration">
-      <change beforePath="$PROJECT_DIR$/gitlab/data/prometheus/data/wal/00000002" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/data/prometheus/data/wal/00000002" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-exporter/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-exporter/current" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/application_json.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/application_json.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/auth.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/auth.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/database_load_balancing.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/database_load_balancing.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/production.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/production.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/production_json.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/production_json.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-workhorse/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-workhorse/current" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlab/logs/nginx/gitlab_access.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/nginx/gitlab_access.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlab/logs/postgresql/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/postgresql/current" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlab/logs/puma/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/puma/current" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlab/logs/sidekiq/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/sidekiq/current" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +22,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
@@ -41,21 +37,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Docker.gitlab.yml.gitlab: Compose Deployment.executor": "Run",
-    "Docker.gitlab.yml: Compose Deployment.executor": "Run",
-    "Python.git_cr.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.test.executor": "Run",
-    "Python.vkapi.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "feat/fsvfvv",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Docker.gitlab.yml.gitlab: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.gitlab.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Python.git_cr.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.vkapi.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/fsvfvv&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />

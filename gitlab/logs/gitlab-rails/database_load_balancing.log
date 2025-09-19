@@ -347,3 +347,5 @@
 {"severity":"DEBUG","time":"2025-09-19T07:41:12.581Z","correlation_id":null,"event":"setup","model":"Ci::ApplicationRecord","start_service_discovery":false}
 {"severity":"DEBUG","time":"2025-09-19T07:41:29.398Z","correlation_id":null,"event":"setup","model":"ActiveRecord::Base","start_service_discovery":false}
 {"severity":"DEBUG","time":"2025-09-19T07:41:29.399Z","correlation_id":null,"event":"setup","model":"Ci::ApplicationRecord","start_service_discovery":false}
+{"severity":"DEBUG","time":"2025-09-19T08:02:54.664Z","correlation_id":null,"event":"setup","model":"ActiveRecord::Base","start_service_discovery":false}
+{"severity":"DEBUG","time":"2025-09-19T08:02:54.666Z","correlation_id":null,"event":"setup","model":"Ci::ApplicationRecord","start_service_discovery":false}

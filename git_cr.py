@@ -132,11 +132,6 @@ def git_cr():
         if confirm("Изменений нет. Создать ПУСТОЙ коммит?", True):
             say_and_run(f'git commit --allow-empty -m {shlex.quote(commit_msg)}', check=True)
 
-    # 9) обновляем базовую ветку и создаём новую
-    if confirm(f"Обновить базовую ветку '{args.base}' (fetch + rebase)?", True):
-        say_and_run(f"git fetch {shlex.quote(args.remote)}", check=False)
-        say_and_run(f"git pull --rebase {shlex.quote(args.remote)} {shlex.quote(args.base)}", check=False)
-
     if confirm(f"Создать ветку '{branch_name}'?", True):
         say_and_run(f"git checkout -b {shlex.quote(branch_name)}", check=True)
 
