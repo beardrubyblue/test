@@ -21,3 +21,4 @@
 2025-09-19_07:04:54.55849 {"time":"2025-09-19T07:04:54.558322752Z","level":"ERROR","msg":"Failed to get receptive agents","mod_name":"kas2agentk_tunnel","error":"HTTP status code: 502 for path /api/v4/internal/kubernetes/receptive_agents"}
 2025-09-19_07:11:47.24951 {"time":"2025-09-19T07:11:47.249394138Z","level":"ERROR","msg":"Failed to get receptive agents","mod_name":"kas2agentk_tunnel","error":"HTTP status code: 502 for path /api/v4/internal/kubernetes/receptive_agents"}
 2025-09-19_07:25:59.30971 {"time":"2025-09-19T07:25:59.309604004Z","level":"ERROR","msg":"Failed to get receptive agents","mod_name":"kas2agentk_tunnel","error":"HTTP status code: 502 for path /api/v4/internal/kubernetes/receptive_agents"}
+2025-09-19_07:37:16.15541 {"time":"2025-09-19T07:37:16.155291845Z","level":"ERROR","msg":"Failed to get receptive agents","mod_name":"kas2agentk_tunnel","error":"HTTP status code: 502 for path /api/v4/internal/kubernetes/receptive_agents"}

@@ -80,19 +80,8 @@ def git_cr():
                 return v
             print("⛔ Введи ровно один из:", ", ".join(options))
 
-    # 0) Проверки окружения git
-    code, out = say_and_run("git rev-parse --is-inside-work-tree", check=False, capture=True)
-    if code != 0 or out.strip() != "true":
-        print("❌ Здесь нет git-репозитория. Запусти скрипт в проекте.")
-        sys.exit(1)
-
     code, current = say_and_run("git rev-parse --abbrev-ref HEAD", check=False, capture=True)
     print(f"➡️ Текущая ветка: {current}")
-
-    code, _ = say_and_run(f"git remote get-url {shlex.quote(args.remote)}", check=False, capture=True)
-    if code != 0:
-        print(f"❌ Remote '{args.remote}' не настроен. Пример:\n   git remote add {args.remote} <URL>")
-        sys.exit(3)
 
     # 1) Локальные конфиги (user.name/email)
     if confirm(f"Поставить локально user.name = '{args.name}'?", True):
@@ -112,21 +101,15 @@ def git_cr():
         ctype = select_type_fallback(TYPES)
     print(f"Выбран тип: {ctype}")
 
-    # 3) scope (необязателен)
-    scope = input("Scope (необязательно, пример ui/auth). Пусто — пропустить: ").strip()
-    scope_part = f"({scope})" if scope else ""
 
-    # 4) breaking change (опционально)
-    breaking = input("Breaking change? (y/N): ").strip().lower() in ("y", "yes", "д", "да")
-    bang = "!" if breaking else ""
 
     # 5) короткое сообщение (subject)
     subject = ""
     while not subject:
-        subject = input("Короткое сообщение (императив, напр. 'add OAuth2 login'): ").strip()
+        subject = input("Cообщение: ").strip()
 
     # 6) формируем conventional commit сообщение
-    commit_msg = f"{ctype}{scope_part}{bang}: {subject}"
+    commit_msg = f"{ctype}:{subject}"
     print(f"\n📝 Commit message: {commit_msg}")
 
     # 7) формируем имя ветки: type/slug(subject)
