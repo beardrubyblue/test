@@ -11,11 +11,10 @@ import sys
 TYPES = ["feat", "fix", "chore"]  # только первые три
 
 def git_cr():
-    parser = argparse.ArgumentParser(description="Удобный CR: стрелками выбираешь тип -> сообщение -> ветка -> пуш (+MR).")
+    parser = argparse.ArgumentParser(description="CR: стрелками выбираешь тип -> сообщение -> ветка -> пуш (авто-MR на GitLab).")
     parser.add_argument("--remote", default="origin", help="Имя удалённого (по умолчанию origin).")
     parser.add_argument("--base", default="main", help="От какой ветки ответвляться (по умолчанию main).")
     parser.add_argument("--yes", action="store_true", help="Автоподтверждение всех шагов.")
-    parser.add_argument("--mr", action="store_true", help="Добавить -о merge_request.create (для GitLab).")
     parser.add_argument("--name", default="ad-user", help="Локальный user.name (по умолчанию ad-user).")
     parser.add_argument("--email", default="ad.dev@arbat.dev", help="Локальный user.email (по умолчанию ad.dev@arbat.dev).")
     args = parser.parse_args()
@@ -50,7 +49,7 @@ def git_cr():
 
     def select_type_curses(options):
         def _inner(stdscr):
-            curses.curs_set(0)  # скрыть курсор
+            curses.curs_set(0)
             idx = 0
             while True:
                 stdscr.erase()
@@ -109,16 +108,13 @@ def git_cr():
 
     slug = subject.lower()
     slug = re.sub(r"[^\w\-]+", "-", slug)
-    slug = re.sub(r"-{2,}", "-", slug).strip("-")
-    if not slug:
-        slug = "change"
+    slug = re.sub(r"-{2,}", "-", slug).strip("-") or "change"
     branch_name = f"{ctype}/{slug}"
     print(f"🧭 Branch: {branch_name}")
 
     # 5) Коммит
     code, status = say_and_run("git status --porcelain", check=False, capture=True)
-    dirty = bool(status.strip())
-    if dirty:
+    if status.strip():
         if confirm("Добавить все изменения и сделать коммит?", True):
             say_and_run("git add -A", check=True)
             say_and_run(f'git commit -m {shlex.quote(commit_msg)}', check=True)
@@ -130,22 +126,22 @@ def git_cr():
     if confirm(f"Создать ветку '{branch_name}'?", True):
         say_and_run(f"git checkout -b {shlex.quote(branch_name)}", check=True)
 
-    # 7) Push
+    # 7) Push (авто-MR для GitLab)
     push_cmd = f"git push -u {shlex.quote(args.remote)} {shlex.quote(branch_name)}"
-    code, remote_url = say_and_run(f"git remote get-url {shlex.quote(args.remote)}", check=False, capture=True)
-    is_gitlab = ("gitlab" in (remote_url or "").lower())
-    if args.mr and is_gitlab:
-        push_cmd += " -o merge_request.create"
+    _, remote_url = say_and_run(f"git remote get-url {shlex.quote(args.remote)}", check=False, capture=True)
+    is_gitlab = "gitlab" in (remote_url or "").lower()
+    if is_gitlab:
+        push_cmd += " -o merge_request.create"  # ВСЕГДА добавляем для GitLab
 
     if confirm(f"Выполнить пуш? ({push_cmd})", True):
         say_and_run(push_cmd, check=True)
 
-    # --- возвращаемся в исходную ветку ---
+    # 8) Возврат в исходную ветку
     if confirm(f"Вернуться обратно в ветку '{original_branch}'?", True):
         say_and_run(f"git checkout {shlex.quote(original_branch)}", check=True)
 
-    print("\n✅ Готово. Коммит по conventional commits создан, ветка сформирована, запушена и возвратился в исходную ветку.")
-    if args.mr and is_gitlab:
+    print("\n✅ Готово. Коммит создан, ветка сформирована, запушено и возвратился в исходную ветку.")
+    if is_gitlab:
         print("📝 Для GitLab MR должен быть создан автоматически.")
 
 if __name__ == "__main__":
