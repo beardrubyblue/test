@@ -5,9 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4da4922-9546-465a-8868-bf763293ae27" name="Changes" comment="feat: send tg result vk registration">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/git_cr.py" beforeDir="false" afterPath="$PROJECT_DIR$/git_cr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/data/prometheus/data/wal/00000002" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/data/prometheus/data/wal/00000002" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlab/data/redis/dump.rdb" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/data/redis/dump.rdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-exporter/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-exporter/current" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-kas/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-kas/current" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/application_json.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/application_json.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/auth.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/auth.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/database_load_balancing.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/database_load_balancing.log" afterDir="false" />
@@ -17,6 +19,7 @@
       <change beforePath="$PROJECT_DIR$/gitlab/logs/nginx/gitlab_access.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/nginx/gitlab_access.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/logs/postgresql/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/postgresql/current" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/logs/puma/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/puma/current" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlab/logs/sidekiq/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/sidekiq/current" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,13 +48,14 @@
   "keyToString": {
     "Docker.gitlab.yml.gitlab: Compose Deployment.executor": "Run",
     "Docker.gitlab.yml: Compose Deployment.executor": "Run",
+    "Python.git_cr.executor": "Run",
     "Python.main.executor": "Run",
     "Python.test.executor": "Run",
     "Python.vkapi.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "feature/add-gitlab",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
