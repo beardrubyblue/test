@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import argparse
 import curses
 import re
@@ -8,7 +5,7 @@ import shlex
 import subprocess
 import sys
 
-TYPES = ["feat", "fix", "chore"]  # только первые три
+TYPES = ["feat", "fix", "chore"]
 
 def git_cr():
     parser = argparse.ArgumentParser(description="Удобный CR: стрелками выбираешь тип -> сообщение -> ветка -> пуш (+MR).")
@@ -50,11 +47,11 @@ def git_cr():
 
     def select_type_curses(options):
         def _inner(stdscr):
-            curses.curs_set(0)  # скрыть курсор
+            curses.curs_set(0)
             idx = 0
             while True:
                 stdscr.erase()
-                stdscr.addstr(0, 0, "Выбери тип коммита (↑/↓, Enter):")
+                stdscr.addstr(0, 0, "Выбери тип коммита:")
                 for i, opt in enumerate(options):
                     if i == idx:
                         stdscr.addstr(2 + i, 0, f"> {opt}", curses.A_REVERSE)
@@ -144,9 +141,8 @@ def git_cr():
     if confirm(f"Вернуться обратно в ветку '{original_branch}'?", True):
         say_and_run(f"git checkout {shlex.quote(original_branch)}", check=True)
 
-    print("\n✅ Готово. Коммит по conventional commits создан, ветка сформирована, запушена и возвратился в исходную ветку.")
-    if args.mr and is_gitlab:
-        print("📝 Для GitLab MR должен быть создан автоматически.")
+    print("\n✅ Готово. Коммит создан, ветка сформирована, запушено и возвратился в исходную ветку.")
+
 
 if __name__ == "__main__":
     git_cr()
