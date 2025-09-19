@@ -6,7 +6,7 @@
   daily
   
   
-  rotate 7
+  rotate 30
   compress
   copytruncate
   missingok
