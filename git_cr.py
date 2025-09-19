@@ -8,7 +8,7 @@ import shlex
 import subprocess
 import sys
 
-TYPES = ["feat", "fix", "chore"]  # только первые три, как просил
+TYPES = ["feat", "fix", "chore"]  # только первые три
 
 def git_cr():
     parser = argparse.ArgumentParser(description="Удобный CR: стрелками выбираешь тип -> сообщение -> ветка -> пуш (+MR).")
@@ -20,7 +20,6 @@ def git_cr():
     parser.add_argument("--email", default="ad.dev@arbat.dev", help="Локальный user.email (по умолчанию ad.dev@arbat.dev).")
     args = parser.parse_args()
 
-    # --- helper: запуск команды с выводом (рус. комментарии) ---
     def say_and_run(cmd, check=True, capture=False):
         print(f"\n$ {cmd}")
         try:
@@ -39,7 +38,6 @@ def git_cr():
                 print(out.strip())
             return e.returncode, out.strip()
 
-    # --- helper: подтверждение шага ---
     def confirm(prompt, default_yes=True):
         if args.yes:
             print(f"{prompt} [auto-yes]")
@@ -50,7 +48,6 @@ def git_cr():
             return default_yes
         return ans in ("y", "yes", "д", "да")
 
-    # --- стрелочное меню через curses ---
     def select_type_curses(options):
         def _inner(stdscr):
             curses.curs_set(0)  # скрыть курсор
@@ -72,7 +69,6 @@ def git_cr():
                     return options[idx]
         return curses.wrapper(_inner)
 
-    # --- fallback, если curses недоступен/нет TTY ---
     def select_type_fallback(options):
         while True:
             v = input(f"Тип коммита [{'/'.join(options)}]: ").strip().lower()
@@ -80,39 +76,37 @@ def git_cr():
                 return v
             print("⛔ Введи ровно один из:", ", ".join(options))
 
+    # --- запоминаем исходную ветку ---
     code, current = say_and_run("git rev-parse --abbrev-ref HEAD", check=False, capture=True)
-    print(f"➡️ Текущая ветка: {current}")
+    original_branch = current.strip()
+    print(f"➡️ Текущая ветка: {original_branch}")
 
-    # 1) Локальные конфиги (user.name/email)
+    # 1) Локальные конфиги
     if confirm(f"Поставить локально user.name = '{args.name}'?", True):
         say_and_run(f"git config --local user.name {shlex.quote(args.name)}", check=True)
     if confirm(f"Поставить локально user.email = '{args.email}'?", True):
         say_and_run(f"git config --local user.email {shlex.quote(args.email)}", check=True)
 
-    # 2) Выбор типа коммита стрелками
+    # 2) Выбор типа
     print()
     if sys.stdin.isatty() and sys.stdout.isatty():
         try:
             ctype = select_type_curses(TYPES)
         except Exception:
-            # если curses не сработал (например, IDE) — fallback
             ctype = select_type_fallback(TYPES)
     else:
         ctype = select_type_fallback(TYPES)
     print(f"Выбран тип: {ctype}")
 
-
-
-    # 5) короткое сообщение (subject)
+    # 3) Сообщение
     subject = ""
     while not subject:
         subject = input("Cообщение: ").strip()
 
-    # 6) формируем conventional commit сообщение
+    # 4) Commit message и branch
     commit_msg = f"{ctype}:{subject}"
     print(f"\n📝 Commit message: {commit_msg}")
 
-    # 7) формируем имя ветки: type/slug(subject)
     slug = subject.lower()
     slug = re.sub(r"[^\w\-]+", "-", slug)
     slug = re.sub(r"-{2,}", "-", slug).strip("-")
@@ -121,7 +115,7 @@ def git_cr():
     branch_name = f"{ctype}/{slug}"
     print(f"🧭 Branch: {branch_name}")
 
-    # 8) делаем коммит (или пустой)
+    # 5) Коммит
     code, status = say_and_run("git status --porcelain", check=False, capture=True)
     dirty = bool(status.strip())
     if dirty:
@@ -132,10 +126,11 @@ def git_cr():
         if confirm("Изменений нет. Создать ПУСТОЙ коммит?", True):
             say_and_run(f'git commit --allow-empty -m {shlex.quote(commit_msg)}', check=True)
 
+    # 6) Создать ветку
     if confirm(f"Создать ветку '{branch_name}'?", True):
         say_and_run(f"git checkout -b {shlex.quote(branch_name)}", check=True)
 
-    # 10) пуш (+ MR для GitLab)
+    # 7) Push
     push_cmd = f"git push -u {shlex.quote(args.remote)} {shlex.quote(branch_name)}"
     code, remote_url = say_and_run(f"git remote get-url {shlex.quote(args.remote)}", check=False, capture=True)
     is_gitlab = ("gitlab" in (remote_url or "").lower())
@@ -145,7 +140,11 @@ def git_cr():
     if confirm(f"Выполнить пуш? ({push_cmd})", True):
         say_and_run(push_cmd, check=True)
 
-    print("\n✅ Готово. Коммит по conventional commits создан, ветка сформирована и запушена.")
+    # --- возвращаемся в исходную ветку ---
+    if confirm(f"Вернуться обратно в ветку '{original_branch}'?", True):
+        say_and_run(f"git checkout {shlex.quote(original_branch)}", check=True)
+
+    print("\n✅ Готово. Коммит по conventional commits создан, ветка сформирована, запушена и возвратился в исходную ветку.")
     if args.mr and is_gitlab:
         print("📝 Для GitLab MR должен быть создан автоматически.")
 

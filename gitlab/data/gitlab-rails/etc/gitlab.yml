@@ -11,7 +11,7 @@ production: &base
   gitlab:
     ## Web server settings (note: host is the FQDN, do not include http://)
     host: localhost
-    port: 8080
+    port: 8000
     https: false
 
 
@@ -207,7 +207,7 @@ production: &base
     # mailroom can contact to. Note that the combined url must not end with "/".
     # At the moment, the webhook delivery method doesn't support HTTP/HTTPs via
     # UNIX socket.
-    gitlab_url: http://localhost:8080
+    gitlab_url: http://localhost:8000
 
     # When the delivery method is webhook, this config is the file that
     # contains the shared secret key for verifying access for mailroom's
@@ -263,7 +263,7 @@ production: &base
     # mailroom can contact to. Note that the combined url must not end with "/".
     # At the moment, the webhook delivery method doesn't support HTTP/HTTPs via
     # UNIX socket.
-    gitlab_url: http://localhost:8080
+    gitlab_url: http://localhost:8000
 
     # When the delivery method is webhook, this config is the file that
     # contains the shared secret key for verifying access for mailroom's
@@ -371,7 +371,7 @@ production: &base
     enabled: true
     internal_url: grpc://localhost:8153
     external_url: ws://localhost:/-/kubernetes-agent/
-    external_k8s_proxy_url: http://localhost:8080/-/kubernetes-agent/k8s-proxy/
+    external_k8s_proxy_url: http://localhost:8000/-/kubernetes-agent/k8s-proxy/
 
   ## Error Reporting and Logging with Sentry
   sentry:
@@ -778,7 +778,7 @@ production: &base
     receive_pack: 
 
     # If you use non-standard ssh port you need to specify it
-    ssh_port: 2222
+    ssh_port: 8022
 
     # Git import/fetch timeout
     git_timeout: 10800

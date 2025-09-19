@@ -5,9 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4da4922-9546-465a-8868-bf763293ae27" name="Changes" comment="feat: send tg result vk registration">
+      <change beforePath="$PROJECT_DIR$/gitlab/data/prometheus/data/wal/00000002" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/data/prometheus/data/wal/00000002" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-exporter/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-exporter/current" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-kas/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-kas/current" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/application_json.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/application_json.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/auth.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/auth.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/database_load_balancing.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/database_load_balancing.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/production.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/production.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/production_json.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-rails/production_json.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlab/logs/gitlab-workhorse/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/gitlab-workhorse/current" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlab/logs/nginx/gitlab_access.log" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/nginx/gitlab_access.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlab/logs/postgresql/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/postgresql/current" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlab/logs/puma/current" beforeDir="false" afterPath="$PROJECT_DIR$/gitlab/logs/puma/current" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,11 +31,6 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="main" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
@@ -41,14 +45,13 @@
   &quot;keyToString&quot;: {
     &quot;Docker.gitlab.yml.gitlab: Compose Deployment.executor&quot;: &quot;Run&quot;,
     &quot;Docker.gitlab.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.git_cr.executor&quot;: &quot;Run&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;Python.test.executor&quot;: &quot;Run&quot;,
     &quot;Python.vkapi.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feat/fsvfvv&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>
@@ -57,9 +60,11 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Docker.gitlab.yml.gitlab: Compose Deployment">
     <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
-      <deployment type="docker-compose.yml" />
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
       <method v="2" />
     </configuration>
     <configuration name="gitlab.yml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
